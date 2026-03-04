@@ -1,0 +1,470 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sistema Simulador</title>
+    <link href="./output.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body class="h-screen overflow-hidden bg-slate-400 flex font-sans">
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-900 text-slate-200 flex flex-col">
+      <div
+        class="px-6 py-4 border-b border-slate-700 text-sm tracking-wide uppercase"
+      >
+        Módulos
+      </div>
+
+      <nav class="flex-1 px-4 py-6 space-y-2 text-sm">
+        <div
+          onclick="setView('nuevoProyecto')"
+          class="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer transition"
+        >
+          Nuevo Proyecto
+        </div>
+
+        <div
+          class="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer transition"
+        >
+          Bombas
+        </div>
+
+        <div
+          class="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer transition"
+        >
+          Contrapresión
+        </div>
+
+        <div
+          class="px-3 py-2 rounded hover:bg-slate-700 cursor-pointer transition"
+        >
+          Configuración
+        </div>
+      </nav>
+
+      <div class="px-6 py-3 text-xs border-t border-slate-700 text-slate-400">
+        v1.0.0
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col">
+      <!-- TOPBAR -->
+      <header
+        class="bg-slate-800 text-slate-200 px-6 py-3 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-4">
+          <img src="logo-SIMBPR.png" class="h-10" />
+          <span class="text-sm tracking-wide">
+            Sistema Simulador de Bombeo de Succión Neumática
+          </span>
+        </div>
+
+        <div class="text-xs text-slate-400">Usuario: Admin</div>
+      </header>
+
+      <!-- MAIN DINÁMICO -->
+      <main
+        id="main-content"
+        class="flex-1 bg-slate-200 p-6 overflow-hidden"
+      ></main>
+
+      <!-- FOOTER -->
+      <footer
+        class="bg-slate-800 text-slate-300 px-6 py-2 text-xs flex justify-between"
+      >
+        <span>26/02/2026 05:22 p.m.</span>
+        <span id="proyecto-footer">Proyecto: -</span>
+        <span class="text-green-400">Conectado</span>
+      </footer>
+    </div>
+
+    <script>
+      /* ===============================
+   ESTADO GLOBAL
+=================================*/
+
+      let appState = {
+        view: "inicio",
+        proyecto: null,
+      };
+
+      /* ===============================
+   RENDER PRINCIPAL
+=================================*/
+
+      function renderApp() {
+
+    const main = document.getElementById("main-content");
+
+    switch (appState.view) {
+
+        case "inicio":
+            main.innerHTML = renderInicio();
+            break;
+
+        case "nuevoProyecto":
+            main.innerHTML = renderNuevoProyecto();
+            break;
+
+        case "simulador":
+            main.innerHTML = renderSimulador();
+            setTimeout(() => cambiarTab('grafico'), 50);
+            break;
+    }
+
+    actualizarFooter();
+}
+
+      /* ===============================
+   VISTAS
+=================================*/
+
+      function renderInicio() {
+        return `
+    <div class="h-full flex items-center justify-center text-slate-500 text-sm">
+        Seleccione "Nuevo Proyecto" para comenzar
+    </div>
+    `;
+      }
+
+      function renderNuevoProyecto() {
+        return `
+    <div class="h-full flex items-center justify-center">
+
+        <div class="bg-slate-100 border border-slate-400 
+                    p-6 w-[480px] rounded shadow-inner">
+
+            <h2 class="text-base font-semibold mb-6 border-b pb-2">
+                Nuevo Proyecto
+            </h2>
+
+            <div class="space-y-4 text-sm">
+
+                <input id="nombre" placeholder="Nombre del Proyecto"
+                       class="w-full border p-2 bg-white rounded">
+
+                <input id="usuario" placeholder="Usuario"
+                       class="w-full border p-2 bg-white rounded">
+
+                <input id="orden" placeholder="Compañia"
+                       class="w-full border p-2 bg-white rounded">
+
+                <input id="orden" placeholder="Cliente"
+                       class="w-full border p-2 bg-white rounded">
+
+                <input id="orden" placeholder="Orden de Trabajo"
+                       class="w-full border p-2 bg-white rounded">
+
+                <div class="flex justify-end gap-3 pt-4 border-t">
+
+                    <button onclick="crearProyecto()"
+                            class="bg-slate-700 text-white px-4 py-2 rounded text-sm">
+                        Crear
+                    </button>
+
+                    <button onclick="setView('inicio')"
+                            class="bg-slate-500 text-white px-4 py-2 rounded text-sm">
+                        Cancelar
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    `;
+      }
+
+      function renderSimulador() {
+    return `
+    <div class="h-full flex flex-col bg-slate-100 border border-slate-400 rounded overflow-hidden">
+
+        <!-- Barra superior -->
+        <div class="bg-slate-300 px-6 py-2 font-semibold text-sm border-b border-slate-400 tracking-wide">
+            Simulador - ${appState.proyecto.nombre}
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="flex flex-1 overflow-hidden">
+
+            <!-- PANEL IZQUIERDO -->
+            <div class="w-72 bg-slate-200 border-r border-slate-400 p-4 text-xs overflow-auto">
+
+                <div class="font-semibold mb-4 uppercase tracking-wide text-slate-700">
+                    Entrada de Datos
+                </div>
+
+                <div class="space-y-3">
+
+                    <div>
+                        <label class="block mb-1">Pws (kg/cm²)</label>
+                        <input class="w-full border border-slate-400 p-1 bg-white focus:outline-none focus:ring-1 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block mb-1">Pwf (kg/cm²)</label>
+                        <input class="w-full border border-slate-400 p-1 bg-white focus:outline-none focus:ring-1 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block mb-1">Intervalos (m)</label>
+                        <input class="w-full border border-slate-400 p-1 bg-white focus:outline-none focus:ring-1 focus:ring-slate-600">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PANEL DERECHO -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+
+                <!-- TABS -->
+                <div class="flex bg-slate-200 border-b border-slate-400 text-xs select-none">
+
+                    <div onclick="cambiarTab('grafico')" 
+                         id="tab-grafico"
+                         class="tab-item px-4 py-2 border-r border-slate-400 cursor-pointer bg-white font-semibold">
+                        Gráfico
+                    </div>
+
+                    <div onclick="cambiarTab('datos')" 
+                         id="tab-datos"
+                         class="tab-item px-4 py-2 border-r border-slate-400 cursor-pointer hover:bg-slate-300">
+                        Datos
+                    </div>
+
+                    <div onclick="cambiarTab('sensibilidad')" 
+                         id="tab-sensibilidad"
+                         class="tab-item px-4 py-2 border-r border-slate-400 cursor-pointer hover:bg-slate-300">
+                        Sensibilidad
+                    </div>
+
+                    <div onclick="cambiarTab('animacion')" 
+                         id="tab-animacion"
+                         class="tab-item px-4 py-2 cursor-pointer hover:bg-slate-300">
+                        Animación
+                    </div>
+
+                </div>
+
+                <!-- ÁREA DINÁMICA PRINCIPAL -->
+                <div id="tab-content"
+     class="flex-1 bg-white p-4 overflow-hidden text-sm">
+</div>
+
+                <!-- RESULTADOS -->
+                <div class="bg-slate-200 border-t border-slate-400 p-3 text-xs">
+
+                    <div class="font-semibold mb-2 uppercase tracking-wide text-slate-700">
+                        Resultado Simulación
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-3">
+
+                        <input placeholder="Psuc" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="Qmax" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="Vent" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="Vsal" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="NLBSN" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="NLP" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="Qo" class="border border-slate-400 p-1 bg-white">
+                        <input placeholder="Qbsn" class="border border-slate-400 p-1 bg-white">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    `;
+}
+
+      /* ===============================
+   CONTROLADORES
+=================================*/
+
+      function setView(viewName) {
+        appState.view = viewName;
+        renderApp();
+      }
+
+      function crearProyecto() {
+        let valido = true;
+
+        const nombre = document.getElementById("nombre");
+        const usuario = document.getElementById("usuario");
+        const orden = document.getElementById("orden");
+
+        [nombre, usuario, orden].forEach((input) => {
+          input.classList.remove("border-red-600");
+          if (input.value.trim() === "") {
+            input.classList.add("border-red-600");
+            valido = false;
+          }
+        });
+
+        if (!valido) {
+          alert("Campos obligatorios faltantes.");
+          return;
+        }
+
+        appState.proyecto = {
+          nombre: nombre.value.trim(),
+          usuario: usuario.value.trim(),
+          orden: orden.value.trim(),
+        };
+
+        appState.view = "simulador";
+        renderApp();
+      }
+
+      
+
+      function actualizarFooter() {
+        const footer = document.getElementById("proyecto-footer");
+        if (appState.proyecto) {
+          footer.textContent = "Proyecto: " + appState.proyecto.nombre;
+        } else {
+          footer.textContent = "Proyecto: -";
+        }
+      }
+
+      function cambiarTab(tab) {
+
+    const content = document.getElementById("tab-content");
+
+    // Reset visual
+    document.querySelectorAll(".tab-item").forEach(t => {
+        t.classList.remove("bg-white", "font-semibold");
+    });
+
+    document.getElementById("tab-" + tab)
+        .classList.add("bg-white", "font-semibold");
+
+    // Contenido dinámico
+   if (tab === "grafico") {
+    content.innerHTML = `
+        <div class="h-full">
+            <canvas id="graficoBSN"></canvas>
+        </div>
+    `;
+
+    setTimeout(() => crearGrafico(), 50);
+}
+
+    if (tab === "datos") {
+        content.innerHTML = `
+            <div class="space-y-4">
+                <div class="font-semibold">Tabla de Datos</div>
+                <table class="w-full border text-xs">
+                    <tr class="bg-slate-200">
+                        <th class="border p-2">Parámetro</th>
+                        <th class="border p-2">Valor</th>
+                    </tr>
+                    <tr>
+                        <td class="border p-2">Pws</td>
+                        <td class="border p-2">--</td>
+                    </tr>
+                </table>
+            </div>
+        `;
+    }
+
+    if (tab === "sensibilidad") {
+        content.innerHTML = `
+            <div>
+                <div class="font-semibold mb-4">Análisis de Sensibilidad</div>
+                <div class="text-slate-500">Módulo en desarrollo...</div>
+            </div>
+        `;
+    }
+
+    if (tab === "animacion") {
+        content.innerHTML = `
+            <div class="flex items-center justify-center h-full text-slate-500">
+                Animación del pistón aquí
+            </div>
+        `;
+    }
+}
+
+function crearGrafico() {
+
+    const ctx = document.getElementById('graficoBSN');
+
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [0, 500, 1000, 1500, 2000, 2500, 3000],
+            datasets: [
+                {
+                    label: 'IPR',
+                    data: [210, 195, 180, 160, 135, 100, 50],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    tension: 0.3,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Actual',
+                    data: [178, 178, 178, 178, 178, 178, 178],
+                    borderColor: '#dc2626',
+                    borderWidth: 2,
+                    pointRadius: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'QL (bpd)'
+                    },
+                    grid: {
+                        color: '#e2e8f0'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Presión (kg/cm²)'
+                    },
+                    grid: {
+                        color: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    });
+}
+
+      /* ===============================
+   INIT
+=================================*/
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderApp();
+      });
+    </script>
+  </body>
+</html>
