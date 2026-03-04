@@ -458,6 +458,24 @@ function crearGrafico() {
     });
 }
 
+function actualizarGrafico() {
+
+    if (!chartBSN) return;
+
+    const pws = parseFloat(document.getElementById("inputPws").value);
+    const pwf = parseFloat(document.getElementById("inputPwf").value);
+
+    const qValues = chartBSN.data.labels;
+
+    const nuevaIPR = qValues.map(q => pws - (pws / 3000) * q);
+    const nuevaActual = qValues.map(() => pwf);
+
+    chartBSN.data.datasets[0].data = nuevaIPR;
+    chartBSN.data.datasets[1].data = nuevaActual;
+
+    chartBSN.update();
+}
+
       /* ===============================
    INIT
 =================================*/
