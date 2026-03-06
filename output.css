@@ -683,6 +683,14 @@ video {
   height: 1.25rem;
 }
 
+.h-\[520px\] {
+  height: 520px;
+}
+
+.h-\[480px\] {
+  height: 480px;
+}
+
 .min-h-screen {
   min-height: 100vh;
 }
@@ -805,6 +813,14 @@ video {
 
 .flex-\[3\] {
   flex: 3;
+}
+
+.flex-\[4\] {
+  flex: 4;
+}
+
+.flex-\[1\.5\] {
+  flex: 1.5;
 }
 
 .transform {

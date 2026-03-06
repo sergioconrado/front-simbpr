@@ -6,145 +6,63 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        transition:
-          background 0.3s ease,
-          color 0.3s ease;
-      }
-
-      /* Glass effect */
-      .glass {
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(16px);
-      }
-
-      /* Dark mode */
-      .dark {
-        background: #0f172a;
-        color: #e5e7eb;
-      }
-
-      .dark .glass {
-        background: rgba(30, 41, 59, 0.6);
-      }
-
-      .fade-in {
-        animation: fadeIn 0.6s ease forwards;
-      }
-
+      html { scroll-behavior: smooth; }
+      body { transition: background 0.3s ease, color 0.3s ease; }
+      .glass { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); }
+      .dark { background: #0f172a; color: #e5e7eb; }
+      .dark .glass { background: rgba(30,41,59,0.6); }
+      .fade-in { animation: fadeIn 0.6s ease forwards; }
       @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
-    </style>
-    <style>
-      body {
-        background: #f3f4f6;
-      }
-      .tab-active {
-        background: #111827;
-        color: white;
-        border-radius: 12px;
-      }
-
-      
+      body { background: #f3f4f6; }
+      .tab-active { background: #111827; color: white; border-radius: 12px; }
     </style>
   </head>
 
   <body class="font-sans text-gray-800">
     <div class="flex h-screen">
+
       <!-- PANEL IZQUIERDO -->
-      <div
-        class="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm"
-      >
+      <div class="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm">
         <div class="flex items-center gap-2 mb-6">
-
-<svg xmlns="http://www.w3.org/2000/svg"
-fill="none"
-viewBox="0 0 24 24"
-stroke-width="1.5"
-stroke="currentColor"
-class="w-5 h-5 text-gray-500">
-
-<path stroke-linecap="round" stroke-linejoin="round"
-d="M4 6h16M4 12h16M4 18h16"/>
-
-</svg>
-
-<h2 class="text-lg font-semibold">
-Entrada de Datos
-</h2>
-
-</div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <h2 class="text-lg font-semibold">Entrada de Datos</h2>
+        </div>
 
         <!-- Tabs -->
         <div class="flex space-x-2 mb-6 text-sm">
           <button class="tab-active px-4 py-2">Yacimiento</button>
-          <button
-            class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            Pozo
-          </button>
-          <button
-            class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            Producción
-          </button>
-          <button
-            class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            BSN
-          </button>
+          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">Pozo</button>
+          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">Producción</button>
+          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">BSN</button>
         </div>
 
         <!-- Yacimiento -->
         <div class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-4">
           <div>
-            <label class="text-sm text-gray-500">Pws</label>
-            <input
-              id="inputPws"
-              type="number"
-              value="210"
-              class="w-full mt-1 border border-gray-200 p-2 glass rounded-2xl shadow-lg p-2 fade-in rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
+            <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
+            <input id="inputPws" type="number" value="210"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
           </div>
-
           <div>
-            <label class="text-sm text-gray-500">Pwf</label>
-            <input
-              id="inputPwf"
-              type="number"
-              value="178"
-              class="w-full mt-1 border border-gray-200 p-2 glass rounded-2xl shadow-lg p-2 fade-in rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
+            <label class="text-sm text-gray-500">Pwf (kg/cm²)</label>
+            <input id="inputPwf" type="number" value="178"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
           </div>
-
           <div>
-            <label class="text-sm text-gray-500">Índice J</label>
-            <input
-              id="inputJ"
-              type="number"
-              value="1.5"
-              class="w-full mt-1 border border-gray-200 p-2 glass rounded-2xl shadow-lg p-2 fade-in rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
+            <label class="text-sm text-gray-500">Índice J (bpd/kg/cm²)</label>
+            <input id="inputJ" type="number" value="1.5"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
           </div>
-
           <div>
             <label class="text-sm text-gray-500">Modelo IPR</label>
-            <select
-              id="modeloIPR"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl glass rounded-2xl shadow-lg p-2 fade-in focus:ring-2 focus:ring-gray-300 outline-none"
-            >
+            <select id="modeloIPR"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
               <option value="lineal">Lineal</option>
               <option value="vogel">Vogel</option>
             </select>
@@ -153,174 +71,86 @@ Entrada de Datos
 
         <!-- Botones -->
         <div class="grid grid-cols-2 gap-3 mt-6">
-          <button
-            onclick="actualizarGrafico()"
-            class="bg-black text-white py-2.5 rounded-lg hover:opacity-90 transition hover:shadow-md hover:scale-[1.02] transition-all duration-200"
-          >
+          <button onclick="actualizarGrafico()"
+            class="bg-black text-white py-2.5 rounded-lg hover:opacity-90 hover:shadow-md hover:scale-[1.02] transition-all duration-200">
             Graficar
           </button>
-
-          <button
-            onclick="location.reload()"
-            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
+          <button onclick="location.reload()"
+            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">
             Limpiar
           </button>
-
-          <button
-            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Exportar
-          </button>
-
-          <button
-            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Informe
-          </button>
+          <button class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">Exportar</button>
+          <button class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">Informe</button>
         </div>
 
         <!-- Resultado -->
         <div class="bg-gray-50 p-6 rounded-2xl shadow-sm mt-6 text-sm">
           <h3 class="font-semibold mb-3">Resultado Simulación</h3>
-
-          <div>
-            Q operación:
-            <span id="resultadoQ" class="font-semibold text-gray-900">0</span>
-            bpd
-          </div>
+          <div>Q operación: <span id="resultadoQ" class="font-semibold text-gray-900">0</span> bpd</div>
+          <div class="mt-1">Qmax: <span id="resultadoQmax" class="font-semibold text-gray-900">0</span> bpd</div>
+          <div class="mt-1 text-xs text-gray-400" id="modeloActivo"></div>
         </div>
       </div>
 
       <!-- PANEL DERECHO -->
-      <div class="flex-1 flex flex-col bg-gray-100 ">
+      <div class="flex-1 flex flex-col bg-gray-100">
+
         <!-- Header -->
         <div class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-
-  <!-- IZQUIERDA -->
-  <div class="flex items-center gap-4">
-
-    <img src="logo-SIMBPR.png" class="h-12 w-auto">
-
-    <div class="h-6 w-px bg-gray-200"></div>
-
-    <div class="flex flex-col leading-tight">
-      <span class="font-semibold text-sm">
-        Simulador BSN
-      </span>
-      <span class="text-xs text-gray-500">
-        Proyecto TARATUNICH 41-D
-      </span>
-    </div>
-
-  </div>
-
-  <!-- DERECHA -->
-  <div class="flex items-center gap-4">
-
-    <!-- Estado -->
-    <div class="text-xs text-green-600 font-medium">
-      ● Activa Local
-    </div>
-
-    <div class="relative">
-
-  <!-- BOTON USUARIO -->
-  <button onclick="toggleUserMenu()" 
-  class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition">
-
-    <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium">
-      SC
-    </div>
-
-    <span class="text-sm">Sergio</span>
-
-    <span class="text-gray-400 text-xs">▾</span>
-
-  </button>
-
-  <!-- MENU -->
-  <div id="userMenu"
-  class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-
-    <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">
-      Perfil
-    </button>
-
-    <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">
-      Configuración
-    </button>
-
-    <div class="border-t border-gray-100"></div>
-
-    <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition">
-      Cerrar sesión
-    </button>
-
-  </div>
-
-</div>
-
-    <!-- Modo oscuro -->
-    <button
-onclick="toggleDarkMode()"
-class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition"
->
-
-<svg xmlns="http://www.w3.org/2000/svg"
-fill="none"
-viewBox="0 0 24 24"
-stroke-width="1.5"
-stroke="currentColor"
-class="w-5 h-5">
-
-<path stroke-linecap="round" stroke-linejoin="round"
-d="M21 12.79A9 9 0 1111.21 3
-a7 7 0 009.79 9.79z"/>
-
-</svg>
-
-</button>
-
-  </div>
-
-</div>
+          <div class="flex items-center gap-4">
+            <div class="h-6 w-px bg-gray-200"></div>
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold text-sm">Simulador BSN</span>
+              <span class="text-xs text-gray-500">Proyecto TARATUNICH 41-D</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="text-xs text-green-600 font-medium">● Activa Local</div>
+            <div class="relative">
+              <button onclick="toggleUserMenu()"
+                class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition">
+                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium">SC</div>
+                <span class="text-sm">Sergio</span>
+                <span class="text-gray-400 text-xs">▾</span>
+              </button>
+              <div id="userMenu"
+                class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">Perfil</button>
+                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">Configuración</button>
+                <div class="border-t border-gray-100"></div>
+                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition">Cerrar sesión</button>
+              </div>
+            </div>
+            <button onclick="toggleDarkMode()"
+              class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
 
         <!-- Tabs superiores -->
         <div class="flex space-x-2 bg-gray-100 p-4 text-sm">
           <div class="tab-active px-4 py-2">Gráfico</div>
-          <div
-            class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Datos
-          </div>
-          <div
-            class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Sensibilidad
-          </div>
-          <div
-            class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Perfil RPF
-          </div>
+          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</div>
+          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</div>
+          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Perfil RPF</div>
         </div>
 
         <!-- CONTENEDOR CENTRAL -->
-        <div class="flex-1 flex flex-col overflow-hidden p-6 gap-6">
+        <div class="flex-1 flex flex-col overflow-y-auto p-6 gap-6">
+
           <!-- GRAFICA -->
-          <div class="flex-[3] glass rounded-2xl shadow-lg p-6 fade-in">
-            <canvas id="graficoBSN"></canvas>
+          <div class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px]">
+            <canvas id="graficoBSN" class="w-full h-full"></canvas>
           </div>
 
           <!-- PANEL INFERIOR -->
-          <div
-            class="flex-[2] glass rounded-2xl shadow-lg p-6 fade-in overflow-auto"
-          >
-            <h2 class="font-semibold mb-4 text-sm">
-              Resultado Simulación Match63
-            </h2>
-
+          <div class="glass rounded-2xl shadow-lg p-6 fade-in">
+            <h2 class="font-semibold mb-4 text-sm">Resultado Simulación Match63</h2>
             <div class="grid grid-cols-4 gap-4 text-sm">
               <div><b>Psuc:</b> -1,675.3</div>
               <div><b>Qmax:</b> 2,980</div>
@@ -331,20 +161,15 @@ a7 7 0 009.79 9.79z"/>
               <div><b>Qo:</b> 0</div>
               <div><b>Qbsn:</b> 0</div>
             </div>
-
             <div class="mt-6 text-sm">
-              <div class="text-red-500 font-medium">
-                Resultado Simulación: Cavitación.
-              </div>
+              <div class="text-red-500 font-medium">Resultado Simulación: Cavitación.</div>
               <div class="text-green-600">No requiere otro SAP.</div>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div
-          class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500"
-        >
+        <div class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500">
           Activa Local | Proyecto TARATUNICH 41-D
         </div>
       </div>
@@ -352,49 +177,71 @@ a7 7 0 009.79 9.79z"/>
 
     <script>
       let chartBSN = null;
-      function generarQ() {
+
+      // ✅ FIX 1: generarQ usa N puntos enteros fijos — sin problemas de paso flotante
+      function generarQ(Qmax, N = 60) {
         let arr = [];
-        for (let i = 0; i <= 3000; i += 100) {
-          arr.push(i);
+        for (let i = 0; i <= N; i++) {
+          arr.push((i / N) * Qmax);
         }
         return arr;
       }
+
       function calcularCurvas() {
         const modelo = document.getElementById("modeloIPR").value;
-        const pws = parseFloat(document.getElementById("inputPws").value) || 0;
-        const pwfSistema =
-          parseFloat(document.getElementById("inputPwf").value) || 0;
-        const J = parseFloat(document.getElementById("inputJ").value) || 1;
-        const qValues = generarQ();
+        const pws    = parseFloat(document.getElementById("inputPws").value) || 0;
+        const pwf    = parseFloat(document.getElementById("inputPwf").value) || 0;
+        const J      = parseFloat(document.getElementById("inputJ").value)   || 1;
+
+        // ✅ FIX 2: Qmax correcto para cada modelo
+        // Lineal:  Q = J*(Pws - Pwf) → Qmax cuando Pwf=0 → J*Pws
+        // Vogel:   Qmax = J*Pws / 1.8  (derivada de la ec. de Vogel en Pwf=0)
+        let Qmax;
+        if (modelo === "lineal") {
+          Qmax = J * pws;
+        } else {
+          // Vogel: Qmax = (J * Pws) / 1.8
+          Qmax = (J * pws) / 1.8;
+        }
+
+        const qValues = generarQ(Qmax);
+
         let ipr = [];
         if (modelo === "lineal") {
-          ipr = qValues.map((q) => ({ x: q, y: pws - q / J }));
+          ipr = qValues.map(q => ({ x: q, y: pws - q / J }));
         } else {
-          const Qmax = (J * pws) / 1.8;
-          ipr = qValues.map((q) => {
-            const xRatio = q / Qmax;
-            return {
-              x: q,
-              y: pws * (1 - 0.2 * xRatio - 0.8 * xRatio * xRatio),
-            };
+          // ✅ FIX 3: Fórmula Vogel correcta
+          // Pwf/Pws = 1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²
+          // => Pwf = Pws * [1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²]
+          ipr = qValues.map(q => {
+            const ratio = q / Qmax;
+            const presion = pws * (1 - 0.2 * ratio - 0.8 * ratio * ratio);
+            return { x: q, y: Math.max(presion, 0) }; // no valores negativos
           });
         }
-        const pwfLine = qValues.map((q) => ({ x: q, y: pwfSistema }));
+
+        // Línea horizontal de Pwf del sistema
+        const pwfLine = qValues.map(q => ({ x: q, y: pwf }));
+
+        // Punto de operación: intersección IPR con Pwf
         let qOperacion = 0;
-        let diffMin = Infinity;
-        ipr.forEach((p) => {
-          const diff = Math.abs(p.y - pwfSistema);
-          if (diff < diffMin) {
-            diffMin = diff;
-            qOperacion = p.x;
-          }
+        let diffMin    = Infinity;
+        ipr.forEach(p => {
+          const diff = Math.abs(p.y - pwf);
+          if (diff < diffMin) { diffMin = diff; qOperacion = p.x; }
         });
-        document.getElementById("resultadoQ").innerText = qOperacion.toFixed(2);
-        return { ipr, pwfLine, qOperacion, pwfSistema };
+
+        document.getElementById("resultadoQ").innerText    = qOperacion.toFixed(2);
+        document.getElementById("resultadoQmax").innerText = Qmax.toFixed(2);
+        document.getElementById("modeloActivo").innerText  = `Modelo: ${modelo === "lineal" ? "Lineal" : "Vogel"}`;
+
+        return { ipr, pwfLine, qOperacion, pwfSistema: pwf, Qmax, pws };
       }
+
       function crearGrafico() {
-        const ctx = document.getElementById("graficoBSN").getContext("2d");
+        const ctx   = document.getElementById("graficoBSN").getContext("2d");
         const datos = calcularCurvas();
+
         chartBSN = new Chart(ctx, {
           type: "line",
           data: {
@@ -402,79 +249,100 @@ a7 7 0 009.79 9.79z"/>
               {
                 label: "IPR",
                 data: datos.ipr,
-                borderColor: "#111827",
+                borderColor: "#2563eb",
                 borderWidth: 3,
                 tension: 0.35,
-                pointRadius: 0,
+                pointRadius: 0,           // sin puntos en la curva → se ve limpia
+                pointHoverRadius: 4,
               },
               {
                 label: "Pwf Sistema",
                 data: datos.pwfLine,
                 borderColor: "#9ca3af",
                 borderWidth: 2,
-                borderDash: [6, 6],
+                borderDash: [8, 6],
                 pointRadius: 0,
               },
               {
                 label: "Punto Operación",
-                data: [
-                  {
-                    x: datos.qOperacion,
-                    y: datos.pwfSistema,
-                  },
-                ],
+                data: [{ x: datos.qOperacion, y: datos.pwfSistema }],
                 pointRadius: 8,
-                backgroundColor: "#000000",
+                pointBackgroundColor: "#000000",
+                pointBorderColor: "#ffffff",
+                pointBorderWidth: 2,
                 hoverRadius: 10,
                 showLine: false,
               },
             ],
           },
           options: {
-            
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const x = ctx.raw.x.toFixed(2);
+                    const y = ctx.raw.y.toFixed(2);
+                    return `(${y} kg/cm² , ${x} bpd)`;
+                  }
+                }
+              }
+            },
             scales: {
               x: {
                 type: "linear",
+                min: 0,
+                max: datos.Qmax * 1.1,
                 title: { display: true, text: "Caudal (bpd)" },
+                grid: { color: "#e5e7eb", lineWidth: 1 },
+                border: { color: "#000000", width: 2 },
+                ticks: { color: "#111827" }
               },
-              y: { title: { display: true, text: "Presión (kg/cm²)" } },
-            },
-          },
+              y: {
+                min: 0,
+                max: datos.pws * 1.1,
+                title: { display: true, text: "Presión (kg/cm²)" },
+                grid: { color: "#e5e7eb", lineWidth: 1 },
+                border: { color: "#000000", width: 2 },
+                ticks: { color: "#111827" }
+              }
+            }
+          }
         });
       }
+
+      // ✅ FIX 4: actualizarGrafico usa calcularCurvas() para Qmax — nunca desincronizado
       function actualizarGrafico() {
         if (!chartBSN) return;
-        const datos = calcularCurvas();
+
+        const datos = calcularCurvas(); // ← Qmax viene de aquí, no se recalcula aparte
+
         chartBSN.data.datasets[0].data = datos.ipr;
         chartBSN.data.datasets[1].data = datos.pwfLine;
-        chartBSN.data.datasets[2].data = [
-          { x: datos.qOperacion, y: datos.pwfSistema },
-        ];
+        chartBSN.data.datasets[2].data = [{ x: datos.qOperacion, y: datos.pwfSistema }];
+
+        // Actualizar rangos dinámicos con los valores correctos
+        chartBSN.options.scales.x.max = datos.Qmax * 1.1;
+        chartBSN.options.scales.y.max = datos.pws  * 1.1;
+
         chartBSN.update();
       }
+
       crearGrafico();
 
-      function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-}
+      function toggleDarkMode() { document.body.classList.toggle("dark"); }
 
-function toggleUserMenu() {
-  const menu = document.getElementById("userMenu");
-  menu.classList.toggle("hidden");
-}
+      function toggleUserMenu() {
+        document.getElementById("userMenu").classList.toggle("hidden");
+      }
 
-document.addEventListener("click", function(event) {
-
-  const menu = document.getElementById("userMenu");
-  const button = event.target.closest("button");
-
-  if (!event.target.closest("#userMenu") && !button?.onclick) {
-    menu.classList.add("hidden");
-  }
-
-});
+      document.addEventListener("click", function(event) {
+        const menu = document.getElementById("userMenu");
+        if (!event.target.closest("#userMenu") && !event.target.closest("button[onclick='toggleUserMenu()']")) {
+          menu.classList.add("hidden");
+        }
+      });
     </script>
   </body>
 </html>
