@@ -36,14 +36,29 @@
 
         <!-- Tabs -->
         <div class="flex space-x-2 mb-6 text-sm">
-          <button class="tab-active px-4 py-2">Yacimiento</button>
-          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">Pozo</button>
-          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">Producción</button>
-          <button class="bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">BSN</button>
-        </div>
+
+  <button onclick="mostrarTab('yacimiento', this)"
+    class="tab-btn tab-active px-4 py-2">
+    Yacimiento
+  </button>
+
+  <button onclick="mostrarTab('pozo', this)"
+    class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
+    Pozo
+  </button>
+
+  <button class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
+    Producción
+  </button>
+
+  <button class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
+    BSN
+  </button>
+
+</div>
 
         <!-- Yacimiento -->
-        <div class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-4">
+        <div id="yacimiento" class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-4">
           <div>
             <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
             <input id="inputPws" type="number" value="210"
@@ -68,6 +83,57 @@
             </select>
           </div>
         </div>
+
+        <!-- POZO -->
+<div id="pozo" class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-3 hidden">
+
+  <div>
+    <label class="text-sm text-gray-500">Tipo Pozo</label>
+    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+      <option>Aceite</option>
+      <option>Gas</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">Estado</label>
+    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+      <option>Fluyente</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">SAP</label>
+    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+      <option>SUAV</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">Prof. m disp.</label>
+    <input type="number" value="2450"
+      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">PL (kg/cm²)</label>
+    <input type="number" value="15"
+      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
+    <input type="number" value="20"
+      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
+  </div>
+
+  <div>
+    <label class="text-sm text-gray-500">NL (m)</label>
+    <input type="number" value="500"
+      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
+  </div>
+
+</div>
 
         <!-- Botones -->
         <div class="grid grid-cols-2 gap-3 mt-6">
@@ -343,6 +409,26 @@
           menu.classList.add("hidden");
         }
       });
+
+      function mostrarTab(tab, boton) {
+
+  // ocultar secciones
+  document.getElementById("yacimiento").classList.add("hidden");
+  document.getElementById("pozo").classList.add("hidden");
+
+  document.getElementById(tab).classList.remove("hidden");
+
+  // resetear botones
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.classList.remove("tab-active");
+    btn.classList.add("bg-gray-100");
+  });
+
+  // activar el seleccionado
+  boton.classList.remove("bg-gray-100");
+  boton.classList.add("tab-active");
+
+}
     </script>
   </body>
 </html>
