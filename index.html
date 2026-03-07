@@ -6,78 +6,142 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      html { scroll-behavior: smooth; }
-      body { transition: background 0.3s ease, color 0.3s ease; }
-      .glass { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); }
-      .dark { background: #0f172a; color: #e5e7eb; }
-      .dark .glass { background: rgba(30,41,59,0.6); }
-      .fade-in { animation: fadeIn 0.6s ease forwards; }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
+      html {
+        scroll-behavior: smooth;
       }
-      body { background: #f3f4f6; }
-      .tab-active { background: #111827; color: white; border-radius: 12px; }
+      body {
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(16px);
+      }
+      .dark {
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+      .dark .glass {
+        background: rgba(30, 41, 59, 0.6);
+      }
+      .fade-in {
+        animation: fadeIn 0.6s ease forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      body {
+        background: #f3f4f6;
+      }
+      .tab-active {
+        background: #111827;
+        color: white;
+        border-radius: 12px;
+      }
     </style>
   </head>
 
   <body class="font-sans text-gray-800">
     <div class="flex h-screen">
-
       <!-- PANEL IZQUIERDO -->
-      <div class="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm">
+      <div
+        class="w-80 bg-white border-r border-gray-200 p-6 overflow-y-auto shadow-sm"
+      >
         <div class="flex items-center gap-2 mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-               stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5 text-gray-500"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
           <h2 class="text-lg font-semibold">Entrada de Datos</h2>
         </div>
 
         <!-- Tabs -->
         <div class="flex space-x-2 mb-6 text-sm">
+          <button
+            onclick="mostrarTab('yacimiento', this)"
+            class="tab-btn tab-active px-4 py-2"
+          >
+            Yacimiento
+          </button>
 
-  <button onclick="mostrarTab('yacimiento', this)"
-    class="tab-btn tab-active px-4 py-2">
-    Yacimiento
-  </button>
+          <button
+            onclick="mostrarTab('pozo', this)"
+            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+          >
+            Pozo
+          </button>
 
-  <button onclick="mostrarTab('pozo', this)"
-    class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
-    Pozo
-  </button>
+          <button
+            onclick="mostrarTab('produccion', this)"
+            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+          >
+            Producción
+          </button>
 
-  <button class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
-    Producción
-  </button>
-
-  <button class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition">
-    BSN
-  </button>
-
-</div>
+          <button
+            onclick="mostrarTab('bsn', this)"
+            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
+          >
+            BSN
+          </button>
+        </div>
 
         <!-- Yacimiento -->
-        <div id="yacimiento" class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-4">
+        <div
+          id="yacimiento"
+          class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-4"
+        >
           <div>
             <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
-            <input id="inputPws" type="number" value="210"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
+            <input
+              id="inputPws"
+              type="number"
+              value="210"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+            />
           </div>
           <div>
             <label class="text-sm text-gray-500">Pwf (kg/cm²)</label>
-            <input id="inputPwf" type="number" value="178"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
+            <input
+              id="inputPwf"
+              type="number"
+              value="178"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+            />
           </div>
           <div>
             <label class="text-sm text-gray-500">Índice J (bpd/kg/cm²)</label>
-            <input id="inputJ" type="number" value="1.5"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"/>
+            <input
+              id="inputJ"
+              type="number"
+              value="1.5"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+            />
           </div>
           <div>
             <label class="text-sm text-gray-500">Modelo IPR</label>
-            <select id="modeloIPR"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
+            <select
+              id="modeloIPR"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+            >
               <option value="lineal">Lineal</option>
               <option value="vogel">Vogel</option>
             </select>
@@ -85,114 +149,356 @@
         </div>
 
         <!-- POZO -->
-<div id="pozo" class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-3 hidden">
+        <div
+          id="pozo"
+          class="bg-gray-50 p-6 rounded-2xl shadow-sm space-y-3 hidden"
+        >
+          <div>
+            <label class="text-sm text-gray-500">Tipo Pozo</label>
+            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+              <option>Aceite</option>
+              <option>Gas</option>
+            </select>
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">Tipo Pozo</label>
-    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-      <option>Aceite</option>
-      <option>Gas</option>
-    </select>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">Estado</label>
+            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+              <option>Fluyente</option>
+            </select>
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">Estado</label>
-    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-      <option>Fluyente</option>
-    </select>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">SAP</label>
+            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+              <option>SUAV</option>
+            </select>
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">SAP</label>
-    <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-      <option>SUAV</option>
-    </select>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">Prof. m disp.</label>
+            <input
+              type="number"
+              value="2450"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+            />
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">Prof. m disp.</label>
-    <input type="number" value="2450"
-      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">PL (kg/cm²)</label>
+            <input
+              type="number"
+              value="15"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+            />
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">PL (kg/cm²)</label>
-    <input type="number" value="15"
-      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
+            <input
+              type="number"
+              value="20"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+            />
+          </div>
 
-  <div>
-    <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
-    <input type="number" value="20"
-      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
-  </div>
+          <div>
+            <label class="text-sm text-gray-500">NL (m)</label>
+            <input
+              type="number"
+              value="500"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+            />
+          </div>
+        </div>
 
-  <div>
-    <label class="text-sm text-gray-500">NL (m)</label>
-    <input type="number" value="500"
-      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"/>
-  </div>
+        <!-- PRODUCCIÓN -->
+        <div
+          id="produccion"
+          class="bg-gray-50 p-5 rounded-2xl shadow-sm space-y-3 hidden"
+        >
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Fluidos del Pozo</p>
 
-</div>
+          <div>
+            <label class="text-sm text-gray-500">Tasa Total (bpd)</label>
+            <input id="prod_qt" type="number" value="1000"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">% Agua (BSW)</label>
+            <input id="prod_bsw" type="number" value="30"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Gravedad API</label>
+            <input id="prod_api" type="number" value="35"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">GOR (scf/bbl)</label>
+            <input id="prod_gor" type="number" value="150"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Temperatura de Fondo (°C)</label>
+            <input id="prod_temp" type="number" value="85"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Bo — Factor Vol. Aceite (rb/stb)</label>
+            <input id="prod_bo" type="number" value="1.15" step="0.01"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Viscosidad Aceite (cP)</label>
+            <input id="prod_visc" type="number" value="2.5" step="0.1"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+
+          <!-- Resultados calculados Producción -->
+          <div class="border-t border-gray-200 pt-3">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Desglose de Fluidos</p>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Qo — Aceite</p>
+                <p id="prod_qo" class="font-bold text-gray-800">700 bpd</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Qw — Agua</p>
+                <p id="prod_qw" class="font-bold text-gray-800">300 bpd</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Qg — Gas</p>
+                <p id="prod_qg" class="font-bold text-gray-800">105.0 Mscf/d</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Densidad Aceite</p>
+                <p id="prod_dens" class="font-bold text-gray-800">0.850 g/cc</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2">
+                <p class="text-gray-400 mb-0.5">Volumen en Yacimiento</p>
+                <p id="prod_res" class="font-bold text-gray-800">805.0 rb/d</p>
+              </div>
+            </div>
+          </div>
+          <button onclick="calcularProduccion()"
+            class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition">
+            Calcular
+          </button>
+        </div>
+
+        <!-- BSN -->
+        <div
+          id="bsn"
+          class="bg-gray-50 p-5 rounded-2xl shadow-sm space-y-3 hidden"
+        >
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Bomba Sumergible (BSN)</p>
+
+          <div>
+            <label class="text-sm text-gray-500">Serie</label>
+            <select id="bsn_serie" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
+              <option value="400">400</option>
+              <option value="513">513</option>
+              <option value="538" selected>538</option>
+              <option value="562">562</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Modelo de Bomba</label>
+            <select id="bsn_modelo" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
+              <option>GN2700</option>
+              <option>GN3300</option>
+              <option>D1100N</option>
+              <option>P1500N</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Número de Etapas</label>
+            <input id="bsn_etapas" type="number" value="120"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Frecuencia (Hz)</label>
+            <input id="bsn_freq" type="number" value="60"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">RPM</label>
+            <input id="bsn_rpm" type="number" value="3500"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Potencia del Motor (HP)</label>
+            <input id="bsn_hp" type="number" value="200"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Voltaje (V)</label>
+            <input id="bsn_volt" type="number" value="1150"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Corriente Nominal (A)</label>
+            <input id="bsn_amp" type="number" value="92"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Prof. Asentamiento (m)</label>
+            <input id="bsn_depth" type="number" value="2200"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Temperatura de Fondo (°C)</label>
+            <input id="bsn_tempfondo" type="number" value="90"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+          </div>
+
+          <!-- Resultados calculados BSN -->
+          <div class="border-t border-gray-200 pt-3">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Parámetros de Operación</p>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Cabeza Total</p>
+                <p id="bsn_cabeza" class="font-bold text-gray-800">—</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">BHP</p>
+                <p id="bsn_bhp" class="font-bold text-gray-800">—</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Eficiencia Hidráulica</p>
+                <p id="bsn_efic" class="font-bold text-gray-800">—</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
+                <p class="text-gray-400 mb-0.5">Factor de Carga</p>
+                <p id="bsn_carga" class="font-bold text-gray-800">—</p>
+              </div>
+              <div class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2">
+                <p class="text-gray-400 mb-0.5">Potencia Eléctrica Estimada</p>
+                <p id="bsn_kw" class="font-bold text-gray-800">—</p>
+              </div>
+            </div>
+          </div>
+          <button onclick="calcularBSN()"
+            class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition">
+            Calcular BSN
+          </button>
+        </div>
 
         <!-- Botones -->
         <div class="grid grid-cols-2 gap-3 mt-6">
-          <button onclick="actualizarGrafico()"
-            class="bg-black text-white py-2.5 rounded-lg hover:opacity-90 hover:shadow-md hover:scale-[1.02] transition-all duration-200">
+          <button
+            onclick="actualizarGrafico()"
+            class="bg-black text-white py-2.5 rounded-lg hover:opacity-90 hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+          >
             Graficar
           </button>
-          <button onclick="location.reload()"
-            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">
+          <button
+            onclick="location.reload()"
+            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+          >
             Limpiar
           </button>
-          <button class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">Exportar</button>
-          <button class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition">Informe</button>
+          <button
+            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+          >
+            Exportar
+          </button>
+          <button
+            class="bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+          >
+            Informe
+          </button>
         </div>
 
         <!-- Resultado -->
         <div class="bg-gray-50 p-6 rounded-2xl shadow-sm mt-6 text-sm">
           <h3 class="font-semibold mb-3">Resultado Simulación</h3>
-          <div>Q operación: <span id="resultadoQ" class="font-semibold text-gray-900">0</span> bpd</div>
-          <div class="mt-1">Qmax: <span id="resultadoQmax" class="font-semibold text-gray-900">0</span> bpd</div>
+          <div>
+            Q operación:
+            <span id="resultadoQ" class="font-semibold text-gray-900">0</span>
+            bpd
+          </div>
+          <div class="mt-1">
+            Qmax:
+            <span id="resultadoQmax" class="font-semibold text-gray-900"
+              >0</span
+            >
+            bpd
+          </div>
           <div class="mt-1 text-xs text-gray-400" id="modeloActivo"></div>
         </div>
       </div>
 
       <!-- PANEL DERECHO -->
       <div class="flex-1 flex flex-col bg-gray-100">
-
         <!-- Header -->
-        <div class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <div
+          class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
+        >
           <div class="flex items-center gap-4">
             <div class="h-6 w-px bg-gray-200"></div>
             <div class="flex flex-col leading-tight">
               <span class="font-semibold text-sm">Simulador BSN</span>
-              <span class="text-xs text-gray-500">Proyecto TARATUNICH 41-D</span>
+              <span class="text-xs text-gray-500"
+                >Proyecto TARATUNICH 41-D</span
+              >
             </div>
           </div>
           <div class="flex items-center gap-4">
             <div class="text-xs text-green-600 font-medium">● Activa Local</div>
             <div class="relative">
-              <button onclick="toggleUserMenu()"
-                class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition">
-                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium">SC</div>
+              <button
+                onclick="toggleUserMenu()"
+                class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition"
+              >
+                <div
+                  class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium"
+                >
+                  SC
+                </div>
                 <span class="text-sm">Sergio</span>
                 <span class="text-gray-400 text-xs">▾</span>
               </button>
-              <div id="userMenu"
-                class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">Perfil</button>
-                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition">Configuración</button>
+              <div
+                id="userMenu"
+                class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+              >
+                <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+                >
+                  Perfil
+                </button>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+                >
+                  Configuración
+                </button>
                 <div class="border-t border-gray-100"></div>
-                <button class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition">Cerrar sesión</button>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition"
+                >
+                  Cerrar sesión
+                </button>
               </div>
             </div>
-            <button onclick="toggleDarkMode()"
-              class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                   stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+            <button
+              onclick="toggleDarkMode()"
+              class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
+                />
               </svg>
             </button>
           </div>
@@ -200,42 +506,191 @@
 
         <!-- Tabs superiores -->
         <div class="flex space-x-2 bg-gray-100 p-4 text-sm">
-          <div class="tab-active px-4 py-2">Gráfico</div>
-          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</div>
-          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</div>
-          <div class="bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Perfil RPF</div>
+          <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-4 py-2">Gráfico</button>
+          <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</button>
+          <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</button>
+          <button onclick="mostrarPanel('panel-perfilrpf', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Perfil RPF</button>
         </div>
 
         <!-- CONTENEDOR CENTRAL -->
         <div class="flex-1 flex flex-col overflow-y-auto p-6 gap-6">
 
-          <!-- GRAFICA -->
-          <div class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px]">
-            <canvas id="graficoBSN" class="w-full h-full"></canvas>
+          <!-- ======= PANEL GRÁFICO ======= -->
+          <div id="panel-grafico">
+            <!-- GRAFICA -->
+            <div class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px] mb-6">
+              <canvas id="graficoBSN" class="w-full h-full"></canvas>
+            </div>
+            <!-- PANEL INFERIOR -->
+            <div class="glass rounded-2xl shadow-lg p-6 fade-in">
+              <h2 class="font-semibold mb-4 text-sm">Resultado Simulación Match63</h2>
+              <div class="grid grid-cols-4 gap-4 text-sm">
+                <div><b>Psuc:</b> -1,675.3</div>
+                <div><b>Qmax:</b> 2,980</div>
+                <div><b>Vent:</b> 260</div>
+                <div><b>Vsal:</b> 21,761</div>
+                <div><b>NLBSN:</b> 24,157</div>
+                <div><b>NLP:</b> 500</div>
+                <div><b>Qo:</b> 0</div>
+                <div><b>Qbsn:</b> 0</div>
+              </div>
+              <div class="mt-6 text-sm">
+                <div class="text-red-500 font-medium">Resultado Simulación: Cavitación.</div>
+                <div class="text-green-600">No requiere otro SAP.</div>
+              </div>
+            </div>
           </div>
 
-          <!-- PANEL INFERIOR -->
-          <div class="glass rounded-2xl shadow-lg p-6 fade-in">
-            <h2 class="font-semibold mb-4 text-sm">Resultado Simulación Match63</h2>
-            <div class="grid grid-cols-4 gap-4 text-sm">
-              <div><b>Psuc:</b> -1,675.3</div>
-              <div><b>Qmax:</b> 2,980</div>
-              <div><b>Vent:</b> 260</div>
-              <div><b>Vsal:</b> 21,761</div>
-              <div><b>NLBSN:</b> 24,157</div>
-              <div><b>NLP:</b> 500</div>
-              <div><b>Qo:</b> 0</div>
-              <div><b>Qbsn:</b> 0</div>
+          <!-- ======= PANEL DATOS ======= -->
+          <div id="panel-datos" class="hidden fade-in space-y-6">
+
+            <!-- Parámetros de entrada -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Parámetros de Entrada del Simulador</h2>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-100 text-gray-600 text-left">
+                      <th class="px-4 py-2 rounded-l-lg">Parámetro</th>
+                      <th class="px-4 py-2">Símbolo</th>
+                      <th class="px-4 py-2">Valor</th>
+                      <th class="px-4 py-2 rounded-r-lg">Unidad</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100" id="tabla-params-body">
+                    <tr><td class="px-4 py-2">Presión estática</td><td class="px-4 py-2">Pws</td><td class="px-4 py-2 font-medium" id="d-pws">—</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
+                    <tr><td class="px-4 py-2">Presión de fondo fluyente</td><td class="px-4 py-2">Pwf</td><td class="px-4 py-2 font-medium" id="d-pwf">—</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
+                    <tr><td class="px-4 py-2">Índice de productividad</td><td class="px-4 py-2">J</td><td class="px-4 py-2 font-medium" id="d-j">—</td><td class="px-4 py-2 text-gray-400">bpd/kg/cm²</td></tr>
+                    <tr><td class="px-4 py-2">Modelo IPR</td><td class="px-4 py-2">—</td><td class="px-4 py-2 font-medium" id="d-modelo">—</td><td class="px-4 py-2 text-gray-400">—</td></tr>
+                    <tr><td class="px-4 py-2">Profundidad disponible</td><td class="px-4 py-2">Prof.</td><td class="px-4 py-2 font-medium">2,450</td><td class="px-4 py-2 text-gray-400">m</td></tr>
+                    <tr><td class="px-4 py-2">Nivel de líquido</td><td class="px-4 py-2">NL</td><td class="px-4 py-2 font-medium">500</td><td class="px-4 py-2 text-gray-400">m</td></tr>
+                    <tr><td class="px-4 py-2">Presión en la línea</td><td class="px-4 py-2">PL</td><td class="px-4 py-2 font-medium">15</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
+                    <tr><td class="px-4 py-2">Presión en la cabeza</td><td class="px-4 py-2">Pwh</td><td class="px-4 py-2 font-medium">20</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="mt-6 text-sm">
-              <div class="text-red-500 font-medium">Resultado Simulación: Cavitación.</div>
-              <div class="text-green-600">No requiere otro SAP.</div>
+
+            <!-- Resultados calculados -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Resultados Calculados</h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 rounded-xl p-4 text-center">
+                  <div class="text-xs text-gray-400 mb-1">Qmax</div>
+                  <div class="text-xl font-bold" id="d-qmax">—</div>
+                  <div class="text-xs text-gray-400">bpd</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center">
+                  <div class="text-xs text-gray-400 mb-1">Q Operación</div>
+                  <div class="text-xl font-bold" id="d-qop">—</div>
+                  <div class="text-xs text-gray-400">bpd</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center">
+                  <div class="text-xs text-gray-400 mb-1">Drawdown</div>
+                  <div class="text-xl font-bold" id="d-drawdown">—</div>
+                  <div class="text-xs text-gray-400">kg/cm²</div>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4 text-center">
+                  <div class="text-xs text-gray-400 mb-1">Eficiencia</div>
+                  <div class="text-xl font-bold" id="d-eficiencia">—</div>
+                  <div class="text-xs text-gray-400">%</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de puntos IPR -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Tabla de Puntos IPR</h2>
+              <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                <table class="w-full text-sm">
+                  <thead class="sticky top-0 bg-white">
+                    <tr class="bg-gray-100 text-gray-600 text-left">
+                      <th class="px-4 py-2 rounded-l-lg">#</th>
+                      <th class="px-4 py-2">Q (bpd)</th>
+                      <th class="px-4 py-2">Pwf (kg/cm²)</th>
+                      <th class="px-4 py-2 rounded-r-lg">% Qmax</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100" id="tabla-ipr-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ======= PANEL SENSIBILIDAD ======= -->
+          <div id="panel-sensibilidad" class="hidden fade-in space-y-6">
+
+            <!-- Cabecera con control -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Análisis de Sensibilidad</h2>
+              <p class="text-xs text-gray-400 mb-4">Evalúa el impacto de variaciones en los parámetros clave del yacimiento sobre la producción.</p>
+              <div class="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <label class="text-xs text-gray-500">Variable a variar</label>
+                  <select id="sens-variable" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
+                    <option value="j">Índice J</option>
+                    <option value="pwf">Pwf</option>
+                    <option value="pws">Pws</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-xs text-gray-500">Valor mínimo</label>
+                  <input id="sens-min" type="number" value="0.5" step="0.1" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl" />
+                </div>
+                <div>
+                  <label class="text-xs text-gray-500">Valor máximo</label>
+                  <input id="sens-max" type="number" value="3.0" step="0.1" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfico de sensibilidad -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h3 class="font-semibold text-sm mb-4">Gráfico de Sensibilidad</h3>
+              <div class="h-64">
+                <canvas id="graficoSens" class="w-full h-full"></canvas>
+              </div>
+            </div>
+
+            <!-- Tabla de escenarios -->
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h3 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Escenarios Generados</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gray-100 text-gray-600 text-left">
+                      <th class="px-4 py-2 rounded-l-lg">Escenario</th>
+                      <th class="px-4 py-2" id="sens-col-var">J (bpd/kg/cm²)</th>
+                      <th class="px-4 py-2">Qmax (bpd)</th>
+                      <th class="px-4 py-2">Q Op. (bpd)</th>
+                      <th class="px-4 py-2">Drawdown (kg/cm²)</th>
+                      <th class="px-4 py-2 rounded-r-lg">Eficiencia (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100" id="tabla-sens-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ======= PANEL PERFIL RPF ======= -->
+          <div id="panel-perfilrpf" class="hidden fade-in">
+            <div class="glass rounded-2xl shadow-lg p-6">
+              <h2 class="font-semibold text-sm mb-2">Perfil RPF</h2>
+              <p class="text-xs text-gray-400">Sección en construcción.</p>
             </div>
           </div>
+
         </div>
 
         <!-- Footer -->
-        <div class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500">
+        <div
+          class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500"
+        >
           Activa Local | Proyecto TARATUNICH 41-D
         </div>
       </div>
@@ -255,9 +710,9 @@
 
       function calcularCurvas() {
         const modelo = document.getElementById("modeloIPR").value;
-        const pws    = parseFloat(document.getElementById("inputPws").value) || 0;
-        const pwf    = parseFloat(document.getElementById("inputPwf").value) || 0;
-        const J      = parseFloat(document.getElementById("inputJ").value)   || 1;
+        const pws = parseFloat(document.getElementById("inputPws").value) || 0;
+        const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
+        const J = parseFloat(document.getElementById("inputJ").value) || 1;
 
         // ✅ FIX 2: Qmax correcto para cada modelo
         // Lineal:  Q = J*(Pws - Pwf) → Qmax cuando Pwf=0 → J*Pws
@@ -274,12 +729,12 @@
 
         let ipr = [];
         if (modelo === "lineal") {
-          ipr = qValues.map(q => ({ x: q, y: pws - q / J }));
+          ipr = qValues.map((q) => ({ x: q, y: pws - q / J }));
         } else {
           // ✅ FIX 3: Fórmula Vogel correcta
           // Pwf/Pws = 1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²
           // => Pwf = Pws * [1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²]
-          ipr = qValues.map(q => {
+          ipr = qValues.map((q) => {
             const ratio = q / Qmax;
             const presion = pws * (1 - 0.2 * ratio - 0.8 * ratio * ratio);
             return { x: q, y: Math.max(presion, 0) }; // no valores negativos
@@ -287,25 +742,29 @@
         }
 
         // Línea horizontal de Pwf del sistema
-        const pwfLine = qValues.map(q => ({ x: q, y: pwf }));
+        const pwfLine = qValues.map((q) => ({ x: q, y: pwf }));
 
         // Punto de operación: intersección IPR con Pwf
         let qOperacion = 0;
-        let diffMin    = Infinity;
-        ipr.forEach(p => {
+        let diffMin = Infinity;
+        ipr.forEach((p) => {
           const diff = Math.abs(p.y - pwf);
-          if (diff < diffMin) { diffMin = diff; qOperacion = p.x; }
+          if (diff < diffMin) {
+            diffMin = diff;
+            qOperacion = p.x;
+          }
         });
 
-        document.getElementById("resultadoQ").innerText    = qOperacion.toFixed(2);
+        document.getElementById("resultadoQ").innerText = qOperacion.toFixed(2);
         document.getElementById("resultadoQmax").innerText = Qmax.toFixed(2);
-        document.getElementById("modeloActivo").innerText  = `Modelo: ${modelo === "lineal" ? "Lineal" : "Vogel"}`;
+        document.getElementById("modeloActivo").innerText =
+          `Modelo: ${modelo === "lineal" ? "Lineal" : "Vogel"}`;
 
         return { ipr, pwfLine, qOperacion, pwfSistema: pwf, Qmax, pws };
       }
 
       function crearGrafico() {
-        const ctx   = document.getElementById("graficoBSN").getContext("2d");
+        const ctx = document.getElementById("graficoBSN").getContext("2d");
         const datos = calcularCurvas();
 
         chartBSN = new Chart(ctx, {
@@ -318,7 +777,7 @@
                 borderColor: "#2563eb",
                 borderWidth: 3,
                 tension: 0.35,
-                pointRadius: 0,           // sin puntos en la curva → se ve limpia
+                pointRadius: 0, // sin puntos en la curva → se ve limpia
                 pointHoverRadius: 4,
               },
               {
@@ -347,13 +806,13 @@
             plugins: {
               tooltip: {
                 callbacks: {
-                  label: ctx => {
+                  label: (ctx) => {
                     const x = ctx.raw.x.toFixed(2);
                     const y = ctx.raw.y.toFixed(2);
                     return `(${y} kg/cm² , ${x} bpd)`;
-                  }
-                }
-              }
+                  },
+                },
+              },
             },
             scales: {
               x: {
@@ -363,7 +822,7 @@
                 title: { display: true, text: "Caudal (bpd)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827" }
+                ticks: { color: "#111827" },
               },
               y: {
                 min: 0,
@@ -371,10 +830,10 @@
                 title: { display: true, text: "Presión (kg/cm²)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827" }
-              }
-            }
-          }
+                ticks: { color: "#111827" },
+              },
+            },
+          },
         });
       }
 
@@ -386,49 +845,264 @@
 
         chartBSN.data.datasets[0].data = datos.ipr;
         chartBSN.data.datasets[1].data = datos.pwfLine;
-        chartBSN.data.datasets[2].data = [{ x: datos.qOperacion, y: datos.pwfSistema }];
+        chartBSN.data.datasets[2].data = [
+          { x: datos.qOperacion, y: datos.pwfSistema },
+        ];
 
         // Actualizar rangos dinámicos con los valores correctos
         chartBSN.options.scales.x.max = datos.Qmax * 1.1;
-        chartBSN.options.scales.y.max = datos.pws  * 1.1;
+        chartBSN.options.scales.y.max = datos.pws * 1.1;
 
         chartBSN.update();
       }
 
       crearGrafico();
 
-      function toggleDarkMode() { document.body.classList.toggle("dark"); }
+      function toggleDarkMode() {
+        document.body.classList.toggle("dark");
+      }
 
       function toggleUserMenu() {
         document.getElementById("userMenu").classList.toggle("hidden");
       }
 
-      document.addEventListener("click", function(event) {
+      document.addEventListener("click", function (event) {
         const menu = document.getElementById("userMenu");
-        if (!event.target.closest("#userMenu") && !event.target.closest("button[onclick='toggleUserMenu()']")) {
+        if (
+          !event.target.closest("#userMenu") &&
+          !event.target.closest("button[onclick='toggleUserMenu()']")
+        ) {
           menu.classList.add("hidden");
         }
       });
 
+      function calcularProduccion() {
+        const qt   = parseFloat(document.getElementById('prod_qt').value)   || 0;
+        const bsw  = parseFloat(document.getElementById('prod_bsw').value)  || 0;
+        const api  = parseFloat(document.getElementById('prod_api').value)  || 35;
+        const gor  = parseFloat(document.getElementById('prod_gor').value)  || 0;
+        const bo   = parseFloat(document.getElementById('prod_bo').value)   || 1;
+
+        const qo   = qt * (1 - bsw / 100);
+        const qw   = qt * (bsw / 100);
+        const qg   = (qo * gor) / 1000;                    // Mscf/d
+        const dens = 141.5 / (api + 131.5);                // g/cc (fórmula API)
+        const qRes = qo * bo;                              // rb/d en yacimiento
+
+        document.getElementById('prod_qo').textContent   = qo.toFixed(0)   + ' bpd';
+        document.getElementById('prod_qw').textContent   = qw.toFixed(0)   + ' bpd';
+        document.getElementById('prod_qg').textContent   = qg.toFixed(2)   + ' Mscf/d';
+        document.getElementById('prod_dens').textContent = dens.toFixed(3) + ' g/cc';
+        document.getElementById('prod_res').textContent  = qRes.toFixed(1) + ' rb/d';
+      }
+
+      function calcularBSN() {
+        const etapas = parseFloat(document.getElementById('bsn_etapas').value) || 120;
+        const freq   = parseFloat(document.getElementById('bsn_freq').value)   || 60;
+        const rpm    = parseFloat(document.getElementById('bsn_rpm').value)    || 3500;
+        const hp     = parseFloat(document.getElementById('bsn_hp').value)     || 200;
+        const volt   = parseFloat(document.getElementById('bsn_volt').value)   || 1150;
+        const amp    = parseFloat(document.getElementById('bsn_amp').value)    || 92;
+
+        // Leyes de afinidad: H ∝ (n/n0)²  — referencia a 60 Hz / 3500 RPM
+        const factorH  = (freq / 60) * (freq / 60);
+        // Cabeza típica por etapa ≈ 8 m a BEP (60 Hz)
+        const cabeza   = etapas * 8 * factorH;
+
+        // BHP = HP × 0.80 (pérdidas mecánicas ~20%)
+        const bhp      = hp * 0.80;
+
+        // Eficiencia hidráulica estimada: escala con frecuencia, base 67%
+        const efic     = 67 * factorH;
+
+        // Factor de carga = BHP / HP instalado
+        const carga    = (bhp / hp) * 100;
+
+        // Potencia eléctrica = √3 × V × I × FP (FP≈0.85)
+        const kw       = (Math.sqrt(3) * volt * amp * 0.85) / 1000;
+
+        document.getElementById('bsn_cabeza').textContent = cabeza.toFixed(0) + ' m';
+        document.getElementById('bsn_bhp').textContent    = bhp.toFixed(0)    + ' HP';
+        document.getElementById('bsn_efic').textContent   = efic.toFixed(1)   + ' %';
+        document.getElementById('bsn_carga').textContent  = carga.toFixed(1)  + ' %';
+        document.getElementById('bsn_kw').textContent     = kw.toFixed(1)     + ' kW';
+      }
+
+      // ── Navegación paneles derechos ──────────────────────────────────────
+      let chartSens = null;
+
+      function mostrarPanel(panelId, boton) {
+        ['panel-grafico','panel-datos','panel-sensibilidad','panel-perfilrpf'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        });
+        document.getElementById(panelId).classList.remove('hidden');
+
+        document.querySelectorAll('.tab-btn-panel').forEach(btn => {
+          btn.classList.remove('tab-active');
+          btn.classList.add('bg-gray-200');
+        });
+        boton.classList.remove('bg-gray-200');
+        boton.classList.add('tab-active');
+
+        if (panelId === 'panel-datos') actualizarTablasDatos();
+        if (panelId === 'panel-sensibilidad') actualizarSensibilidad();
+      }
+
+      function actualizarTablasDatos() {
+        const pws    = parseFloat(document.getElementById('inputPws').value) || 0;
+        const pwf    = parseFloat(document.getElementById('inputPwf').value) || 0;
+        const J      = parseFloat(document.getElementById('inputJ').value) || 1;
+        const modelo = document.getElementById('modeloIPR').value;
+
+        document.getElementById('d-pws').textContent    = pws.toFixed(2);
+        document.getElementById('d-pwf').textContent    = pwf.toFixed(2);
+        document.getElementById('d-j').textContent      = J.toFixed(2);
+        document.getElementById('d-modelo').textContent = modelo === 'lineal' ? 'Lineal' : 'Vogel';
+
+        const Qmax = modelo === 'lineal' ? J * pws : (J * pws) / 1.8;
+        let qOp = 0, diffMin = Infinity;
+        const N = 60;
+        for (let i = 0; i <= N; i++) {
+          const q   = (i / N) * Qmax;
+          const pCalc = modelo === 'lineal'
+            ? pws - q / J
+            : pws * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2));
+          const diff = Math.abs(pCalc - pwf);
+          if (diff < diffMin) { diffMin = diff; qOp = q; }
+        }
+
+        const drawdown   = pws - pwf;
+        const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : '0.0';
+
+        document.getElementById('d-qmax').textContent      = Qmax.toFixed(0);
+        document.getElementById('d-qop').textContent       = qOp.toFixed(0);
+        document.getElementById('d-drawdown').textContent  = drawdown.toFixed(2);
+        document.getElementById('d-eficiencia').textContent = eficiencia;
+
+        // Tabla de puntos IPR (cada 5% de Qmax)
+        const tbody = document.getElementById('tabla-ipr-body');
+        tbody.innerHTML = '';
+        for (let i = 0; i <= 20; i++) {
+          const q       = (i / 20) * Qmax;
+          const pCalc   = modelo === 'lineal'
+            ? Math.max(pws - q / J, 0)
+            : Math.max(pws * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2)), 0);
+          const pct     = (i * 5);
+          const isOp    = Math.abs(q - qOp) < Qmax / 15;
+          const hlClass = isOp ? 'bg-blue-50 font-semibold' : '';
+          tbody.innerHTML += `<tr class="${hlClass}">
+            <td class="px-4 py-1.5">${i+1}</td>
+            <td class="px-4 py-1.5">${q.toFixed(1)}</td>
+            <td class="px-4 py-1.5">${pCalc.toFixed(2)}</td>
+            <td class="px-4 py-1.5">${pct}%</td>
+          </tr>`;
+        }
+      }
+
+      function actualizarSensibilidad() {
+        const pws    = parseFloat(document.getElementById('inputPws').value) || 210;
+        const pwf    = parseFloat(document.getElementById('inputPwf').value) || 178;
+        const J      = parseFloat(document.getElementById('inputJ').value) || 1.5;
+        const modelo = document.getElementById('modeloIPR').value;
+
+        const variable = document.getElementById('sens-variable').value;
+        const sMin     = parseFloat(document.getElementById('sens-min').value) || 0.5;
+        const sMax     = parseFloat(document.getElementById('sens-max').value) || 3.0;
+
+        const labels = { j: 'J (bpd/kg/cm²)', pwf: 'Pwf (kg/cm²)', pws: 'Pws (kg/cm²)' };
+        document.getElementById('sens-col-var').textContent = labels[variable];
+
+        const steps = 10;
+        const step  = (sMax - sMin) / steps;
+        const rows  = [];
+        const xVals = [];
+        const qmaxVals = [];
+        const qopVals  = [];
+
+        for (let i = 0; i <= steps; i++) {
+          const val = sMin + i * step;
+          const jV   = variable === 'j'   ? val : J;
+          const pwfV = variable === 'pwf' ? val : pwf;
+          const pwsV = variable === 'pws' ? val : pws;
+
+          const Qmax = modelo === 'lineal' ? jV * pwsV : (jV * pwsV) / 1.8;
+          let qOp = 0, diffMin = Infinity;
+          const N = 60;
+          for (let k = 0; k <= N; k++) {
+            const q      = (k / N) * Qmax;
+            const pCalc  = modelo === 'lineal'
+              ? pwsV - q / jV
+              : pwsV * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2));
+            const diff = Math.abs(pCalc - pwfV);
+            if (diff < diffMin) { diffMin = diff; qOp = q; }
+          }
+          const drawdown   = pwsV - pwfV;
+          const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : '0.0';
+          rows.push({ val: val.toFixed(2), Qmax: Qmax.toFixed(0), qOp: qOp.toFixed(0), drawdown: drawdown.toFixed(2), eficiencia });
+          xVals.push(val.toFixed(2));
+          qmaxVals.push(parseFloat(Qmax.toFixed(1)));
+          qopVals.push(parseFloat(qOp.toFixed(1)));
+        }
+
+        // Tabla
+        const tbody = document.getElementById('tabla-sens-body');
+        tbody.innerHTML = '';
+        rows.forEach((r, idx) => {
+          tbody.innerHTML += `<tr class="${idx % 2 === 0 ? 'bg-gray-50' : ''}"> 
+            <td class="px-4 py-2">Escenario ${idx+1}</td>
+            <td class="px-4 py-2">${r.val}</td>
+            <td class="px-4 py-2 font-medium">${r.Qmax}</td>
+            <td class="px-4 py-2">${r.qOp}</td>
+            <td class="px-4 py-2">${r.drawdown}</td>
+            <td class="px-4 py-2">${r.eficiencia}</td>
+          </tr>`;
+        });
+
+        // Gráfico
+        const ctx = document.getElementById('graficoSens').getContext('2d');
+        if (chartSens) { chartSens.destroy(); }
+        chartSens = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: xVals,
+            datasets: [
+              { label: 'Qmax (bpd)', data: qmaxVals, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.35, pointRadius: 4 },
+              { label: 'Q Operación (bpd)', data: qopVals, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.35, pointRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+              x: { title: { display: true, text: labels[variable] }, grid: { color: '#e5e7eb' } },
+              y: { title: { display: true, text: 'Caudal (bpd)' }, min: 0, grid: { color: '#e5e7eb' } }
+            }
+          }
+        });
+      }
+      // ── Fin navegación paneles ──────────────────────────────────────────────
+
       function mostrarTab(tab, boton) {
+        // ocultar todas las secciones
+        ["yacimiento", "pozo", "produccion", "bsn"].forEach((id) => {
+          document.getElementById(id).classList.add("hidden");
+        });
 
-  // ocultar secciones
-  document.getElementById("yacimiento").classList.add("hidden");
-  document.getElementById("pozo").classList.add("hidden");
+        // mostrar la sección seleccionada
+        document.getElementById(tab).classList.remove("hidden");
 
-  document.getElementById(tab).classList.remove("hidden");
+        // resetear botones
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("tab-active");
+          btn.classList.add("bg-gray-100");
+        });
 
-  // resetear botones
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.classList.remove("tab-active");
-    btn.classList.add("bg-gray-100");
-  });
-
-  // activar el seleccionado
-  boton.classList.remove("bg-gray-100");
-  boton.classList.add("tab-active");
-
-}
+        // activar el botón seleccionado
+        boton.classList.remove("bg-gray-100");
+        boton.classList.add("tab-active");
+      }
     </script>
   </body>
 </html>
