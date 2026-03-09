@@ -50,9 +50,9 @@
       /* ── Auto-ocultar tabs superiores ── */
       .tabs-panel {
         /* transición rápida para no entorpecer el flujo */
-        transition: height 0.12s ease, padding-top 0.12s ease,
-                    padding-bottom 0.12s ease, margin-top 0.12s ease,
-                    margin-bottom 0.12s ease, opacity 0.12s ease;
+        transition: height 0.05s ease, padding-top 0.05s ease,
+                    padding-bottom 0.05s ease, margin-top 0.05s ease,
+                    margin-bottom 0.05s ease, opacity 0.05s ease;
         overflow: hidden;
       }
       .tabs-hidden {
@@ -1255,7 +1255,7 @@
         if (panelId === 'panel-perfilrpf') calcularRPF();
 
         // Ocultar tabs después de un pequeño delay para liberar espacio vertical
-        scheduleHideTabs();
+        scheduleHideTabs(80);
       }
 
       /* ── Lógica de auto-ocultado de tabs ── */
@@ -1275,7 +1275,7 @@
 
       function scheduleHideTabs(delay) {
         clearTimeout(_hideTabsTimer);
-        _hideTabsTimer = setTimeout(hideTabsNow, delay !== undefined ? delay : 200);
+        _hideTabsTimer = setTimeout(hideTabsNow, delay !== undefined ? delay : 80);
       }
 
       document.addEventListener('DOMContentLoaded', function () {
@@ -1287,7 +1287,7 @@
 
         // Programar ocultado cuando el mouse sale de la barra
         panel.addEventListener('mouseleave', function () {
-          scheduleHideTabs(200);
+          scheduleHideTabs(80);
         });
 
         // Mostrar tabs cuando el cursor se aproxima al borde superior (zona amplia de 60px)
