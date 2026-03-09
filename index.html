@@ -46,6 +46,26 @@
         color: white;
         border-radius: 12px;
       }
+
+      /* ── Auto-ocultar tabs superiores ── */
+      .tabs-panel {
+        /* height real se calcula dinámicamente; transición suave */
+        transition: height 0.3s ease, padding-top 0.3s ease,
+                    padding-bottom 0.3s ease, margin-top 0.3s ease,
+                    margin-bottom 0.3s ease, opacity 0.3s ease;
+        overflow: hidden;
+      }
+      .tabs-hidden {
+        /* Colapsa completamente sin ocupar espacio */
+        height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: 0;
+      }
     </style>
   </head>
 
@@ -63,7 +83,7 @@
         </div>
 
         <!-- Tabs -->
-        <div class="flex flex-wrap gap-2 mb-4 text-sm">
+        <div class="flex flex-wrap gap-2 mb-4 text-sm justify-center">
           <button
             onclick="mostrarTab('yacimiento', this)"
             class="tab-btn tab-active px-4 py-2 rounded-xl"
@@ -116,12 +136,21 @@
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
-          <div>
+          <div id="campoJ">
             <label class="text-sm text-gray-500">Índice J (bpd/kg/cm²)</label>
             <input
               id="inputJ"
               type="number"
               value="1.5"
+              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500">Qb (bpd)</label>
+            <input
+              id="inputQb"
+              type="number"
+              value="380"
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -134,15 +163,6 @@
               <option value="lineal">Lineal</option>
               <option value="vogel">Vogel</option>
             </select>
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Qb (bpd)</label>
-            <input
-              id="inputQb"
-              type="number"
-              value="380"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
           </div>
           <div class="flex items-center gap-2">
             <input
@@ -447,6 +467,7 @@
           class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
         >
           <div class="flex items-center gap-4">
+            <img src="logo-SIMBPR.png" alt="Logo SIMBPR" class="h-12 w-auto object-contain" />
             <div class="h-6 w-px bg-gray-200"></div>
             <div class="flex flex-col leading-tight">
               <span class="font-semibold text-sm">Simulador BSN</span>
@@ -515,7 +536,7 @@
         </div>
 
         <!-- Tabs superiores -->
-        <div class="flex flex-wrap gap-2 bg-gray-100 px-5 py-3 text-sm">
+        <div id="tabsPanel" class="tabs-panel flex flex-wrap gap-2 bg-gray-100 px-5 py-3 text-sm">
           <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-4 py-2 rounded-xl">Gráfico</button>
           <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</button>
           <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</button>
@@ -570,16 +591,16 @@
               </div>
 
               <!-- Tabla Ql vs Pwf -->
-              <h3 class="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-4 text-center tracking-widest">Ql (bpd) vs Pwf (kg/cm²)</h3>
+              <h3 class="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-3">Ql (bpd) vs Pwf (kg/cm²)</h3>
               <div class="overflow-x-auto">
-                <table class="mx-auto text-sm border-separate border-spacing-0 rounded-xl overflow-hidden shadow-sm" id="tablaIpr" style="min-width:280px">
+                <table class="w-full text-sm" id="tablaIpr">
                   <thead>
-                    <tr class="bg-gray-800 text-white text-center">
-                      <th class="px-10 py-3 font-semibold text-xs uppercase tracking-wider">Ql (bpd)</th>
-                      <th class="px-10 py-3 font-semibold text-xs uppercase tracking-wider">Pwf (kg/cm²)</th>
+                    <tr class="bg-gray-100 text-gray-600 text-left">
+                      <th class="px-4 py-2 rounded-l-lg">Ql (bpd)</th>
+                      <th class="px-4 py-2 rounded-r-lg">Pwf (kg/cm²)</th>
                     </tr>
                   </thead>
-                  <tbody id="tablaIprBody">
+                  <tbody id="tablaIprBody" class="divide-y divide-gray-100">
                   </tbody>
                 </table>
               </div>
@@ -1014,18 +1035,14 @@
         if (!tbody || ipr.length === 0) return;
 
         tbody.innerHTML = '';
-        pcts.forEach((pct, i) => {
+        pcts.forEach(pct => {
           const idx = Math.round((pct / 100) * (ipr.length - 1));
           const pt  = ipr[idx];
           if (!pt) return;
-          const isOp  = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
-          const isEven = i % 2 === 0;
-          let rowClass = isOp
-            ? 'bg-blue-50 font-bold text-blue-800 border-l-4 border-blue-400'
-            : (isEven ? 'bg-white' : 'bg-gray-50');
-          tbody.innerHTML += `<tr class="${rowClass} transition-colors hover:bg-blue-50">
-            <td class="px-10 py-3 text-center text-gray-700 border-b border-gray-100">${pt.x.toFixed(1)}</td>
-            <td class="px-10 py-3 text-center text-gray-700 border-b border-gray-100">${pt.y.toFixed(2)}</td>
+          const isOp = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
+          tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
+            <td class="px-4 py-2">${pt.x.toFixed(1)}</td>
+            <td class="px-4 py-2">${pt.y.toFixed(2)}</td>
           </tr>`;
         });
       }
@@ -1125,11 +1142,25 @@
         const el = document.getElementById(id);
         if (el) el.addEventListener("input", () => actualizarGrafico());
       });
-      document.getElementById("modeloIPR")
-        ?.addEventListener("change", () => actualizarGrafico());
-      document.getElementById("autoCalibrarVogel")
-        ?.addEventListener("change", () => actualizarGrafico());
+      // ── Visibilidad del campo Índice J ────────────────────────────────────
+      function actualizarVisibilidadJ() {
+        const modelo = document.getElementById('modeloIPR').value;
+        const autoCalib = document.getElementById('autoCalibrarVogel')?.checked;
+        const campoJ = document.getElementById('campoJ');
+        if (campoJ) {
+          campoJ.classList.toggle('hidden', modelo === 'vogel' && autoCalib);
+        }
+      }
       // ────────────────────────────────────────────────────────────────────────
+
+      document.getElementById("modeloIPR")
+        ?.addEventListener("change", () => { actualizarGrafico(); actualizarVisibilidadJ(); });
+      document.getElementById("autoCalibrarVogel")
+        ?.addEventListener("change", () => { actualizarGrafico(); actualizarVisibilidadJ(); });
+      // ────────────────────────────────────────────────────────────────────────
+
+      // Estado inicial
+      actualizarVisibilidadJ();
 
       function toggleDarkMode() {
         document.body.classList.toggle("dark");
@@ -1222,7 +1253,50 @@
         if (panelId === 'panel-datos') actualizarTablasDatos();
         if (panelId === 'panel-sensibilidad') actualizarSensibilidad();
         if (panelId === 'panel-perfilrpf') calcularRPF();
+
+        // Ocultar tabs después de un pequeño delay para liberar espacio vertical
+        scheduleHideTabs();
       }
+
+      /* ── Lógica de auto-ocultado de tabs ── */
+      let _hideTabsTimer = null;
+
+      function showTabsNow() {
+        clearTimeout(_hideTabsTimer);
+        _hideTabsTimer = null;
+        const panel = document.getElementById('tabsPanel');
+        if (panel) panel.classList.remove('tabs-hidden');
+      }
+
+      function hideTabsNow() {
+        const panel = document.getElementById('tabsPanel');
+        if (panel) panel.classList.add('tabs-hidden');
+      }
+
+      function scheduleHideTabs(delay) {
+        clearTimeout(_hideTabsTimer);
+        _hideTabsTimer = setTimeout(hideTabsNow, delay !== undefined ? delay : 700);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const panel = document.getElementById('tabsPanel');
+        if (!panel) return;
+
+        // Mantener visible mientras el mouse está encima de la barra de tabs
+        panel.addEventListener('mouseenter', showTabsNow);
+
+        // Programar ocultado cuando el mouse sale de la barra
+        panel.addEventListener('mouseleave', function () {
+          scheduleHideTabs(700);
+        });
+
+        // Mostrar tabs cuando el cursor está a <= 25px del borde superior de la ventana
+        document.addEventListener('mousemove', function (e) {
+          if (e.clientY <= 25) {
+            showTabsNow();
+          }
+        });
+      });
 
       function actualizarTablasDatos() {
         const pws    = parseFloat(document.getElementById('inputPws').value) || 0;
