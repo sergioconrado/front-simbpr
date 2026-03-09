@@ -73,6 +73,7 @@
     <div class="flex min-h-screen">
       <!-- PANEL IZQUIERDO -->
       <div
+        id="leftPanel"
         class="w-80 bg-gray-50 border-r border-gray-200 p-6 shadow-sm"
       >
         <!-- Tarjeta entrada de datos -->
@@ -83,7 +84,7 @@
         </div>
 
         <!-- Tabs -->
-        <div class="flex flex-wrap gap-2 mb-4 text-sm justify-center">
+        <div id="leftTabsPanel" class="tabs-panel flex flex-wrap gap-2 mb-4 text-sm justify-center">
           <button
             onclick="mostrarTab('yacimiento', this)"
             class="tab-btn tab-active px-4 py-2 rounded-xl"
@@ -1588,7 +1589,52 @@
         // activar el botón seleccionado
         boton.classList.remove("bg-gray-100");
         boton.classList.add("tab-active");
+
+        // Ocultar tabs izquierdos después de seleccionar para liberar espacio
+        scheduleHideLeftTabs(80);
       }
+
+      /* ── Lógica de auto-ocultado de tabs IZQUIERDOS ── */
+      let _hideLeftTabsTimer = null;
+
+      function showLeftTabsNow() {
+        clearTimeout(_hideLeftTabsTimer);
+        _hideLeftTabsTimer = null;
+        const p = document.getElementById('leftTabsPanel');
+        if (p) p.classList.remove('tabs-hidden');
+      }
+
+      function hideLeftTabsNow() {
+        const p = document.getElementById('leftTabsPanel');
+        if (p) p.classList.add('tabs-hidden');
+      }
+
+      function scheduleHideLeftTabs(delay) {
+        clearTimeout(_hideLeftTabsTimer);
+        _hideLeftTabsTimer = setTimeout(hideLeftTabsNow, delay !== undefined ? delay : 80);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const leftTabsEl = document.getElementById('leftTabsPanel');
+        const leftPanelEl = document.getElementById('leftPanel');
+        if (!leftTabsEl) return;
+
+        // Mostrar cuando mouse entra a la barra de tabs
+        leftTabsEl.addEventListener('mouseenter', showLeftTabsNow);
+        // Ocultar cuando mouse sale de la barra de tabs
+        leftTabsEl.addEventListener('mouseleave', function () {
+          scheduleHideLeftTabs(80);
+        });
+
+        // Mostrar cuando el cursor se aproxima a la zona superior del panel izquierdo
+        document.addEventListener('mousemove', function (e) {
+          if (!leftPanelEl) return;
+          const rect = leftPanelEl.getBoundingClientRect();
+          if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY <= rect.top + 80) {
+            showLeftTabsNow();
+          }
+        });
+      });
     </script>
   </body>
 </html>
