@@ -904,12 +904,11 @@
       // Devuelve Qmax > 0 o null si los parámetros son inválidos
       function calcularQmaxDesdePuntoVogel(pws, pwf, qb) {
         if (pws <= 0 || qb <= 0 || pwf < 0 || pwf > pws) return null;
-        const a    = pwf / pws;
-        const disc = 0.04 - 3.2 * (a - 1);  // 0.2² - 4·0.8·(a-1)
-        if (disc < 0) return null;
-        const r = (-0.2 + Math.sqrt(disc)) / 1.6;  // raíz física positiva
-        if (r <= 0) return null;
-        return qb / r;
+        // Vogel: Qmax = Qb / (1 - 0.2*(Pwf/Pws) - 0.8*(Pwf/Pws)^2)
+        const a = pwf / pws;
+        const denom = 1 - 0.2 * a - 0.8 * a * a;
+        if (denom <= 0) return null;
+        return qb / denom;
       }
 
       // Devuelve n+1 puntos equidistantes muestreados de la curva IPR para dibujar los marcadores
