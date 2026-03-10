@@ -1098,19 +1098,19 @@
               x: {
                 type: "linear",
                 min: 0,
-                max: datos.Qmax * 1.1,
+                max: Math.ceil(datos.Qmax * 1.1),
                 title: { display: true, text: "Q (BPD)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827", precision: 0 },
+                ticks: { color: "#111827", precision: 0, callback: (v) => Number.isInteger(v) ? v : null },
               },
               y: {
                 min: 0,
-                max: datos.pws * 1.1,
+                max: Math.ceil(datos.pws * 1.1),
                 title: { display: true, text: "Pwf (kg/cm\u00b2)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827", precision: 0 },
+                ticks: { color: "#111827", precision: 0, callback: (v) => Number.isInteger(v) ? v : null },
               },
             },
           },
@@ -1128,8 +1128,8 @@
         chartBSN.data.datasets[1].data = samplearPuntosIPR(datos.ipr, 12);
 
         // Actualizar rangos dinámicos con los valores correctos
-        chartBSN.options.scales.x.max = datos.Qmax * 1.1;
-        chartBSN.options.scales.y.max = datos.pws * 1.1;
+        chartBSN.options.scales.x.max = Math.ceil(datos.Qmax * 1.1);
+        chartBSN.options.scales.y.max = Math.ceil(datos.pws * 1.1);
 
         chartBSN.update();
       }
