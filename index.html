@@ -597,8 +597,8 @@
                 <table class="w-full text-sm" id="tablaIpr">
                   <thead>
                     <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg">Ql (bpd)</th>
-                      <th class="px-4 py-2 rounded-r-lg">Pwf (kg/cm²)</th>
+                      <th class="px-4 py-2 rounded-l-lg font-bold text-gray-800">Ql (bpd)</th>
+                      <th class="px-4 py-2 rounded-r-lg font-bold text-gray-800">Pwf (kg/cm²)</th>
                     </tr>
                   </thead>
                   <tbody id="tablaIprBody" class="divide-y divide-gray-100">
@@ -1050,7 +1050,7 @@
 
       // Devuelve { max, stepSize } con valores redondeados a números bonitos (50, 100, etc.)
       function niceAxisMax(rawMax) {
-        const target = rawMax * 1.1;
+        const target = rawMax; // sin padding extra; el redondeo ya deja margen
         const rough  = target / 6; // ~6 intervalos
         const mag    = Math.pow(10, Math.floor(Math.log10(rough)));
         const norm   = rough / mag;
