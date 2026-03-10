@@ -47,25 +47,7 @@
         border-radius: 12px;
       }
 
-      /* ── Auto-ocultar tabs superiores ── */
-      .tabs-panel {
-        /* transición rápida para no entorpecer el flujo */
-        transition: height 0.05s ease, padding-top 0.05s ease,
-                    padding-bottom 0.05s ease, margin-top 0.05s ease,
-                    margin-bottom 0.05s ease, opacity 0.05s ease;
-        overflow: hidden;
-      }
-      .tabs-hidden {
-        /* Colapsa completamente sin ocupar espacio */
-        height: 0 !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        overflow: hidden;
-        pointer-events: none;
-        opacity: 0;
-      }
+
     </style>
   </head>
 
@@ -84,7 +66,7 @@
         </div>
 
         <!-- Tabs -->
-        <div id="leftTabsPanel" class="tabs-panel flex flex-wrap gap-2 mb-4 text-sm justify-center">
+        <div id="leftTabsPanel" class="flex flex-wrap gap-2 mb-4 text-sm justify-center">
           <button
             onclick="mostrarTab('yacimiento', this)"
             class="tab-btn tab-active px-4 py-2 rounded-xl"
@@ -124,7 +106,7 @@
             <input
               id="inputPws"
               type="number"
-              value="210"
+              value="73"
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -133,7 +115,7 @@
             <input
               id="inputPwf"
               type="number"
-              value="178"
+              value="66"
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -151,7 +133,7 @@
             <input
               id="inputQb"
               type="number"
-              value="380"
+              value="50"
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -162,7 +144,7 @@
               class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
             >
               <option value="lineal">Lineal</option>
-              <option value="vogel">Vogel</option>
+              <option value="vogel" selected>Vogel</option>
             </select>
           </div>
           <div class="flex items-center gap-2">
@@ -537,7 +519,7 @@
         </div>
 
         <!-- Tabs superiores -->
-        <div id="tabsPanel" class="tabs-panel flex flex-wrap gap-2 bg-gray-100 px-5 py-3 text-sm">
+        <div id="tabsPanel" class="flex flex-wrap gap-2 bg-gray-100 px-5 py-3 text-sm">
           <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-4 py-2 rounded-xl">Gráfico</button>
           <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</button>
           <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</button>
@@ -911,14 +893,10 @@
         return qb / denom;
       }
 
-      // Devuelve n+1 puntos equidistantes muestreados de la curva IPR para dibujar los marcadores
-      function samplearPuntosIPR(ipr, n = 12) {
-        const result = [];
-        for (let i = 0; i <= n; i++) {
-          const idx = Math.round((i / n) * (ipr.length - 1));
-          result.push(ipr[idx]);
-        }
-        return result;
+      // Devuelve los 11 puntos de la tabla (índices 0,20,40…200) de la curva
+      // generada con 201 puntos a Pwf equidistante — tabla y gráfica siempre sincronizados
+      function samplearPuntosIPR(ipr) {
+        return [0,20,40,60,80,100,120,140,160,180,200].map(i => ipr[i]).filter(Boolean);
       }
 
       // ✅ FIX 1: generarQ usa N puntos enteros fijos — sin problemas de paso flotante
@@ -972,24 +950,23 @@
           }
         }
 
-        const qValues = generarQ(Qmax);
-
-        let ipr = [];
-        if (modelo === "lineal") {
-          ipr = qValues.map((q) => ({ x: q, y: pws - q / J }));
-        } else {
-          // ✅ FIX 3: Fórmula Vogel correcta
-          // Pwf/Pws = 1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²
-          // => Pwf = Pws * [1 - 0.2*(q/Qmax) - 0.8*(q/Qmax)²]
-          ipr = qValues.map((q) => {
-            const ratio = q / Qmax;
-            const presion = pws * (1 - 0.2 * ratio - 0.8 * ratio * ratio);
-            return { x: q, y: Math.max(presion, 0) }; // no valores negativos
-          });
-        }
+        // Curva IPR: 201 puntos por Pwf equidistante (Pws→0) usando fórmulas estándar
+        const N = 200;
+        const ipr = Array.from({length: N + 1}, (_, i) => {
+          const pwfVal = pws * (1 - i / N);
+          let q;
+          if (modelo === "lineal") {
+            q = J * (pws - pwfVal);
+          } else {
+            // Vogel estándar: Q/Qmax = 1 - 0.2*(Pwf/Pws) - 0.8*(Pwf/Pws)²
+            const r = pwfVal / pws;
+            q = Qmax * (1 - 0.2 * r - 0.8 * r * r);
+          }
+          return { x: Math.max(q, 0), y: pwfVal };
+        });
 
         // Línea horizontal de Pwf del sistema
-        const pwfLine = qValues.map((q) => ({ x: q, y: pwf }));
+        const pwfLine = ipr.map(pt => ({ x: pt.x, y: pwf }));
 
         // Punto de operación: intersección IPR con Pwf
         let qOperacion = 0;
@@ -1028,21 +1005,18 @@
         set('resultadoQop',       qop.toFixed(0));
         set('resultadoQmaxPanel', Qmax.toFixed(0));
 
-        // Tabla IPR: 11 filas en intervalos de 10% de Qmax (0%, 10% ... 100%)
-        const pcts  = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        // Tabla IPR: 11 filas a intervalos iguales de Pwf (100%→0% de Pws)
         const ipr   = datos.ipr;
         const tbody = document.getElementById('tablaIprBody');
         if (!tbody || ipr.length === 0) return;
 
         tbody.innerHTML = '';
-        pcts.forEach(pct => {
-          const idx = Math.round((pct / 100) * (ipr.length - 1));
-          const pt  = ipr[idx];
+        samplearPuntosIPR(ipr).forEach(pt => {
           if (!pt) return;
           const isOp = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
           tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
-            <td class="px-4 py-2">${pt.x.toFixed(0)}</td>
-            <td class="px-4 py-2">${pt.y.toFixed(0)}</td>
+            <td class="px-4 py-2">${Math.round(pt.x)}</td>
+            <td class="px-4 py-2">${Math.round(pt.y + 0.1)}</td>
           </tr>`;
         });
       }
@@ -1087,7 +1061,7 @@
               },
               {
                 label: "Puntos IPR",
-                data: samplearPuntosIPR(datos.ipr, 12),
+                data: samplearPuntosIPR(datos.ipr),
                 borderColor: "#2563eb",
                 backgroundColor: "#2563eb",
                 pointRadius: 5,
@@ -1102,13 +1076,15 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            clip: false,
             plugins: {
               tooltip: {
                 callbacks: {
+                  title: () => '',
                   label: (ctx) => {
-                    const x = ctx.raw.x.toFixed(0);
-                    const y = ctx.raw.y.toFixed(0);
-                    return `(${y} kg/cm² , ${x} bpd)`;
+                    const x = Math.round(ctx.raw.x);
+                    const y = Math.round(ctx.raw.y);
+                    return `Ql: ${x} bpd  |  Pwf: ${y} kg/cm²`;
                   },
                 },
               },
@@ -1144,7 +1120,7 @@
         renderResultadosYTabla(datos);
 
         chartBSN.data.datasets[0].data = datos.ipr;
-        chartBSN.data.datasets[1].data = samplearPuntosIPR(datos.ipr, 12);
+        chartBSN.data.datasets[1].data = samplearPuntosIPR(datos.ipr);
 
         // Actualizar rangos dinámicos con los valores correctos
         const axX = niceAxisMax(datos.Qmax);
@@ -1277,49 +1253,7 @@
         if (panelId === 'panel-sensibilidad') actualizarSensibilidad();
         if (panelId === 'panel-perfilrpf') calcularRPF();
 
-        // Ocultar tabs después de un pequeño delay para liberar espacio vertical
-        scheduleHideTabs(80);
       }
-
-      /* ── Lógica de auto-ocultado de tabs ── */
-      let _hideTabsTimer = null;
-
-      function showTabsNow() {
-        clearTimeout(_hideTabsTimer);
-        _hideTabsTimer = null;
-        const panel = document.getElementById('tabsPanel');
-        if (panel) panel.classList.remove('tabs-hidden');
-      }
-
-      function hideTabsNow() {
-        const panel = document.getElementById('tabsPanel');
-        if (panel) panel.classList.add('tabs-hidden');
-      }
-
-      function scheduleHideTabs(delay) {
-        clearTimeout(_hideTabsTimer);
-        _hideTabsTimer = setTimeout(hideTabsNow, delay !== undefined ? delay : 80);
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        const panel = document.getElementById('tabsPanel');
-        if (!panel) return;
-
-        // Mantener visible mientras el mouse está encima de la barra de tabs
-        panel.addEventListener('mouseenter', showTabsNow);
-
-        // Programar ocultado cuando el mouse sale de la barra
-        panel.addEventListener('mouseleave', function () {
-          scheduleHideTabs(80);
-        });
-
-        // Mostrar tabs cuando el cursor se aproxima al borde superior (zona amplia de 60px)
-        document.addEventListener('mousemove', function (e) {
-          if (e.clientY <= 60) {
-            showTabsNow();
-          }
-        });
-      });
 
       function actualizarTablasDatos() {
         const pws    = parseFloat(document.getElementById('inputPws').value) || 0;
@@ -1622,51 +1556,7 @@
         boton.classList.remove("bg-gray-100");
         boton.classList.add("tab-active");
 
-        // Ocultar tabs izquierdos después de seleccionar para liberar espacio
-        scheduleHideLeftTabs(80);
       }
-
-      /* ── Lógica de auto-ocultado de tabs IZQUIERDOS ── */
-      let _hideLeftTabsTimer = null;
-
-      function showLeftTabsNow() {
-        clearTimeout(_hideLeftTabsTimer);
-        _hideLeftTabsTimer = null;
-        const p = document.getElementById('leftTabsPanel');
-        if (p) p.classList.remove('tabs-hidden');
-      }
-
-      function hideLeftTabsNow() {
-        const p = document.getElementById('leftTabsPanel');
-        if (p) p.classList.add('tabs-hidden');
-      }
-
-      function scheduleHideLeftTabs(delay) {
-        clearTimeout(_hideLeftTabsTimer);
-        _hideLeftTabsTimer = setTimeout(hideLeftTabsNow, delay !== undefined ? delay : 80);
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        const leftTabsEl = document.getElementById('leftTabsPanel');
-        const leftPanelEl = document.getElementById('leftPanel');
-        if (!leftTabsEl) return;
-
-        // Mostrar cuando mouse entra a la barra de tabs
-        leftTabsEl.addEventListener('mouseenter', showLeftTabsNow);
-        // Ocultar cuando mouse sale de la barra de tabs
-        leftTabsEl.addEventListener('mouseleave', function () {
-          scheduleHideLeftTabs(80);
-        });
-
-        // Mostrar cuando el cursor se aproxima a la zona superior del panel izquierdo
-        document.addEventListener('mousemove', function (e) {
-          if (!leftPanelEl) return;
-          const rect = leftPanelEl.getBoundingClientRect();
-          if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY <= rect.top + 80) {
-            showLeftTabsNow();
-          }
-        });
-      });
     </script>
   </body>
 </html>
