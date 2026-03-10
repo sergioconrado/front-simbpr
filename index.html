@@ -1002,8 +1002,8 @@
           }
         });
 
-        document.getElementById("resultadoQ").innerText = qOperacion.toFixed(2);
-        document.getElementById("resultadoQmax").innerText = Qmax.toFixed(2);
+        document.getElementById("resultadoQ").innerText = qOperacion.toFixed(0);
+        document.getElementById("resultadoQmax").innerText = Qmax.toFixed(0);
         document.getElementById("modeloActivo").innerText =
           `Modelo: ${modelo === "lineal" ? "Lineal" : "Vogel"}`;
 
@@ -1021,12 +1021,12 @@
         const Qmax = datos.Qmax;
         const qb   = parseFloat(document.getElementById('inputQb')?.value) || 0;
 
-        set('resultadoPws',       pws.toFixed(2));
-        set('resultadoPwf',       pwf.toFixed(2));
-        set('resultadoQb',        qb.toFixed(1));
-        set('resultadoDP',        (pws - pwf).toFixed(2));
-        set('resultadoQop',       qop.toFixed(1));
-        set('resultadoQmaxPanel', Qmax.toFixed(1));
+        set('resultadoPws',       pws.toFixed(0));
+        set('resultadoPwf',       pwf.toFixed(0));
+        set('resultadoQb',        qb.toFixed(0));
+        set('resultadoDP',        (pws - pwf).toFixed(0));
+        set('resultadoQop',       qop.toFixed(0));
+        set('resultadoQmaxPanel', Qmax.toFixed(0));
 
         // Build sampled table from datos.ipr (same series as the chart)
         const pcts  = [0, 15, 30, 45, 60, 75, 85, 92, 97, 100];
@@ -1041,8 +1041,8 @@
           if (!pt) return;
           const isOp = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
           tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
-            <td class="px-4 py-2">${pt.x.toFixed(1)}</td>
-            <td class="px-4 py-2">${pt.y.toFixed(2)}</td>
+            <td class="px-4 py-2">${pt.x.toFixed(0)}</td>
+            <td class="px-4 py-2">${pt.y.toFixed(0)}</td>
           </tr>`;
         });
       }
@@ -1087,8 +1087,8 @@
               tooltip: {
                 callbacks: {
                   label: (ctx) => {
-                    const x = ctx.raw.x.toFixed(2);
-                    const y = ctx.raw.y.toFixed(2);
+                    const x = ctx.raw.x.toFixed(0);
+                    const y = ctx.raw.y.toFixed(0);
                     return `(${y} kg/cm² , ${x} bpd)`;
                   },
                 },
@@ -1304,8 +1304,8 @@
         const J      = parseFloat(document.getElementById('inputJ').value) || 1;
         const modelo = document.getElementById('modeloIPR').value;
 
-        document.getElementById('d-pws').textContent    = pws.toFixed(2);
-        document.getElementById('d-pwf').textContent    = pwf.toFixed(2);
+        document.getElementById('d-pws').textContent    = pws.toFixed(0);
+        document.getElementById('d-pwf').textContent    = pwf.toFixed(0);
         document.getElementById('d-j').textContent      = J.toFixed(2);
         document.getElementById('d-modelo').textContent = modelo === 'lineal' ? 'Lineal' : 'Vogel';
 
@@ -1322,11 +1322,11 @@
         }
 
         const drawdown   = pws - pwf;
-        const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : '0.0';
+        const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : '0';
 
         document.getElementById('d-qmax').textContent      = Qmax.toFixed(0);
         document.getElementById('d-qop').textContent       = qOp.toFixed(0);
-        document.getElementById('d-drawdown').textContent  = drawdown.toFixed(2);
+        document.getElementById('d-drawdown').textContent  = drawdown.toFixed(0);
         document.getElementById('d-eficiencia').textContent = eficiencia;
 
         // Tabla de puntos IPR (cada 5% de Qmax)
@@ -1342,8 +1342,8 @@
           const hlClass = isOp ? 'bg-blue-50 font-semibold' : '';
           tbody.innerHTML += `<tr class="${hlClass}">
             <td class="px-4 py-1.5">${i+1}</td>
-            <td class="px-4 py-1.5">${q.toFixed(1)}</td>
-            <td class="px-4 py-1.5">${pCalc.toFixed(2)}</td>
+            <td class="px-4 py-1.5">${q.toFixed(0)}</td>
+            <td class="px-4 py-1.5">${pCalc.toFixed(0)}</td>
             <td class="px-4 py-1.5">${pct}%</td>
           </tr>`;
         }
