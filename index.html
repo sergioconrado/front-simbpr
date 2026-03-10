@@ -1332,7 +1332,17 @@
         document.getElementById('d-j').textContent      = J.toFixed(2);
         document.getElementById('d-modelo').textContent = modelo === 'lineal' ? 'Lineal' : 'Vogel';
 
-        const Qmax = modelo === 'lineal' ? J * pws : (J * pws) / 1.8;
+        const Qmax = (() => {
+          if (modelo === 'lineal') return J * pws;
+          // Vogel: usar fórmula directa con Qb si autoCalibración está activa
+          const autoCalib = document.getElementById('autoCalibrarVogel')?.checked;
+          if (autoCalib) {
+            const qb = parseFloat(document.getElementById('inputQb')?.value) || 0;
+            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
+            if (Qcalc !== null && Qcalc > 0) return Qcalc;
+          }
+          return (J * pws) / 1.8;
+        })();
         let qOp = 0, diffMin = Infinity;
         const N = 60;
         for (let i = 0; i <= N; i++) {
