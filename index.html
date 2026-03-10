@@ -922,7 +922,7 @@
       }
 
       // ✅ FIX 1: generarQ usa N puntos enteros fijos — sin problemas de paso flotante
-      function generarQ(Qmax, N = 60) {
+      function generarQ(Qmax, N = 200) {
         let arr = [];
         for (let i = 0; i <= N; i++) {
           arr.push((i / N) * Qmax);
@@ -1028,8 +1028,8 @@
         set('resultadoQop',       qop.toFixed(0));
         set('resultadoQmaxPanel', Qmax.toFixed(0));
 
-        // Build sampled table from datos.ipr (same series as the chart)
-        const pcts  = [0, 15, 30, 45, 60, 75, 85, 92, 97, 100];
+        // Tabla IPR: 11 filas en intervalos de 10% de Qmax (0%, 10% ... 100%)
+        const pcts  = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
         const ipr   = datos.ipr;
         const tbody = document.getElementById('tablaIprBody');
         if (!tbody || ipr.length === 0) return;
@@ -1062,8 +1062,8 @@
                 data: datos.ipr,
                 borderColor: "#2563eb",
                 borderWidth: 3,
-                tension: 0.35,
-                pointRadius: 0, // sin puntos en la curva → se ve limpia
+                tension: 0,
+                pointRadius: 0,
                 pointHoverRadius: 4,
               },
               {
@@ -1099,18 +1099,18 @@
                 type: "linear",
                 min: 0,
                 max: datos.Qmax * 1.1,
-                title: { display: true, text: "Caudal (bpd)" },
+                title: { display: true, text: "Q (BPD)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827" },
+                ticks: { color: "#111827", precision: 0 },
               },
               y: {
                 min: 0,
                 max: datos.pws * 1.1,
-                title: { display: true, text: "Presión (kg/cm²)" },
+                title: { display: true, text: "Pwf (kg/cm\u00b2)" },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827" },
+                ticks: { color: "#111827", precision: 0 },
               },
             },
           },
