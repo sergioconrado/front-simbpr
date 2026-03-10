@@ -41,10 +41,34 @@
       body {
         background: #f3f4f6;
       }
+      /* Pestañas estilo GitHub / Office */
       .tab-active {
-        background: #111827;
-        color: white;
-        border-radius: 12px;
+        color: #111827;
+        font-weight: 600;
+        border-bottom: 2px solid #111827;
+        background: transparent;
+      }
+      .tab-inactive {
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+        transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+      .tab-inactive:hover {
+        color: #374151;
+        background: rgba(0, 0, 0, 0.04);
+        border-bottom-color: #d1d5db;
+      }
+      .dark .tab-active {
+        color: #f1f5f9;
+        border-bottom-color: #f1f5f9;
+      }
+      .dark .tab-inactive {
+        color: #94a3b8;
+      }
+      .dark .tab-inactive:hover {
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom-color: #475569;
       }
 
 
@@ -52,49 +76,102 @@
   </head>
 
   <body class="font-sans text-gray-800">
-    <div class="flex min-h-screen">
-      <!-- PANEL IZQUIERDO -->
+    <div class="flex flex-col min-h-screen">
+      <!-- Header -->
+      <div
+        class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
+      >
+        <div class="flex items-center gap-4">
+          <img src="logo-SIMBPR.png" alt="Logo SIMBPR" class="h-12 w-auto object-contain" />
+          <div class="h-6 w-px bg-gray-200"></div>
+          <div class="flex flex-col leading-tight">
+            <span class="font-semibold text-sm">Simulador BSN</span>
+            <span class="text-xs text-gray-500"
+              >Proyecto TARATUNICH 41-D</span
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-xs text-green-600 font-medium">● Activa Local</div>
+          <div class="relative">
+            <button
+              onclick="toggleUserMenu()"
+              class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition"
+            >
+              <div
+                class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium"
+              >
+                SC
+              </div>
+              <span class="text-sm">Sergio</span>
+              <span class="text-gray-400 text-xs">▾</span>
+            </button>
+            <div
+              id="userMenu"
+              class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+            >
+              <button
+                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+              >
+                Perfil
+              </button>
+              <button
+                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
+              >
+                Configuración
+              </button>
+              <div class="border-t border-gray-100"></div>
+              <button
+                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+          <button
+            onclick="toggleDarkMode()"
+            class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="flex flex-1">
+        <!-- PANEL IZQUIERDO -->
       <div
         id="leftPanel"
         class="w-80 bg-gray-50 border-r border-gray-200 p-6 shadow-sm"
       >
         <!-- Tarjeta entrada de datos -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 mb-5">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-5">
 
-        <div class="flex items-center gap-2 mb-4">
-          <h2 class="text-lg font-semibold">Entrada de Datos</h2>
-        </div>
+          <!-- Mini-header -->
+          <div class="px-5 pt-4 pb-2">
+            <h2 class="text-sm font-semibold text-gray-700">Entrada de Datos</h2>
+          </div>
+          <!-- Tabs pegados al mini-header — se distribuyen en todo el ancho -->
+          <div id="leftTabsPanel" class="flex border-b border-gray-200 text-xs">
+            <button onclick="mostrarTab('yacimiento', this)" class="tab-btn tab-active flex-1 text-center py-2.5">Yacimiento</button>
+            <button onclick="mostrarTab('pozo', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">Pozo</button>
+            <button onclick="mostrarTab('produccion', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">Producción</button>
+            <button onclick="mostrarTab('bsn', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">BSN</button>
+          </div>
 
-        <!-- Tabs -->
-        <div id="leftTabsPanel" class="flex flex-wrap gap-2 mb-4 text-sm justify-center">
-          <button
-            onclick="mostrarTab('yacimiento', this)"
-            class="tab-btn tab-active px-4 py-2 rounded-xl"
-          >
-            Yacimiento
-          </button>
-
-          <button
-            onclick="mostrarTab('pozo', this)"
-            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            Pozo
-          </button>
-
-          <button
-            onclick="mostrarTab('produccion', this)"
-            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            Producción
-          </button>
-
-          <button
-            onclick="mostrarTab('bsn', this)"
-            class="tab-btn bg-gray-100 px-4 py-2 rounded-xl hover:bg-gray-200 transition"
-          >
-            BSN
-          </button>
-        </div>
+          <!-- Contenido del tab activo -->
+          <div class="p-4">
 
         <!-- Yacimiento -->
         <div
@@ -396,6 +473,7 @@
           </button>
         </div>
 
+          </div><!-- /contenido tab -->
         </div><!-- /tarjeta entrada de datos -->
 
         <!-- Botones -->
@@ -445,85 +523,12 @@
 
       <!-- PANEL DERECHO -->
       <div class="flex-1 flex flex-col bg-gray-100">
-        <!-- Header -->
-        <div
-          class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
-        >
-          <div class="flex items-center gap-4">
-            <img src="logo-SIMBPR.png" alt="Logo SIMBPR" class="h-12 w-auto object-contain" />
-            <div class="h-6 w-px bg-gray-200"></div>
-            <div class="flex flex-col leading-tight">
-              <span class="font-semibold text-sm">Simulador BSN</span>
-              <span class="text-xs text-gray-500"
-                >Proyecto TARATUNICH 41-D</span
-              >
-            </div>
-          </div>
-          <div class="flex items-center gap-4">
-            <div class="text-xs text-green-600 font-medium">● Activa Local</div>
-            <div class="relative">
-              <button
-                onclick="toggleUserMenu()"
-                class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition"
-              >
-                <div
-                  class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium"
-                >
-                  SC
-                </div>
-                <span class="text-sm">Sergio</span>
-                <span class="text-gray-400 text-xs">▾</span>
-              </button>
-              <div
-                id="userMenu"
-                class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-              >
-                <button
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
-                >
-                  Perfil
-                </button>
-                <button
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
-                >
-                  Configuración
-                </button>
-                <div class="border-t border-gray-100"></div>
-                <button
-                  class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition"
-                >
-                  Cerrar sesión
-                </button>
-              </div>
-            </div>
-            <button
-              onclick="toggleDarkMode()"
-              class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-5 h-5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Tabs superiores -->
-        <div id="tabsPanel" class="flex flex-wrap gap-2 bg-gray-100 px-5 py-3 text-sm">
-          <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-4 py-2 rounded-xl">Gráfico</button>
-          <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Datos</button>
-          <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Sensibilidad</button>
-          <button onclick="mostrarPanel('panel-perfilrpf', this)" class="tab-btn-panel bg-gray-200 px-4 py-2 rounded-xl hover:bg-gray-300 transition">Perfil RPF</button>
+        <!-- Tabs superiores estilo GitHub / Office -->
+        <div id="tabsPanel" class="flex bg-white/70 backdrop-blur-md border-b border-gray-200 px-5 text-sm">
+          <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-5 py-3.5">Gráfico</button>
+          <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Datos</button>
+          <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Sensibilidad</button>
+          <button onclick="mostrarPanel('panel-perfilrpf', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Perfil RPF</button>
         </div>
 
         <!-- CONTENEDOR CENTRAL -->
@@ -875,6 +880,7 @@
         >
           Activa Local | Proyecto TARATUNICH 41-D
         </div>
+      </div>
       </div>
     </div>
 
@@ -1244,9 +1250,9 @@
 
         document.querySelectorAll('.tab-btn-panel').forEach(btn => {
           btn.classList.remove('tab-active');
-          btn.classList.add('bg-gray-200');
+          btn.classList.add('tab-inactive');
         });
-        boton.classList.remove('bg-gray-200');
+        boton.classList.remove('tab-inactive');
         boton.classList.add('tab-active');
 
         if (panelId === 'panel-datos') actualizarTablasDatos();
@@ -1549,11 +1555,11 @@
         // resetear botones
         document.querySelectorAll(".tab-btn").forEach((btn) => {
           btn.classList.remove("tab-active");
-          btn.classList.add("bg-gray-100");
+          btn.classList.add("tab-inactive");
         });
 
         // activar el botón seleccionado
-        boton.classList.remove("bg-gray-100");
+        boton.classList.remove("tab-inactive");
         boton.classList.add("tab-active");
 
       }
