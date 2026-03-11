@@ -51,7 +51,10 @@
       .tab-inactive {
         color: #6b7280;
         border-bottom: 2px solid transparent;
-        transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        transition:
+          color 0.15s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
       }
       .tab-inactive:hover {
         color: #374151;
@@ -70,8 +73,6 @@
         background: rgba(255, 255, 255, 0.05);
         border-bottom-color: #475569;
       }
-
-
     </style>
   </head>
 
@@ -82,13 +83,15 @@
         class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
       >
         <div class="flex items-center gap-4">
-          <img src="logo-SIMBPR.png" alt="Logo SIMBPR" class="h-12 w-auto object-contain" />
+          <img
+            src="logo-SIMBPR.png"
+            alt="Logo SIMBPR"
+            class="h-12 w-auto object-contain"
+          />
           <div class="h-6 w-px bg-gray-200"></div>
           <div class="flex flex-col leading-tight">
             <span class="font-semibold text-sm">Simulador BSN</span>
-            <span class="text-xs text-gray-500"
-              >Proyecto TARATUNICH 41-D</span
-            >
+            <span class="text-xs text-gray-500">Proyecto TARATUNICH 41-D</span>
           </div>
         </div>
         <div class="flex items-center gap-4">
@@ -151,736 +154,1068 @@
       </div>
       <div class="flex flex-1">
         <!-- PANEL IZQUIERDO -->
-      <div
-        id="leftPanel"
-        class="w-80 bg-gray-50 border-r border-gray-200 p-6 shadow-sm"
-      >
-        <!-- Tarjeta entrada de datos -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-5">
-
-          <!-- Mini-header -->
-          <div class="px-5 pt-4 pb-2">
-            <h2 class="text-sm font-semibold text-gray-700">Entrada de Datos</h2>
-          </div>
-          <!-- Tabs pegados al mini-header — se distribuyen en todo el ancho -->
-          <div id="leftTabsPanel" class="flex border-b border-gray-200 text-xs">
-            <button onclick="mostrarTab('yacimiento', this)" class="tab-btn tab-active flex-1 text-center py-2.5">Yacimiento</button>
-            <button onclick="mostrarTab('pozo', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">Pozo</button>
-            <button onclick="mostrarTab('produccion', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">Producción</button>
-            <button onclick="mostrarTab('bsn', this)" class="tab-btn tab-inactive flex-1 text-center py-2.5">BSN</button>
-          </div>
-
-          <!-- Contenido del tab activo -->
-          <div class="p-4">
-
-        <!-- Yacimiento -->
         <div
-          id="yacimiento"
-          class="bg-gray-50/70 rounded-xl p-4 space-y-4"
+          id="leftPanel"
+          class="w-80 bg-gray-50 border-r border-gray-200 p-6 shadow-sm"
         >
-          <div>
-            <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
-            <input
-              id="inputPws"
-              type="number"
-              value="73"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Pwf (kg/cm²)</label>
-            <input
-              id="inputPwf"
-              type="number"
-              value="66"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
-          </div>
-          <div id="campoJ">
-            <label class="text-sm text-gray-500">Índice J (bpd/kg/cm²)</label>
-            <input
-              id="inputJ"
-              type="number"
-              value="1.5"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Qb (bpd)</label>
-            <input
-              id="inputQb"
-              type="number"
-              value="50"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-            />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Modelo IPR</label>
-            <select
-              id="modeloIPR"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+          <!-- Tarjeta entrada de datos -->
+          <div
+            class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-5"
+          >
+            <!-- Mini-header -->
+            <div class="px-5 pt-4 pb-2">
+              <h2 class="text-sm font-semibold text-gray-700">
+                Entrada de Datos
+              </h2>
+            </div>
+            <!-- Tabs pegados al mini-header — se distribuyen en todo el ancho -->
+            <div
+              id="leftTabsPanel"
+              class="flex border-b border-gray-200 text-xs"
             >
-              <option value="lineal">Lineal</option>
-              <option value="vogel" selected>Vogel</option>
-            </select>
-          </div>
-          <div class="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="autoCalibrarVogel"
-              checked
-              class="rounded"
-            />
-            <label for="autoCalibrarVogel" class="text-sm text-gray-500 cursor-pointer">Auto-calibrar Vogel con Qb y Pwf</label>
-          </div>
-          <p id="vogelCalibError" class="text-xs text-red-500 hidden"></p>
-        </div>
-
-        <!-- POZO -->
-        <div
-          id="pozo"
-          class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
-        >
-          <div>
-            <label class="text-sm text-gray-500">Tipo Pozo</label>
-            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-              <option>Aceite</option>
-              <option>Gas</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">Estado</label>
-            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-              <option>Fluyente</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">SAP</label>
-            <select class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-              <option>SUAV</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">Prof. m disp.</label>
-            <input
-              type="number"
-              value="2450"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">PL (kg/cm²)</label>
-            <input
-              type="number"
-              value="15"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
-            <input
-              type="number"
-              value="20"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">NL (m)</label>
-            <input
-              type="number"
-              value="500"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
-            />
-          </div>
-        </div>
-
-        <!-- PRODUCCIÓN -->
-        <div
-          id="produccion"
-          class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
-        >
-          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Fluidos del Pozo</p>
-
-          <div>
-            <label class="text-sm text-gray-500">Tasa Total (bpd)</label>
-            <input id="prod_qt" type="number" value="1000"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">% Agua (BSW)</label>
-            <input id="prod_bsw" type="number" value="30"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Gravedad API</label>
-            <input id="prod_api" type="number" value="35"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">GOR (scf/bbl)</label>
-            <input id="prod_gor" type="number" value="150"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Temperatura de Fondo (°C)</label>
-            <input id="prod_temp" type="number" value="85"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Bo — Factor Vol. Aceite (rb/stb)</label>
-            <input id="prod_bo" type="number" value="1.15" step="0.01"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Viscosidad Aceite (cP)</label>
-            <input id="prod_visc" type="number" value="2.5" step="0.1"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-
-          <!-- Resultados calculados Producción -->
-          <div class="border-t border-gray-200 pt-3">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Desglose de Fluidos</p>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Qo — Aceite</p>
-                <p id="prod_qo" class="font-bold text-gray-800">700 bpd</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Qw — Agua</p>
-                <p id="prod_qw" class="font-bold text-gray-800">300 bpd</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Qg — Gas</p>
-                <p id="prod_qg" class="font-bold text-gray-800">105.0 Mscf/d</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Densidad Aceite</p>
-                <p id="prod_dens" class="font-bold text-gray-800">0.850 g/cc</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2">
-                <p class="text-gray-400 mb-0.5">Volumen en Yacimiento</p>
-                <p id="prod_res" class="font-bold text-gray-800">805.0 rb/d</p>
-              </div>
-            </div>
-          </div>
-          <button onclick="calcularProduccion()"
-            class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition">
-            Calcular
-          </button>
-        </div>
-
-        <!-- BSN -->
-        <div
-          id="bsn"
-          class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
-        >
-          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Bomba Sumergible (BSN)</p>
-
-          <div>
-            <label class="text-sm text-gray-500">Serie</label>
-            <select id="bsn_serie" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
-              <option value="400">400</option>
-              <option value="513">513</option>
-              <option value="538" selected>538</option>
-              <option value="562">562</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Modelo de Bomba</label>
-            <select id="bsn_modelo" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none">
-              <option>GN2700</option>
-              <option>GN3300</option>
-              <option>D1100N</option>
-              <option>P1500N</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Número de Etapas</label>
-            <input id="bsn_etapas" type="number" value="120"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Frecuencia (Hz)</label>
-            <input id="bsn_freq" type="number" value="60"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">RPM</label>
-            <input id="bsn_rpm" type="number" value="3500"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Potencia del Motor (HP)</label>
-            <input id="bsn_hp" type="number" value="200"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Voltaje (V)</label>
-            <input id="bsn_volt" type="number" value="1150"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Corriente Nominal (A)</label>
-            <input id="bsn_amp" type="number" value="92"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Prof. Asentamiento (m)</label>
-            <input id="bsn_depth" type="number" value="2200"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-          <div>
-            <label class="text-sm text-gray-500">Temperatura de Fondo (°C)</label>
-            <input id="bsn_tempfondo" type="number" value="90"
-              class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
-          </div>
-
-          <!-- Resultados calculados BSN -->
-          <div class="border-t border-gray-200 pt-3">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Parámetros de Operación</p>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Cabeza Total</p>
-                <p id="bsn_cabeza" class="font-bold text-gray-800">—</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">BHP</p>
-                <p id="bsn_bhp" class="font-bold text-gray-800">—</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Eficiencia Hidráulica</p>
-                <p id="bsn_efic" class="font-bold text-gray-800">—</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100">
-                <p class="text-gray-400 mb-0.5">Factor de Carga</p>
-                <p id="bsn_carga" class="font-bold text-gray-800">—</p>
-              </div>
-              <div class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2">
-                <p class="text-gray-400 mb-0.5">Potencia Eléctrica Estimada</p>
-                <p id="bsn_kw" class="font-bold text-gray-800">—</p>
-              </div>
-            </div>
-          </div>
-          <button onclick="calcularBSN()"
-            class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition">
-            Calcular BSN
-          </button>
-        </div>
-
-          </div><!-- /contenido tab -->
-        </div><!-- /tarjeta entrada de datos -->
-
-        <!-- Botones -->
-        <div class="flex flex-wrap justify-center gap-3 mt-6">
-          <button
-            onclick="actualizarGrafico()"
-            class="w-32 bg-black text-white py-2.5 rounded-lg hover:opacity-90 hover:shadow-md hover:scale-[1.02] transition-all duration-200"
-          >
-            Graficar
-          </button>
-          <button
-            onclick="location.reload()"
-            class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Limpiar
-          </button>
-          <button
-            class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Exportar
-          </button>
-          <button
-            class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
-          >
-            Informe
-          </button>
-        </div>
-
-        <!-- Resultado -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mt-4 text-sm">
-          <h3 class="font-semibold mb-3">Resultado Simulación</h3>
-          <div>
-            Q operación:
-            <span id="resultadoQ" class="font-semibold text-gray-900">0</span>
-            bpd
-          </div>
-          <div class="mt-1">
-            Qmax:
-            <span id="resultadoQmax" class="font-semibold text-gray-900"
-              >0</span
-            >
-            bpd
-          </div>
-          <div class="mt-1 text-xs text-gray-400" id="modeloActivo"></div>
-        </div>
-      </div>
-
-      <!-- PANEL DERECHO -->
-      <div class="flex-1 flex flex-col bg-gray-100">
-        <!-- Tabs superiores estilo GitHub / Office -->
-        <div id="tabsPanel" class="flex bg-white/70 backdrop-blur-md border-b border-gray-200 px-5 text-sm">
-          <button onclick="mostrarPanel('panel-grafico', this)" class="tab-btn-panel tab-active px-5 py-3.5">Gráfico</button>
-          <button onclick="mostrarPanel('panel-datos', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Datos</button>
-          <button onclick="mostrarPanel('panel-sensibilidad', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Sensibilidad</button>
-          <button onclick="mostrarPanel('panel-perfilrpf', this)" class="tab-btn-panel tab-inactive px-5 py-3.5">Perfil RPF</button>
-        </div>
-
-        <!-- CONTENEDOR CENTRAL -->
-        <div class="flex flex-col p-6 gap-6">
-
-          <!-- ======= PANEL GRÁFICO ======= -->
-          <div id="panel-grafico">
-            <!-- GRAFICA -->
-            <div class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px] mb-6">
-              <canvas id="graficoBSN" class="w-full h-full"></canvas>
-            </div>
-            <!-- PANEL INFERIOR — Resultados + Tabla IPR -->
-            <div class="glass rounded-2xl shadow-lg p-6 fade-in">
-              <h2 class="font-semibold mb-4 text-sm">Resultados</h2>
-
-              <!-- Tarjetas resumen -->
-              <div class="grid grid-cols-3 md:grid-cols-6 gap-3 text-xs mb-6">
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">Pws</p>
-                  <p id="resultadoPws" class="font-bold text-gray-900 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">kg/cm²</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">Pwf</p>
-                  <p id="resultadoPwf" class="font-bold text-gray-900 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">kg/cm²</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">Qb</p>
-                  <p id="resultadoQb" class="font-bold text-gray-900 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">bpd</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">ΔP (Pws−Pwf)</p>
-                  <p id="resultadoDP" class="font-bold text-gray-900 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">kg/cm²</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">Q Operación</p>
-                  <p id="resultadoQop" class="font-bold text-blue-700 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">bpd</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                  <p class="text-gray-400 mb-0.5">Qmax</p>
-                  <p id="resultadoQmaxPanel" class="font-bold text-gray-900 text-sm">—</p>
-                  <p class="text-gray-400 mt-0.5">bpd</p>
-                </div>
-              </div>
-
-              <!-- Tabla Ql vs Pwf -->
-              <h3 class="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-3">Ql (bpd) vs Pwf (kg/cm²)</h3>
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm" id="tablaIpr">
-                  <thead>
-                    <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg font-bold text-gray-800">Ql (bpd)</th>
-                      <th class="px-4 py-2 rounded-r-lg font-bold text-gray-800">Pwf (kg/cm²)</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tablaIprBody" class="divide-y divide-gray-100">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- ======= PANEL DATOS ======= -->
-          <div id="panel-datos" class="hidden fade-in space-y-6">
-
-            <!-- Parámetros de entrada -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Parámetros de Entrada del Simulador</h2>
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg">Parámetro</th>
-                      <th class="px-4 py-2">Símbolo</th>
-                      <th class="px-4 py-2">Valor</th>
-                      <th class="px-4 py-2 rounded-r-lg">Unidad</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100" id="tabla-params-body">
-                    <tr><td class="px-4 py-2">Presión estática</td><td class="px-4 py-2">Pws</td><td class="px-4 py-2 font-medium" id="d-pws">—</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
-                    <tr><td class="px-4 py-2">Presión de fondo fluyente</td><td class="px-4 py-2">Pwf</td><td class="px-4 py-2 font-medium" id="d-pwf">—</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
-                    <tr><td class="px-4 py-2">Índice de productividad</td><td class="px-4 py-2">J</td><td class="px-4 py-2 font-medium" id="d-j">—</td><td class="px-4 py-2 text-gray-400">bpd/kg/cm²</td></tr>
-                    <tr><td class="px-4 py-2">Modelo IPR</td><td class="px-4 py-2">—</td><td class="px-4 py-2 font-medium" id="d-modelo">—</td><td class="px-4 py-2 text-gray-400">—</td></tr>
-                    <tr><td class="px-4 py-2">Profundidad disponible</td><td class="px-4 py-2">Prof.</td><td class="px-4 py-2 font-medium">2,450</td><td class="px-4 py-2 text-gray-400">m</td></tr>
-                    <tr><td class="px-4 py-2">Nivel de líquido</td><td class="px-4 py-2">NL</td><td class="px-4 py-2 font-medium">500</td><td class="px-4 py-2 text-gray-400">m</td></tr>
-                    <tr><td class="px-4 py-2">Presión en la línea</td><td class="px-4 py-2">PL</td><td class="px-4 py-2 font-medium">15</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
-                    <tr><td class="px-4 py-2">Presión en la cabeza</td><td class="px-4 py-2">Pwh</td><td class="px-4 py-2 font-medium">20</td><td class="px-4 py-2 text-gray-400">kg/cm²</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <button
+                onclick="mostrarTab('yacimiento', this)"
+                class="tab-btn tab-active flex-1 text-center py-2.5"
+              >
+                Yacimiento
+              </button>
+              <button
+                onclick="mostrarTab('pozo', this)"
+                class="tab-btn tab-inactive flex-1 text-center py-2.5"
+              >
+                Pozo
+              </button>
+              <button
+                onclick="mostrarTab('produccion', this)"
+                class="tab-btn tab-inactive flex-1 text-center py-2.5"
+              >
+                Producción
+              </button>
+              <button
+                onclick="mostrarTab('bsn', this)"
+                class="tab-btn tab-inactive flex-1 text-center py-2.5"
+              >
+                BSN
+              </button>
             </div>
 
-            <!-- Resultados calculados -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Resultados Calculados</h2>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-gray-50 rounded-xl p-4 text-center">
-                  <div class="text-xs text-gray-400 mb-1">Qmax</div>
-                  <div class="text-xl font-bold" id="d-qmax">—</div>
-                  <div class="text-xs text-gray-400">bpd</div>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center">
-                  <div class="text-xs text-gray-400 mb-1">Q Operación</div>
-                  <div class="text-xl font-bold" id="d-qop">—</div>
-                  <div class="text-xs text-gray-400">bpd</div>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center">
-                  <div class="text-xs text-gray-400 mb-1">Drawdown</div>
-                  <div class="text-xl font-bold" id="d-drawdown">—</div>
-                  <div class="text-xs text-gray-400">kg/cm²</div>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-4 text-center">
-                  <div class="text-xs text-gray-400 mb-1">Eficiencia</div>
-                  <div class="text-xl font-bold" id="d-eficiencia">—</div>
-                  <div class="text-xs text-gray-400">%</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tabla de puntos IPR -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Tabla de Puntos IPR</h2>
-              <div class="overflow-x-auto max-h-64 overflow-y-auto">
-                <table class="w-full text-sm">
-                  <thead class="sticky top-0 bg-white">
-                    <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg">#</th>
-                      <th class="px-4 py-2">Q (bpd)</th>
-                      <th class="px-4 py-2">Pwf (kg/cm²)</th>
-                      <th class="px-4 py-2 rounded-r-lg">% Qmax</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100" id="tabla-ipr-body">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- ======= PANEL SENSIBILIDAD ======= -->
-          <div id="panel-sensibilidad" class="hidden fade-in space-y-6">
-
-            <!-- Cabecera con control -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Análisis de Sensibilidad</h2>
-              <p class="text-xs text-gray-400 mb-4">Evalúa el impacto de variaciones en los parámetros clave del yacimiento sobre la producción.</p>
-              <div class="grid grid-cols-3 gap-4 text-sm">
+            <!-- Contenido del tab activo -->
+            <div class="p-4">
+              <!-- Yacimiento -->
+              <div
+                id="yacimiento"
+                class="bg-gray-50/70 rounded-xl p-4 space-y-4"
+              >
                 <div>
-                  <label class="text-xs text-gray-500">Variable a variar</label>
-                  <select id="sens-variable" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl">
-                    <option value="j">Índice J</option>
-                    <option value="pwf">Pwf</option>
-                    <option value="pws">Pws</option>
+                  <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
+                  <input
+                    id="inputPws"
+                    type="number"
+                    value="73"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">Pwf (kg/cm²)</label>
+                  <input
+                    id="inputPwf"
+                    type="number"
+                    value="66"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <input id="inputJ" type="hidden" value="1.5" />
+                <div>
+                  <label class="text-sm text-gray-500">Qb (bpd)</label>
+                  <input
+                    id="inputQb"
+                    type="number"
+                    value="50"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">Modelo IPR</label>
+                  <select
+                    id="modeloIPR"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  >
+                    <option value="lineal">Índice de Productividad (IP)</option>
+                    <option value="vogel" selected>Vogel</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="autoCalibrarVogel"
+                    checked
+                    class="rounded"
+                  />
+                  <label
+                    for="autoCalibrarVogel"
+                    class="text-sm text-gray-500 cursor-pointer"
+                    >Auto-calibrar con Qb y Pwf</label
+                  >
+                </div>
+                <p id="vogelCalibError" class="text-xs text-red-500 hidden"></p>
+              </div>
+
+              <!-- POZO -->
+              <div
+                id="pozo"
+                class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
+              >
+                <div>
+                  <label class="text-sm text-gray-500">Tipo Pozo</label>
+                  <select
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  >
+                    <option>Aceite</option>
+                    <option>Gas</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">Estado</label>
+                  <select
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  >
+                    <option>Fluyente</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">SAP</label>
+                  <select
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  >
+                    <option>SUAV</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">Prof. m disp.</label>
+                  <input
+                    type="number"
+                    value="2450"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">PL (kg/cm²)</label>
+                  <input
+                    type="number"
+                    value="15"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
+                  <input
+                    type="number"
+                    value="20"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label class="text-sm text-gray-500">NL (m)</label>
+                  <input
+                    type="number"
+                    value="500"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <!-- PRODUCCIÓN -->
+              <div
+                id="produccion"
+                class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
+              >
+                <p
+                  class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1"
+                >
+                  Fluidos del Pozo
+                </p>
+
+                <div>
+                  <label class="text-sm text-gray-500">Tasa Total (bpd)</label>
+                  <input
+                    id="prod_qt"
+                    type="number"
+                    value="1000"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">% Agua (BSW)</label>
+                  <input
+                    id="prod_bsw"
+                    type="number"
+                    value="30"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">Gravedad API</label>
+                  <input
+                    id="prod_api"
+                    type="number"
+                    value="35"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">GOR (scf/bbl)</label>
+                  <input
+                    id="prod_gor"
+                    type="number"
+                    value="150"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Temperatura de Fondo (°C)</label
+                  >
+                  <input
+                    id="prod_temp"
+                    type="number"
+                    value="85"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Bo — Factor Vol. Aceite (rb/stb)</label
+                  >
+                  <input
+                    id="prod_bo"
+                    type="number"
+                    value="1.15"
+                    step="0.01"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Viscosidad Aceite (cP)</label
+                  >
+                  <input
+                    id="prod_visc"
+                    type="number"
+                    value="2.5"
+                    step="0.1"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+
+                <!-- Resultados calculados Producción -->
+                <div class="border-t border-gray-200 pt-3">
+                  <p
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Desglose de Fluidos
+                  </p>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Qo — Aceite</p>
+                      <p id="prod_qo" class="font-bold text-gray-800">
+                        700 bpd
+                      </p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Qw — Agua</p>
+                      <p id="prod_qw" class="font-bold text-gray-800">
+                        300 bpd
+                      </p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Qg — Gas</p>
+                      <p id="prod_qg" class="font-bold text-gray-800">
+                        105.0 Mscf/d
+                      </p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Densidad Aceite</p>
+                      <p id="prod_dens" class="font-bold text-gray-800">
+                        0.850 g/cc
+                      </p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2"
+                    >
+                      <p class="text-gray-400 mb-0.5">Volumen en Yacimiento</p>
+                      <p id="prod_res" class="font-bold text-gray-800">
+                        805.0 rb/d
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onclick="calcularProduccion()"
+                  class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition"
+                >
+                  Calcular
+                </button>
+              </div>
+
+              <!-- BSN -->
+              <div
+                id="bsn"
+                class="bg-gray-50/70 rounded-xl p-4 space-y-3 hidden"
+              >
+                <p
+                  class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1"
+                >
+                  Bomba Sumergible (BSN)
+                </p>
+
+                <div>
+                  <label class="text-sm text-gray-500">Serie</label>
+                  <select
+                    id="bsn_serie"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  >
+                    <option value="400">400</option>
+                    <option value="513">513</option>
+                    <option value="538" selected>538</option>
+                    <option value="562">562</option>
                   </select>
                 </div>
                 <div>
-                  <label class="text-xs text-gray-500">Valor mínimo</label>
-                  <input id="sens-min" type="number" value="0.5" step="0.1" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl" />
+                  <label class="text-sm text-gray-500">Modelo de Bomba</label>
+                  <select
+                    id="bsn_modelo"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  >
+                    <option>GN2700</option>
+                    <option>GN3300</option>
+                    <option>D1100N</option>
+                    <option>P1500N</option>
+                  </select>
                 </div>
                 <div>
-                  <label class="text-xs text-gray-500">Valor máximo</label>
-                  <input id="sens-max" type="number" value="3.0" step="0.1" onchange="actualizarSensibilidad()" class="w-full mt-1 border border-gray-200 p-2 rounded-xl" />
+                  <label class="text-sm text-gray-500">Número de Etapas</label>
+                  <input
+                    id="bsn_etapas"
+                    type="number"
+                    value="120"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
                 </div>
+                <div>
+                  <label class="text-sm text-gray-500">Frecuencia (Hz)</label>
+                  <input
+                    id="bsn_freq"
+                    type="number"
+                    value="60"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">RPM</label>
+                  <input
+                    id="bsn_rpm"
+                    type="number"
+                    value="3500"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Potencia del Motor (HP)</label
+                  >
+                  <input
+                    id="bsn_hp"
+                    type="number"
+                    value="200"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500">Voltaje (V)</label>
+                  <input
+                    id="bsn_volt"
+                    type="number"
+                    value="1150"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Corriente Nominal (A)</label
+                  >
+                  <input
+                    id="bsn_amp"
+                    type="number"
+                    value="92"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Prof. Asentamiento (m)</label
+                  >
+                  <input
+                    id="bsn_depth"
+                    type="number"
+                    value="2200"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm text-gray-500"
+                    >Temperatura de Fondo (°C)</label
+                  >
+                  <input
+                    id="bsn_tempfondo"
+                    type="number"
+                    value="90"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
+                  />
+                </div>
+
+                <!-- Resultados calculados BSN -->
+                <div class="border-t border-gray-200 pt-3">
+                  <p
+                    class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                  >
+                    Parámetros de Operación
+                  </p>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Cabeza Total</p>
+                      <p id="bsn_cabeza" class="font-bold text-gray-800">—</p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">BHP</p>
+                      <p id="bsn_bhp" class="font-bold text-gray-800">—</p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Eficiencia Hidráulica</p>
+                      <p id="bsn_efic" class="font-bold text-gray-800">—</p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100"
+                    >
+                      <p class="text-gray-400 mb-0.5">Factor de Carga</p>
+                      <p id="bsn_carga" class="font-bold text-gray-800">—</p>
+                    </div>
+                    <div
+                      class="bg-white rounded-xl p-2.5 border border-gray-100 col-span-2"
+                    >
+                      <p class="text-gray-400 mb-0.5">
+                        Potencia Eléctrica Estimada
+                      </p>
+                      <p id="bsn_kw" class="font-bold text-gray-800">—</p>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onclick="calcularBSN()"
+                  class="w-full bg-gray-800 text-white py-2 rounded-xl text-sm hover:bg-gray-700 transition"
+                >
+                  Calcular BSN
+                </button>
               </div>
             </div>
+            <!-- /contenido tab -->
+          </div>
+          <!-- /tarjeta entrada de datos -->
 
-            <!-- Gráfico de sensibilidad -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h3 class="font-semibold text-sm mb-4">Gráfico de Sensibilidad</h3>
-              <div class="h-64">
-                <canvas id="graficoSens" class="w-full h-full"></canvas>
-              </div>
-            </div>
-
-            <!-- Tabla de escenarios -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h3 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Escenarios Generados</h3>
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg">Escenario</th>
-                      <th class="px-4 py-2" id="sens-col-var">J (bpd/kg/cm²)</th>
-                      <th class="px-4 py-2">Qmax (bpd)</th>
-                      <th class="px-4 py-2">Q Op. (bpd)</th>
-                      <th class="px-4 py-2">Drawdown (kg/cm²)</th>
-                      <th class="px-4 py-2 rounded-r-lg">Eficiencia (%)</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100" id="tabla-sens-body">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
+          <!-- Botones -->
+          <div class="flex flex-wrap justify-center gap-3 mt-6">
+            <button
+              onclick="actualizarGrafico()"
+              class="w-32 bg-black text-white py-2.5 rounded-lg hover:opacity-90 hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+            >
+              Graficar
+            </button>
+            <button
+              onclick="location.reload()"
+              class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+            >
+              Limpiar
+            </button>
+            <button
+              class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+            >
+              Exportar
+            </button>
+            <button
+              class="w-32 bg-gray-200 text-gray-800 py-2 rounded-xl hover:bg-gray-300 transition"
+            >
+              Informe
+            </button>
           </div>
 
-          <!-- ======= PANEL PERFIL RPF ======= -->
-          <div id="panel-perfilrpf" class="hidden fade-in space-y-6">
-
-            <!-- KPI Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div class="glass rounded-2xl shadow-lg p-4 text-center">
-                <p class="text-xs text-gray-400 mb-1">BHP Estático</p>
-                <p id="rpf_bhp_est" class="text-2xl font-bold text-gray-900">—</p>
-                <p class="text-xs text-gray-400 mt-0.5">kg/cm²</p>
-              </div>
-              <div class="glass rounded-2xl shadow-lg p-4 text-center">
-                <p class="text-xs text-gray-400 mb-1">BHT (Temp. Fondo)</p>
-                <p id="rpf_bht" class="text-2xl font-bold text-gray-900">—</p>
-                <p class="text-xs text-gray-400 mt-0.5">°C</p>
-              </div>
-              <div class="glass rounded-2xl shadow-lg p-4 text-center">
-                <p class="text-xs text-gray-400 mb-1">Grad. Presión</p>
-                <p id="rpf_grad_p" class="text-2xl font-bold text-gray-900">—</p>
-                <p class="text-xs text-gray-400 mt-0.5">kg/cm²/100m</p>
-              </div>
-              <div class="glass rounded-2xl shadow-lg p-4 text-center">
-                <p class="text-xs text-gray-400 mb-1">Grad. Temperatura</p>
-                <p id="rpf_grad_t" class="text-2xl font-bold text-gray-900">—</p>
-                <p class="text-xs text-gray-400 mt-0.5">°C/100m</p>
-              </div>
+          <!-- Resultado -->
+          <div
+            class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mt-4 text-sm"
+          >
+            <h3 class="font-semibold mb-3">Resultado Simulación</h3>
+            <div>
+              Q operación:
+              <span id="resultadoQ" class="font-semibold text-gray-900">0</span>
+              bpd
             </div>
-
-            <!-- Perfil Presión y Temperatura vs Profundidad -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="font-semibold text-sm">Perfil de Presión y Temperatura vs Profundidad</h2>
-                <button onclick="calcularRPF()" class="bg-gray-800 text-white text-xs px-4 py-2 rounded-xl hover:bg-gray-700 transition">Recalcular RPF</button>
-              </div>
-              <div class="h-80">
-                <canvas id="graficoRPF" class="w-full h-full"></canvas>
-              </div>
+            <div class="mt-1">
+              Qmax:
+              <span id="resultadoQmax" class="font-semibold text-gray-900"
+                >0</span
+              >
+              bpd
             </div>
+            <div class="mt-1 text-xs text-gray-400" id="modeloActivo"></div>
+          </div>
+        </div>
 
-            <!-- Parámetros de Operación RPF -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Parámetros de Operación — RPF</h2>
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Pozo</p>
-                  <p class="font-semibold">TARATUNICH 41-D</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Campo</p>
-                  <p class="font-semibold">Taratunich</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Formación</p>
-                  <p class="font-semibold">Brecha Calcárea</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Prof. Asentamiento BSN</p>
-                  <p id="rpf_prof_bsn" class="font-semibold">—</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Nivel de Líquido (NL)</p>
-                  <p class="font-semibold">500 m</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Pws (Presión Estática)</p>
-                  <p id="rpf_pws_card" class="font-semibold">—</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Pwf (BHF Fluyente)</p>
-                  <p id="rpf_pwf_card" class="font-semibold">—</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Drawdown</p>
-                  <p id="rpf_drawdown" class="font-semibold">—</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Índice J</p>
-                  <p id="rpf_j_card" class="font-semibold">—</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tabla Perfil de Fondo -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Tabla de Perfil de Fondo</h2>
-              <div class="overflow-x-auto max-h-64 overflow-y-auto">
-                <table class="w-full text-sm">
-                  <thead class="sticky top-0 bg-white">
-                    <tr class="bg-gray-100 text-gray-600 text-left">
-                      <th class="px-4 py-2 rounded-l-lg">Profundidad (m)</th>
-                      <th class="px-4 py-2">Presión (kg/cm²)</th>
-                      <th class="px-4 py-2">Temperatura (°C)</th>
-                      <th class="px-4 py-2">Grad. P (kg/cm²/100m)</th>
-                      <th class="px-4 py-2 rounded-r-lg">Grad. T (°C/100m)</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-100" id="tabla-rpf-body"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Diagnóstico RPF -->
-            <div class="glass rounded-2xl shadow-lg p-6">
-              <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Diagnóstico del Pozo</h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div class="space-y-2">
-                  <div class="flex items-start gap-2">
-                    <span class="mt-0.5 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0"></span>
-                    <div>
-                      <p class="font-medium text-gray-700">Estado de Presión</p>
-                      <p id="rpf_diag_presion" class="text-xs text-gray-500">—</p>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <span class="mt-0.5 w-2.5 h-2.5 rounded-full bg-orange-400 flex-shrink-0"></span>
-                    <div>
-                      <p class="font-medium text-gray-700">Estado Térmico</p>
-                      <p id="rpf_diag_temp" class="text-xs text-gray-500">—</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="space-y-2">
-                  <div class="flex items-start gap-2">
-                    <span class="mt-0.5 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"></span>
-                    <div>
-                      <p class="font-medium text-gray-700">Potencial de Producción</p>
-                      <p id="rpf_diag_prod" class="text-xs text-gray-500">—</p>
-                    </div>
-                  </div>
-                  <div class="flex items-start gap-2">
-                    <span class="mt-0.5 w-2.5 h-2.5 rounded-full bg-purple-500 flex-shrink-0"></span>
-                    <div>
-                      <p class="font-medium text-gray-700">Recomendación BSN</p>
-                      <p id="rpf_diag_bsn" class="text-xs text-gray-500">—</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+        <!-- PANEL DERECHO -->
+        <div class="flex-1 flex flex-col bg-gray-100">
+          <!-- Tabs superiores estilo GitHub / Office -->
+          <div
+            id="tabsPanel"
+            class="flex bg-white/70 backdrop-blur-md border-b border-gray-200 px-5 text-sm"
+          >
+            <button
+              onclick="mostrarPanel('panel-grafico', this)"
+              class="tab-btn-panel tab-active px-5 py-3.5"
+            >
+              Gráfico
+            </button>
+            <button
+              onclick="mostrarPanel('panel-perfilrpf', this)"
+              class="tab-btn-panel tab-inactive px-5 py-3.5"
+            >
+              Perfil RPF
+            </button>
+            <button
+              onclick="mostrarPanel('panel-sensibilidad', this)"
+              class="tab-btn-panel tab-inactive px-5 py-3.5"
+            >
+              Sensibilidad
+            </button>
+            <button
+              onclick="mostrarPanel('panel-datos', this)"
+              class="tab-btn-panel tab-inactive px-5 py-3.5"
+            >
+              Reporte
+            </button>
           </div>
 
-        </div>
+          <!-- CONTENEDOR CENTRAL -->
+          <div class="flex flex-col p-6 gap-6">
+            <!-- ======= PANEL GRÁFICO ======= -->
+            <div id="panel-grafico">
+              <!-- GRAFICA -->
+              <div
+                class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px] mb-6"
+              >
+                <canvas id="graficoBSN" class="w-full h-full"></canvas>
+              </div>
+              <!-- PANEL INFERIOR — Resultados + Tabla IPR -->
+              <div class="glass rounded-2xl shadow-lg p-6 fade-in">
+                <h2 class="font-semibold mb-4 text-sm">Resultados</h2>
 
-        <!-- Footer -->
-        <div
-          class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500"
-        >
-          Activa Local | Proyecto TARATUNICH 41-D
+                <!-- Tarjetas resumen -->
+                <div class="grid grid-cols-3 gap-3 text-xs mb-6">
+                  <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                    <p class="text-gray-400 mb-0.5">ΔP (Pws−Pwf)</p>
+                    <p id="resultadoDP" class="font-bold text-gray-900 text-sm">—</p>
+                    <p class="text-gray-400 mt-0.5">kg/cm²</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                    <p class="text-gray-400 mb-0.5">Índice J</p>
+                    <p id="resultadoJ" class="font-bold text-gray-900 text-sm">—</p>
+                    <p class="text-gray-400 mt-0.5">bpd/kg/cm²</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+                    <p class="text-gray-400 mb-0.5">Qmax</p>
+                    <p id="resultadoQmaxPanel" class="font-bold text-gray-900 text-sm">—</p>
+                    <p class="text-gray-400 mt-0.5">bpd</p>
+                  </div>
+                </div>
+
+                <!-- Tabla Ql vs Pwf -->
+                <h3
+                  class="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-3"
+                >
+                  Ql (bpd) vs Pwf (kg/cm²)
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm" id="tablaIpr">
+                    <thead>
+                      <tr class="bg-gray-100 text-gray-600 text-left">
+                        <th
+                          class="px-4 py-2 rounded-l-lg font-bold text-gray-800"
+                        >
+                          Ql (bpd)
+                        </th>
+                        <th
+                          class="px-4 py-2 rounded-r-lg font-bold text-gray-800"
+                        >
+                          Pwf (kg/cm²)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      id="tablaIprBody"
+                      class="divide-y divide-gray-100"
+                    ></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ======= PANEL DATOS ======= -->
+            <div id="panel-datos" class="hidden fade-in space-y-6">
+              <!-- Parámetros de entrada -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Parámetros de Entrada del Simulador
+                </h2>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="bg-gray-100 text-gray-600 text-left">
+                        <th class="px-4 py-2 rounded-l-lg">Parámetro</th>
+                        <th class="px-4 py-2">Símbolo</th>
+                        <th class="px-4 py-2">Valor</th>
+                        <th class="px-4 py-2 rounded-r-lg">Unidad</th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="divide-y divide-gray-100"
+                      id="tabla-params-body"
+                    >
+                      <tr>
+                        <td class="px-4 py-2">Presión estática</td>
+                        <td class="px-4 py-2">Pws</td>
+                        <td class="px-4 py-2 font-medium" id="d-pws">—</td>
+                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Presión de fondo fluyente</td>
+                        <td class="px-4 py-2">Pwf</td>
+                        <td class="px-4 py-2 font-medium" id="d-pwf">—</td>
+                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Índice de productividad</td>
+                        <td class="px-4 py-2">J</td>
+                        <td class="px-4 py-2 font-medium" id="d-j">—</td>
+                        <td class="px-4 py-2 text-gray-400">bpd/kg/cm²</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Modelo IPR</td>
+                        <td class="px-4 py-2">—</td>
+                        <td class="px-4 py-2 font-medium" id="d-modelo">—</td>
+                        <td class="px-4 py-2 text-gray-400">—</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Profundidad disponible</td>
+                        <td class="px-4 py-2">Prof.</td>
+                        <td class="px-4 py-2 font-medium">2,450</td>
+                        <td class="px-4 py-2 text-gray-400">m</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Nivel de líquido</td>
+                        <td class="px-4 py-2">NL</td>
+                        <td class="px-4 py-2 font-medium">500</td>
+                        <td class="px-4 py-2 text-gray-400">m</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Presión en la línea</td>
+                        <td class="px-4 py-2">PL</td>
+                        <td class="px-4 py-2 font-medium">15</td>
+                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">Presión en la cabeza</td>
+                        <td class="px-4 py-2">Pwh</td>
+                        <td class="px-4 py-2 font-medium">20</td>
+                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Resultados calculados -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Resultados Calculados
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div class="bg-gray-50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Qmax</div>
+                    <div class="text-xl font-bold" id="d-qmax">—</div>
+                    <div class="text-xs text-gray-400">bpd</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Q Operación</div>
+                    <div class="text-xl font-bold" id="d-qop">—</div>
+                    <div class="text-xs text-gray-400">bpd</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Drawdown</div>
+                    <div class="text-xl font-bold" id="d-drawdown">—</div>
+                    <div class="text-xs text-gray-400">kg/cm²</div>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-4 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Eficiencia</div>
+                    <div class="text-xl font-bold" id="d-eficiencia">—</div>
+                    <div class="text-xs text-gray-400">%</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabla de puntos IPR -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Tabla de Puntos IPR
+                </h2>
+                <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                  <table class="w-full text-sm">
+                    <thead class="sticky top-0 bg-white">
+                      <tr class="bg-gray-100 text-gray-600 text-left">
+                        <th class="px-4 py-2 rounded-l-lg">#</th>
+                        <th class="px-4 py-2">Q (bpd)</th>
+                        <th class="px-4 py-2">Pwf (kg/cm²)</th>
+                        <th class="px-4 py-2 rounded-r-lg">% Qmax</th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="divide-y divide-gray-100"
+                      id="tabla-ipr-body"
+                    ></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ======= PANEL SENSIBILIDAD ======= -->
+            <div id="panel-sensibilidad" class="hidden fade-in space-y-6">
+              <!-- Cabecera con control -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Análisis de Sensibilidad
+                </h2>
+                <p class="text-xs text-gray-400 mb-4">
+                  Evalúa el impacto de variaciones en los parámetros clave del
+                  yacimiento sobre la producción.
+                </p>
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <label class="text-xs text-gray-500"
+                      >Variable a variar</label
+                    >
+                    <select
+                      id="sens-variable"
+                      onchange="actualizarSensibilidad()"
+                      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                    >
+                      <option value="j">Índice J</option>
+                      <option value="pwf">Pwf</option>
+                      <option value="pws">Pws</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-xs text-gray-500">Valor mínimo</label>
+                    <input
+                      id="sens-min"
+                      type="number"
+                      value="0.5"
+                      step="0.1"
+                      onchange="actualizarSensibilidad()"
+                      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label class="text-xs text-gray-500">Valor máximo</label>
+                    <input
+                      id="sens-max"
+                      type="number"
+                      value="3.0"
+                      step="0.1"
+                      onchange="actualizarSensibilidad()"
+                      class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gráfico de sensibilidad -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h3 class="font-semibold text-sm mb-4">
+                  Gráfico de Sensibilidad
+                </h3>
+                <div class="h-64">
+                  <canvas id="graficoSens" class="w-full h-full"></canvas>
+                </div>
+              </div>
+
+              <!-- Tabla de escenarios -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h3
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Escenarios Generados
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="bg-gray-100 text-gray-600 text-left">
+                        <th class="px-4 py-2 rounded-l-lg">Escenario</th>
+                        <th class="px-4 py-2" id="sens-col-var">
+                          J (bpd/kg/cm²)
+                        </th>
+                        <th class="px-4 py-2">Qmax (bpd)</th>
+                        <th class="px-4 py-2">Q Op. (bpd)</th>
+                        <th class="px-4 py-2">Drawdown (kg/cm²)</th>
+                        <th class="px-4 py-2 rounded-r-lg">Eficiencia (%)</th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="divide-y divide-gray-100"
+                      id="tabla-sens-body"
+                    ></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ======= PANEL PERFIL RPF ======= -->
+            <div id="panel-perfilrpf" class="hidden fade-in space-y-6">
+              <!-- KPI Cards -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass rounded-2xl shadow-lg p-4 text-center">
+                  <p class="text-xs text-gray-400 mb-1">BHP Estático</p>
+                  <p id="rpf_bhp_est" class="text-2xl font-bold text-gray-900">
+                    —
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5">kg/cm²</p>
+                </div>
+                <div class="glass rounded-2xl shadow-lg p-4 text-center">
+                  <p class="text-xs text-gray-400 mb-1">BHT (Temp. Fondo)</p>
+                  <p id="rpf_bht" class="text-2xl font-bold text-gray-900">—</p>
+                  <p class="text-xs text-gray-400 mt-0.5">°C</p>
+                </div>
+                <div class="glass rounded-2xl shadow-lg p-4 text-center">
+                  <p class="text-xs text-gray-400 mb-1">Grad. Presión</p>
+                  <p id="rpf_grad_p" class="text-2xl font-bold text-gray-900">
+                    —
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5">kg/cm²/100m</p>
+                </div>
+                <div class="glass rounded-2xl shadow-lg p-4 text-center">
+                  <p class="text-xs text-gray-400 mb-1">Grad. Temperatura</p>
+                  <p id="rpf_grad_t" class="text-2xl font-bold text-gray-900">
+                    —
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5">°C/100m</p>
+                </div>
+              </div>
+
+              <!-- Perfil Presión y Temperatura vs Profundidad -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h2 class="font-semibold text-sm">
+                    Perfil de Presión y Temperatura vs Profundidad
+                  </h2>
+                  <button
+                    onclick="calcularRPF()"
+                    class="bg-gray-800 text-white text-xs px-4 py-2 rounded-xl hover:bg-gray-700 transition"
+                  >
+                    Recalcular RPF
+                  </button>
+                </div>
+                <div class="h-80">
+                  <canvas id="graficoRPF" class="w-full h-full"></canvas>
+                </div>
+              </div>
+
+              <!-- Parámetros de Operación RPF -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Parámetros de Operación — RPF
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">Pozo</p>
+                    <p class="font-semibold">TARATUNICH 41-D</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">Campo</p>
+                    <p class="font-semibold">Taratunich</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">Formación</p>
+                    <p class="font-semibold">Brecha Calcárea</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">
+                      Prof. Asentamiento BSN
+                    </p>
+                    <p id="rpf_prof_bsn" class="font-semibold">—</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">
+                      Nivel de Líquido (NL)
+                    </p>
+                    <p class="font-semibold">500 m</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">
+                      Pws (Presión Estática)
+                    </p>
+                    <p id="rpf_pws_card" class="font-semibold">—</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">
+                      Pwf (BHF Fluyente)
+                    </p>
+                    <p id="rpf_pwf_card" class="font-semibold">—</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">Drawdown</p>
+                    <p id="rpf_drawdown" class="font-semibold">—</p>
+                  </div>
+                  <div class="bg-gray-50 rounded-xl p-3">
+                    <p class="text-xs text-gray-400 mb-0.5">Índice J</p>
+                    <p id="rpf_j_card" class="font-semibold">—</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabla Perfil de Fondo -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Tabla de Perfil de Fondo
+                </h2>
+                <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                  <table class="w-full text-sm">
+                    <thead class="sticky top-0 bg-white">
+                      <tr class="bg-gray-100 text-gray-600 text-left">
+                        <th class="px-4 py-2 rounded-l-lg">Profundidad (m)</th>
+                        <th class="px-4 py-2">Presión (kg/cm²)</th>
+                        <th class="px-4 py-2">Temperatura (°C)</th>
+                        <th class="px-4 py-2">Grad. P (kg/cm²/100m)</th>
+                        <th class="px-4 py-2 rounded-r-lg">
+                          Grad. T (°C/100m)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="divide-y divide-gray-100"
+                      id="tabla-rpf-body"
+                    ></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Diagnóstico RPF -->
+              <div class="glass rounded-2xl shadow-lg p-6">
+                <h2
+                  class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2"
+                >
+                  Diagnóstico del Pozo
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div class="space-y-2">
+                    <div class="flex items-start gap-2">
+                      <span
+                        class="mt-0.5 w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0"
+                      ></span>
+                      <div>
+                        <p class="font-medium text-gray-700">
+                          Estado de Presión
+                        </p>
+                        <p id="rpf_diag_presion" class="text-xs text-gray-500">
+                          —
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span
+                        class="mt-0.5 w-2.5 h-2.5 rounded-full bg-orange-400 flex-shrink-0"
+                      ></span>
+                      <div>
+                        <p class="font-medium text-gray-700">Estado Térmico</p>
+                        <p id="rpf_diag_temp" class="text-xs text-gray-500">
+                          —
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-start gap-2">
+                      <span
+                        class="mt-0.5 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"
+                      ></span>
+                      <div>
+                        <p class="font-medium text-gray-700">
+                          Potencial de Producción
+                        </p>
+                        <p id="rpf_diag_prod" class="text-xs text-gray-500">
+                          —
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span
+                        class="mt-0.5 w-2.5 h-2.5 rounded-full bg-purple-500 flex-shrink-0"
+                      ></span>
+                      <div>
+                        <p class="font-medium text-gray-700">
+                          Recomendación BSN
+                        </p>
+                        <p id="rpf_diag_bsn" class="text-xs text-gray-500">—</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+            class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500"
+          >
+            Activa Local | Proyecto TARATUNICH 41-D
+          </div>
         </div>
-      </div>
       </div>
     </div>
 
@@ -902,7 +1237,9 @@
       // Devuelve los 11 puntos de la tabla (índices 0,20,40…200) de la curva
       // generada con 201 puntos a Pwf equidistante — tabla y gráfica siempre sincronizados
       function samplearPuntosIPR(ipr) {
-        return [0,20,40,60,80,100,120,140,160,180,200].map(i => ipr[i]).filter(Boolean);
+        return [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200]
+          .map((i) => ipr[i])
+          .filter(Boolean);
       }
 
       // ✅ FIX 1: generarQ usa N puntos enteros fijos — sin problemas de paso flotante
@@ -918,47 +1255,52 @@
         const modelo = document.getElementById("modeloIPR").value;
         const pws = parseFloat(document.getElementById("inputPws").value) || 0;
         const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
-        const J = parseFloat(document.getElementById("inputJ").value) || 1;
-
-        // ✅ FIX 2: Qmax correcto para cada modelo
-        // Lineal:  Q = J*(Pws - Pwf) → Qmax cuando Pwf=0 → J*Pws
-        // Vogel:   Qmax = J*Pws / 1.8  (derivada de la ec. de Vogel en Pwf=0)
-        //          — o bien calibrado con (Qb, Pwf) cuando autoCalibrarVogel está activo
-        let Qmax;
+        let J = parseFloat(document.getElementById("inputJ").value) || 1;
+        const autoCalib = document.getElementById("autoCalibrarVogel")?.checked;
         const errEl = document.getElementById("vogelCalibError");
-        if (modelo === "lineal") {
-          Qmax = J * pws;
-          if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-        } else {
-          // Vogel
-          const autoCalib = document.getElementById("autoCalibrarVogel")?.checked;
-          if (autoCalib) {
-            const qb    = parseFloat(document.getElementById("inputQb")?.value) || 0;
-            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
-            if (Qcalc !== null && Qcalc > 0) {
-              Qmax = Qcalc;
-              // Reflejar la calibración en inputJ (programmatic → no dispara el listener)
-              const Jcalibrado = (1.8 * Qmax) / (pws || 1);
-              document.getElementById("inputJ").value = Jcalibrado.toFixed(4);
+        let Qmax;
+
+        if (autoCalib) {
+          const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
+          if (modelo === "lineal") {
+            const dp = pws - pwf;
+            if (dp > 0 && qb > 0 && pws > 0) {
+              J = qb / dp;
+              document.getElementById("inputJ").value = J.toFixed(4);
+              Qmax = J * pws;
               if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
             } else {
-              // Parámetros inválidos → fallback a J manual
-              Qmax = (J * pws) / 1.8;
+              Qmax = J * pws;
               if (errEl) {
                 errEl.textContent = "⚠ Parámetros inválidos para auto-calibración (revisar Pws, Pwf, Qb).";
                 errEl.classList.remove("hidden");
               }
             }
           } else {
-            // Manual: usa J
-            Qmax = (J * pws) / 1.8;
-            if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
+            // Vogel
+            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
+            if (Qcalc !== null && Qcalc > 0) {
+              Qmax = Qcalc;
+              J = (1.8 * Qmax) / (pws || 1);
+              document.getElementById("inputJ").value = J.toFixed(4);
+              if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
+            } else {
+              Qmax = (J * pws) / 1.8;
+              if (errEl) {
+                errEl.textContent = "⚠ Parámetros inválidos para auto-calibración (revisar Pws, Pwf, Qb).";
+                errEl.classList.remove("hidden");
+              }
+            }
           }
+        } else {
+          // Manual: usa J del campo
+          Qmax = modelo === "lineal" ? J * pws : (J * pws) / 1.8;
+          if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
         }
 
         // Curva IPR: 201 puntos por Pwf equidistante (Pws→0) usando fórmulas estándar
         const N = 200;
-        const ipr = Array.from({length: N + 1}, (_, i) => {
+        const ipr = Array.from({ length: N + 1 }, (_, i) => {
           const pwfVal = pws * (1 - i / N);
           let q;
           if (modelo === "lineal") {
@@ -972,7 +1314,7 @@
         });
 
         // Línea horizontal de Pwf del sistema
-        const pwfLine = ipr.map(pt => ({ x: pt.x, y: pwf }));
+        const pwfLine = ipr.map((pt) => ({ x: pt.x, y: pwf }));
 
         // Punto de operación: intersección IPR con Pwf
         let qOperacion = 0;
@@ -988,7 +1330,7 @@
         document.getElementById("resultadoQ").innerText = qOperacion.toFixed(0);
         document.getElementById("resultadoQmax").innerText = Qmax.toFixed(0);
         document.getElementById("modeloActivo").innerText =
-          `Modelo: ${modelo === "lineal" ? "Lineal" : "Vogel"}`;
+          `Modelo: ${modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel"}`;
 
         return { ipr, pwfLine, qOperacion, pwfSistema: pwf, Qmax, pws };
       }
@@ -996,31 +1338,35 @@
       // ── Panel inferior: resumen + tabla IPR ────────────────────────────────
       // Samples datos.ipr at fixed % of Qmax — same data used by the chart, no re-calculation.
       function renderResultadosYTabla(datos) {
-        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const set = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val;
+        };
 
-        const pws  = datos.pws;
-        const pwf  = datos.pwfSistema;
-        const qop  = datos.qOperacion;
+        const pws = datos.pws;
+        const pwf = datos.pwfSistema;
+        const qop = datos.qOperacion;
         const Qmax = datos.Qmax;
-        const qb   = parseFloat(document.getElementById('inputQb')?.value) || 0;
+        const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
 
-        set('resultadoPws',       pws.toFixed(0));
-        set('resultadoPwf',       pwf.toFixed(0));
-        set('resultadoQb',        qb.toFixed(0));
-        set('resultadoDP',        (pws - pwf).toFixed(0));
-        set('resultadoQop',       qop.toFixed(0));
-        set('resultadoQmaxPanel', Qmax.toFixed(0));
+        const modelo = document.getElementById("modeloIPR").value;
+        const J = modelo === "lineal"
+          ? (pws - pwf > 0 ? qb / (pws - pwf) : Qmax / (pws || 1))
+          : (1.8 * Qmax) / (pws || 1);
+        set("resultadoDP", (pws - pwf).toFixed(1));
+        set("resultadoJ", J.toFixed(4));
+        set("resultadoQmaxPanel", Qmax.toFixed(0));
 
         // Tabla IPR: 11 filas a intervalos iguales de Pwf (100%→0% de Pws)
-        const ipr   = datos.ipr;
-        const tbody = document.getElementById('tablaIprBody');
+        const ipr = datos.ipr;
+        const tbody = document.getElementById("tablaIprBody");
         if (!tbody || ipr.length === 0) return;
 
-        tbody.innerHTML = '';
-        samplearPuntosIPR(ipr).forEach(pt => {
+        tbody.innerHTML = "";
+        samplearPuntosIPR(ipr).forEach((pt) => {
           if (!pt) return;
           const isOp = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
-          tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
+          tbody.innerHTML += `<tr class="${isOp ? "bg-blue-50 font-semibold" : ""}">
             <td class="px-4 py-2">${Math.round(pt.x)}</td>
             <td class="px-4 py-2">${Math.round(pt.y + 0.1)}</td>
           </tr>`;
@@ -1031,19 +1377,23 @@
       // Devuelve { max, stepSize } con valores redondeados a números bonitos (50, 100, etc.)
       function niceAxisMax(rawMax) {
         const target = rawMax; // sin padding extra; el redondeo ya deja margen
-        const rough  = target / 6; // ~6 intervalos
-        const mag    = Math.pow(10, Math.floor(Math.log10(rough)));
-        const norm   = rough / mag;
+        const rough = target / 6; // ~6 intervalos
+        const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+        const norm = rough / mag;
         let step;
-        if      (norm < 1.5) step = 1;
-        else if (norm < 3)   step = 2;
-        else if (norm < 7)   step = 5;
-        else                 step = 10;
+        if (norm < 1.5) step = 1;
+        else if (norm < 3) step = 2;
+        else if (norm < 7) step = 5;
+        else step = 10;
         step *= mag;
         // Redondear step a valores "bonitos" estándar
-        const nice = [1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000];
-        step = nice.reduce((prev, cur) => Math.abs(cur - step) < Math.abs(prev - step) ? cur : prev);
-        const max  = Math.ceil(target / step) * step;
+        const nice = [
+          1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000,
+        ];
+        step = nice.reduce((prev, cur) =>
+          Math.abs(cur - step) < Math.abs(prev - step) ? cur : prev,
+        );
+        const max = Math.ceil(target / step) * step;
         return { max, stepSize: step };
       }
 
@@ -1086,7 +1436,7 @@
             plugins: {
               tooltip: {
                 callbacks: {
-                  title: () => '',
+                  title: () => "",
                   label: (ctx) => {
                     const x = Math.round(ctx.raw.x);
                     const y = Math.round(ctx.raw.y);
@@ -1100,18 +1450,34 @@
                 type: "linear",
                 min: 0,
                 max: niceAxisMax(datos.Qmax).max,
-                title: { display: true, text: "Ql (bpd)", font: { weight: "bold", size: 13 }, color: "#111827" },
+                title: {
+                  display: true,
+                  text: "Ql (bpd)",
+                  font: { weight: "bold", size: 13 },
+                  color: "#111827",
+                },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827", stepSize: niceAxisMax(datos.Qmax).stepSize },
+                ticks: {
+                  color: "#111827",
+                  stepSize: niceAxisMax(datos.Qmax).stepSize,
+                },
               },
               y: {
                 min: 0,
                 max: niceAxisMax(datos.pws).max,
-                title: { display: true, text: "Pwf (kg/cm\u00b2)", font: { weight: "bold", size: 13 }, color: "#111827" },
+                title: {
+                  display: true,
+                  text: "Pwf (kg/cm\u00b2)",
+                  font: { weight: "bold", size: 13 },
+                  color: "#111827",
+                },
                 grid: { color: "#e5e7eb", lineWidth: 1 },
                 border: { color: "#000000", width: 2 },
-                ticks: { color: "#111827", stepSize: niceAxisMax(datos.pws).stepSize },
+                ticks: {
+                  color: "#111827",
+                  stepSize: niceAxisMax(datos.pws).stepSize,
+                },
               },
             },
           },
@@ -1142,26 +1508,30 @@
       crearGrafico();
 
       // ── Sincronización automática de la gráfica IPR ─────────────────────────
-      // Los cambios programáticos a .value NO disparan 'input', evitando bucles.
-      ["inputPws", "inputPwf", "inputJ", "inputQb"].forEach((id) => {
+      // Con checkbox activo → auto-actualiza al cambiar Pws, Pwf o Qb.
+      // Sin checkbox → solo el botón Graficar actualiza la gráfica.
+      ["inputPws", "inputPwf", "inputQb"].forEach((id) => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener("input", () => actualizarGrafico());
+        if (el) el.addEventListener("input", () => {
+          if (document.getElementById("autoCalibrarVogel")?.checked) actualizarGrafico();
+        });
       });
       // ── Visibilidad del campo Índice J ────────────────────────────────────
       function actualizarVisibilidadJ() {
-        const modelo = document.getElementById('modeloIPR').value;
-        const autoCalib = document.getElementById('autoCalibrarVogel')?.checked;
-        const campoJ = document.getElementById('campoJ');
-        if (campoJ) {
-          campoJ.classList.toggle('hidden', modelo === 'vogel' && autoCalib);
-        }
+        // campo J es hidden permanentemente; no hay nada que mostrar/ocultar
       }
       // ────────────────────────────────────────────────────────────────────────
 
-      document.getElementById("modeloIPR")
-        ?.addEventListener("change", () => { actualizarGrafico(); actualizarVisibilidadJ(); });
-      document.getElementById("autoCalibrarVogel")
-        ?.addEventListener("change", () => { actualizarGrafico(); actualizarVisibilidadJ(); });
+      document.getElementById("modeloIPR")?.addEventListener("change", () => {
+        actualizarGrafico();
+        actualizarVisibilidadJ();
+      });
+      document
+        .getElementById("autoCalibrarVogel")
+        ?.addEventListener("change", () => {
+          actualizarGrafico();
+          actualizarVisibilidadJ();
+        });
       // ────────────────────────────────────────────────────────────────────────
 
       // Estado inicial
@@ -1186,135 +1556,165 @@
       });
 
       function calcularProduccion() {
-        const qt   = parseFloat(document.getElementById('prod_qt').value)   || 0;
-        const bsw  = parseFloat(document.getElementById('prod_bsw').value)  || 0;
-        const api  = parseFloat(document.getElementById('prod_api').value)  || 35;
-        const gor  = parseFloat(document.getElementById('prod_gor').value)  || 0;
-        const bo   = parseFloat(document.getElementById('prod_bo').value)   || 1;
+        const qt = parseFloat(document.getElementById("prod_qt").value) || 0;
+        const bsw = parseFloat(document.getElementById("prod_bsw").value) || 0;
+        const api = parseFloat(document.getElementById("prod_api").value) || 35;
+        const gor = parseFloat(document.getElementById("prod_gor").value) || 0;
+        const bo = parseFloat(document.getElementById("prod_bo").value) || 1;
 
-        const qo   = qt * (1 - bsw / 100);
-        const qw   = qt * (bsw / 100);
-        const qg   = (qo * gor) / 1000;                    // Mscf/d
-        const dens = 141.5 / (api + 131.5);                // g/cc (fórmula API)
-        const qRes = qo * bo;                              // rb/d en yacimiento
+        const qo = qt * (1 - bsw / 100);
+        const qw = qt * (bsw / 100);
+        const qg = (qo * gor) / 1000; // Mscf/d
+        const dens = 141.5 / (api + 131.5); // g/cc (fórmula API)
+        const qRes = qo * bo; // rb/d en yacimiento
 
-        document.getElementById('prod_qo').textContent   = qo.toFixed(0)   + ' bpd';
-        document.getElementById('prod_qw').textContent   = qw.toFixed(0)   + ' bpd';
-        document.getElementById('prod_qg').textContent   = qg.toFixed(2)   + ' Mscf/d';
-        document.getElementById('prod_dens').textContent = dens.toFixed(3) + ' g/cc';
-        document.getElementById('prod_res').textContent  = qRes.toFixed(1) + ' rb/d';
+        document.getElementById("prod_qo").textContent = qo.toFixed(0) + " bpd";
+        document.getElementById("prod_qw").textContent = qw.toFixed(0) + " bpd";
+        document.getElementById("prod_qg").textContent =
+          qg.toFixed(2) + " Mscf/d";
+        document.getElementById("prod_dens").textContent =
+          dens.toFixed(3) + " g/cc";
+        document.getElementById("prod_res").textContent =
+          qRes.toFixed(1) + " rb/d";
       }
 
       function calcularBSN() {
-        const etapas = parseFloat(document.getElementById('bsn_etapas').value) || 120;
-        const freq   = parseFloat(document.getElementById('bsn_freq').value)   || 60;
-        const rpm    = parseFloat(document.getElementById('bsn_rpm').value)    || 3500;
-        const hp     = parseFloat(document.getElementById('bsn_hp').value)     || 200;
-        const volt   = parseFloat(document.getElementById('bsn_volt').value)   || 1150;
-        const amp    = parseFloat(document.getElementById('bsn_amp').value)    || 92;
+        const etapas =
+          parseFloat(document.getElementById("bsn_etapas").value) || 120;
+        const freq =
+          parseFloat(document.getElementById("bsn_freq").value) || 60;
+        const rpm =
+          parseFloat(document.getElementById("bsn_rpm").value) || 3500;
+        const hp = parseFloat(document.getElementById("bsn_hp").value) || 200;
+        const volt =
+          parseFloat(document.getElementById("bsn_volt").value) || 1150;
+        const amp = parseFloat(document.getElementById("bsn_amp").value) || 92;
 
         // Leyes de afinidad: H ∝ (n/n0)²  — referencia a 60 Hz / 3500 RPM
-        const factorH  = (freq / 60) * (freq / 60);
+        const factorH = (freq / 60) * (freq / 60);
         // Cabeza típica por etapa ≈ 8 m a BEP (60 Hz)
-        const cabeza   = etapas * 8 * factorH;
+        const cabeza = etapas * 8 * factorH;
 
         // BHP = HP × 0.80 (pérdidas mecánicas ~20%)
-        const bhp      = hp * 0.80;
+        const bhp = hp * 0.8;
 
         // Eficiencia hidráulica estimada: escala con frecuencia, base 67%
-        const efic     = 67 * factorH;
+        const efic = 67 * factorH;
 
         // Factor de carga = BHP / HP instalado
-        const carga    = (bhp / hp) * 100;
+        const carga = (bhp / hp) * 100;
 
         // Potencia eléctrica = √3 × V × I × FP (FP≈0.85)
-        const kw       = (Math.sqrt(3) * volt * amp * 0.85) / 1000;
+        const kw = (Math.sqrt(3) * volt * amp * 0.85) / 1000;
 
-        document.getElementById('bsn_cabeza').textContent = cabeza.toFixed(0) + ' m';
-        document.getElementById('bsn_bhp').textContent    = bhp.toFixed(0)    + ' HP';
-        document.getElementById('bsn_efic').textContent   = efic.toFixed(1)   + ' %';
-        document.getElementById('bsn_carga').textContent  = carga.toFixed(1)  + ' %';
-        document.getElementById('bsn_kw').textContent     = kw.toFixed(1)     + ' kW';
+        document.getElementById("bsn_cabeza").textContent =
+          cabeza.toFixed(0) + " m";
+        document.getElementById("bsn_bhp").textContent = bhp.toFixed(0) + " HP";
+        document.getElementById("bsn_efic").textContent =
+          efic.toFixed(1) + " %";
+        document.getElementById("bsn_carga").textContent =
+          carga.toFixed(1) + " %";
+        document.getElementById("bsn_kw").textContent = kw.toFixed(1) + " kW";
       }
 
       // ── Navegación paneles derechos ──────────────────────────────────────
       let chartSens = null;
 
       function mostrarPanel(panelId, boton) {
-        ['panel-grafico','panel-datos','panel-sensibilidad','panel-perfilrpf'].forEach(id => {
-
+        [
+          "panel-grafico",
+          "panel-datos",
+          "panel-sensibilidad",
+          "panel-perfilrpf",
+        ].forEach((id) => {
           const el = document.getElementById(id);
-          if (el) el.classList.add('hidden');
+          if (el) el.classList.add("hidden");
         });
-        document.getElementById(panelId).classList.remove('hidden');
+        document.getElementById(panelId).classList.remove("hidden");
 
-        document.querySelectorAll('.tab-btn-panel').forEach(btn => {
-          btn.classList.remove('tab-active');
-          btn.classList.add('tab-inactive');
+        document.querySelectorAll(".tab-btn-panel").forEach((btn) => {
+          btn.classList.remove("tab-active");
+          btn.classList.add("tab-inactive");
         });
-        boton.classList.remove('tab-inactive');
-        boton.classList.add('tab-active');
+        boton.classList.remove("tab-inactive");
+        boton.classList.add("tab-active");
 
-        if (panelId === 'panel-datos') actualizarTablasDatos();
-        if (panelId === 'panel-sensibilidad') actualizarSensibilidad();
-        if (panelId === 'panel-perfilrpf') calcularRPF();
-
+        if (panelId === "panel-datos") actualizarTablasDatos();
+        if (panelId === "panel-sensibilidad") actualizarSensibilidad();
+        if (panelId === "panel-perfilrpf") calcularRPF();
       }
 
       function actualizarTablasDatos() {
-        const pws    = parseFloat(document.getElementById('inputPws').value) || 0;
-        const pwf    = parseFloat(document.getElementById('inputPwf').value) || 0;
-        const J      = parseFloat(document.getElementById('inputJ').value) || 1;
-        const modelo = document.getElementById('modeloIPR').value;
+        const pws = parseFloat(document.getElementById("inputPws").value) || 0;
+        const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
+        const J = parseFloat(document.getElementById("inputJ").value) || 1;
+        const modelo = document.getElementById("modeloIPR").value;
 
-        document.getElementById('d-pws').textContent    = pws.toFixed(0);
-        document.getElementById('d-pwf').textContent    = pwf.toFixed(0);
-        document.getElementById('d-j').textContent      = J.toFixed(2);
-        document.getElementById('d-modelo').textContent = modelo === 'lineal' ? 'Lineal' : 'Vogel';
+        document.getElementById("d-pws").textContent = pws.toFixed(0);
+        document.getElementById("d-pwf").textContent = pwf.toFixed(0);
+        document.getElementById("d-modelo").textContent =
+          modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel";
 
+        const autoCalib = document.getElementById("autoCalibrarVogel")?.checked;
+        const qbCalib = parseFloat(document.getElementById("inputQb")?.value) || 0;
+        let Jactual = J;
         const Qmax = (() => {
-          if (modelo === 'lineal') return J * pws;
-          // Vogel: usar fórmula directa con Qb si autoCalibración está activa
-          const autoCalib = document.getElementById('autoCalibrarVogel')?.checked;
+          if (modelo === "lineal") {
+            if (autoCalib) {
+              const dp = pws - pwf;
+              if (dp > 0 && qbCalib > 0 && pws > 0) { Jactual = qbCalib / dp; return Jactual * pws; }
+            }
+            return J * pws;
+          }
+          // Vogel
           if (autoCalib) {
-            const qb = parseFloat(document.getElementById('inputQb')?.value) || 0;
-            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
-            if (Qcalc !== null && Qcalc > 0) return Qcalc;
+            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qbCalib);
+            if (Qcalc !== null && Qcalc > 0) { Jactual = (1.8 * Qcalc) / (pws || 1); return Qcalc; }
           }
           return (J * pws) / 1.8;
         })();
-        let qOp = 0, diffMin = Infinity;
+        document.getElementById("d-j").textContent = Jactual.toFixed(2);
+        let qOp = 0,
+          diffMin = Infinity;
         const N = 60;
         for (let i = 0; i <= N; i++) {
-          const q   = (i / N) * Qmax;
-          const pCalc = modelo === 'lineal'
-            ? pws - q / J
-            : pws * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2));
+          const q = (i / N) * Qmax;
+          const pCalc =
+            modelo === "lineal"
+              ? pws - q / Jactual
+              : pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
           const diff = Math.abs(pCalc - pwf);
-          if (diff < diffMin) { diffMin = diff; qOp = q; }
+          if (diff < diffMin) {
+            diffMin = diff;
+            qOp = q;
+          }
         }
 
-        const drawdown   = pws - pwf;
-        const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : '0';
+        const drawdown = pws - pwf;
+        const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : "0";
 
-        document.getElementById('d-qmax').textContent      = Qmax.toFixed(0);
-        document.getElementById('d-qop').textContent       = qOp.toFixed(0);
-        document.getElementById('d-drawdown').textContent  = drawdown.toFixed(0);
-        document.getElementById('d-eficiencia').textContent = eficiencia;
+        document.getElementById("d-qmax").textContent = Qmax.toFixed(0);
+        document.getElementById("d-qop").textContent = qOp.toFixed(0);
+        document.getElementById("d-drawdown").textContent = drawdown.toFixed(0);
+        document.getElementById("d-eficiencia").textContent = eficiencia;
 
         // Tabla de puntos IPR (cada 5% de Qmax)
-        const tbody = document.getElementById('tabla-ipr-body');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById("tabla-ipr-body");
+        tbody.innerHTML = "";
         for (let i = 0; i <= 20; i++) {
-          const q       = (i / 20) * Qmax;
-          const pCalc   = modelo === 'lineal'
-            ? Math.max(pws - q / J, 0)
-            : Math.max(pws * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2)), 0);
-          const pct     = (i * 5);
-          const isOp    = Math.abs(q - qOp) < Qmax / 15;
-          const hlClass = isOp ? 'bg-blue-50 font-semibold' : '';
+          const q = (i / 20) * Qmax;
+          const pCalc =
+            modelo === "lineal"
+              ? Math.max(pws - q / Jactual, 0)
+              : Math.max(
+                  pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2)),
+                  0,
+                );
+          const pct = i * 5;
+          const isOp = Math.abs(q - qOp) < Qmax / 15;
+          const hlClass = isOp ? "bg-blue-50 font-semibold" : "";
           tbody.innerHTML += `<tr class="${hlClass}">
-            <td class="px-4 py-1.5">${i+1}</td>
+            <td class="px-4 py-1.5">${i + 1}</td>
             <td class="px-4 py-1.5">${q.toFixed(0)}</td>
             <td class="px-4 py-1.5">${pCalc.toFixed(0)}</td>
             <td class="px-4 py-1.5">${pct}%</td>
@@ -1323,56 +1723,75 @@
       }
 
       function actualizarSensibilidad() {
-        const pws    = parseFloat(document.getElementById('inputPws').value) || 210;
-        const pwf    = parseFloat(document.getElementById('inputPwf').value) || 178;
-        const J      = parseFloat(document.getElementById('inputJ').value) || 1.5;
-        const modelo = document.getElementById('modeloIPR').value;
+        const pws =
+          parseFloat(document.getElementById("inputPws").value) || 210;
+        const pwf =
+          parseFloat(document.getElementById("inputPwf").value) || 178;
+        const J = parseFloat(document.getElementById("inputJ").value) || 1.5;
+        const modelo = document.getElementById("modeloIPR").value;
 
-        const variable = document.getElementById('sens-variable').value;
-        const sMin     = parseFloat(document.getElementById('sens-min').value) || 0.5;
-        const sMax     = parseFloat(document.getElementById('sens-max').value) || 3.0;
+        const variable = document.getElementById("sens-variable").value;
+        const sMin =
+          parseFloat(document.getElementById("sens-min").value) || 0.5;
+        const sMax =
+          parseFloat(document.getElementById("sens-max").value) || 3.0;
 
-        const labels = { j: 'J (bpd/kg/cm²)', pwf: 'Pwf (kg/cm²)', pws: 'Pws (kg/cm²)' };
-        document.getElementById('sens-col-var').textContent = labels[variable];
+        const labels = {
+          j: "J (bpd/kg/cm²)",
+          pwf: "Pwf (kg/cm²)",
+          pws: "Pws (kg/cm²)",
+        };
+        document.getElementById("sens-col-var").textContent = labels[variable];
 
         const steps = 10;
-        const step  = (sMax - sMin) / steps;
-        const rows  = [];
+        const step = (sMax - sMin) / steps;
+        const rows = [];
         const xVals = [];
         const qmaxVals = [];
-        const qopVals  = [];
+        const qopVals = [];
 
         for (let i = 0; i <= steps; i++) {
           const val = sMin + i * step;
-          const jV   = variable === 'j'   ? val : J;
-          const pwfV = variable === 'pwf' ? val : pwf;
-          const pwsV = variable === 'pws' ? val : pws;
+          const jV = variable === "j" ? val : J;
+          const pwfV = variable === "pwf" ? val : pwf;
+          const pwsV = variable === "pws" ? val : pws;
 
-          const Qmax = modelo === 'lineal' ? jV * pwsV : (jV * pwsV) / 1.8;
-          let qOp = 0, diffMin = Infinity;
+          const Qmax = modelo === "lineal" ? jV * pwsV : (jV * pwsV) / 1.8;
+          let qOp = 0,
+            diffMin = Infinity;
           const N = 60;
           for (let k = 0; k <= N; k++) {
-            const q      = (k / N) * Qmax;
-            const pCalc  = modelo === 'lineal'
-              ? pwsV - q / jV
-              : pwsV * (1 - 0.2*(q/Qmax) - 0.8*Math.pow(q/Qmax,2));
+            const q = (k / N) * Qmax;
+            const pCalc =
+              modelo === "lineal"
+                ? pwsV - q / jV
+                : pwsV * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
             const diff = Math.abs(pCalc - pwfV);
-            if (diff < diffMin) { diffMin = diff; qOp = q; }
+            if (diff < diffMin) {
+              diffMin = diff;
+              qOp = q;
+            }
           }
-          const drawdown   = pwsV - pwfV;
-          const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : '0.0';
-          rows.push({ val: val.toFixed(2), Qmax: Qmax.toFixed(0), qOp: qOp.toFixed(0), drawdown: drawdown.toFixed(2), eficiencia });
+          const drawdown = pwsV - pwfV;
+          const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : "0.0";
+          rows.push({
+            val: val.toFixed(2),
+            Qmax: Qmax.toFixed(0),
+            qOp: qOp.toFixed(0),
+            drawdown: drawdown.toFixed(2),
+            eficiencia,
+          });
           xVals.push(val.toFixed(2));
           qmaxVals.push(parseFloat(Qmax.toFixed(1)));
           qopVals.push(parseFloat(qOp.toFixed(1)));
         }
 
         // Tabla
-        const tbody = document.getElementById('tabla-sens-body');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById("tabla-sens-body");
+        tbody.innerHTML = "";
         rows.forEach((r, idx) => {
-          tbody.innerHTML += `<tr class="${idx % 2 === 0 ? 'bg-gray-50' : ''}"> 
-            <td class="px-4 py-2">Escenario ${idx+1}</td>
+          tbody.innerHTML += `<tr class="${idx % 2 === 0 ? "bg-gray-50" : ""}"> 
+            <td class="px-4 py-2">Escenario ${idx + 1}</td>
             <td class="px-4 py-2">${r.val}</td>
             <td class="px-4 py-2 font-medium">${r.Qmax}</td>
             <td class="px-4 py-2">${r.qOp}</td>
@@ -1382,26 +1801,51 @@
         });
 
         // Gráfico
-        const ctx = document.getElementById('graficoSens').getContext('2d');
-        if (chartSens) { chartSens.destroy(); }
+        const ctx = document.getElementById("graficoSens").getContext("2d");
+        if (chartSens) {
+          chartSens.destroy();
+        }
         chartSens = new Chart(ctx, {
-          type: 'line',
+          type: "line",
           data: {
             labels: xVals,
             datasets: [
-              { label: 'Qmax (bpd)', data: qmaxVals, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.35, pointRadius: 4 },
-              { label: 'Q Operación (bpd)', data: qopVals, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', fill: true, tension: 0.35, pointRadius: 4 }
-            ]
+              {
+                label: "Qmax (bpd)",
+                data: qmaxVals,
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37,99,235,0.1)",
+                fill: true,
+                tension: 0.35,
+                pointRadius: 4,
+              },
+              {
+                label: "Q Operación (bpd)",
+                data: qopVals,
+                borderColor: "#16a34a",
+                backgroundColor: "rgba(22,163,74,0.1)",
+                fill: true,
+                tension: 0.35,
+                pointRadius: 4,
+              },
+            ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'top' } },
+            plugins: { legend: { position: "top" } },
             scales: {
-              x: { title: { display: true, text: labels[variable] }, grid: { color: '#e5e7eb' } },
-              y: { title: { display: true, text: 'Caudal (bpd)' }, min: 0, grid: { color: '#e5e7eb' } }
-            }
-          }
+              x: {
+                title: { display: true, text: labels[variable] },
+                grid: { color: "#e5e7eb" },
+              },
+              y: {
+                title: { display: true, text: "Caudal (bpd)" },
+                min: 0,
+                grid: { color: "#e5e7eb" },
+              },
+            },
+          },
         });
       }
       // ── Fin navegación paneles ──────────────────────────────────────────────
@@ -1410,45 +1854,66 @@
       let chartRPF = null;
 
       function calcularRPF() {
-        const pws      = parseFloat(document.getElementById('inputPws').value)       || 210;
-        const pwf      = parseFloat(document.getElementById('inputPwf').value)       || 178;
-        const J        = parseFloat(document.getElementById('inputJ').value)         || 1.5;
-        const profBSN  = parseFloat(document.getElementById('bsn_depth').value)      || 2200;
-        const bht      = parseFloat(document.getElementById('bsn_tempfondo').value)  || 90;
-        const tempSup  = 25; // temperatura superficial estimada (°C)
-        const STEPS    = 10;
+        const pws =
+          parseFloat(document.getElementById("inputPws").value) || 210;
+        const pwf =
+          parseFloat(document.getElementById("inputPwf").value) || 178;
+        const J = parseFloat(document.getElementById("inputJ").value) || 1.5;
+        const profBSN =
+          parseFloat(document.getElementById("bsn_depth").value) || 2200;
+        const bht =
+          parseFloat(document.getElementById("bsn_tempfondo").value) || 90;
+        const tempSup = 25; // temperatura superficial estimada (°C)
+        const STEPS = 10;
 
         // Gradientes
-        const gradP = (pws / profBSN) * 100;           // kg/cm²/100m
+        const gradP = (pws / profBSN) * 100; // kg/cm²/100m
         const gradT = ((bht - tempSup) / profBSN) * 100; // °C/100m
 
         // KPI cards
-        document.getElementById('rpf_bhp_est').textContent  = pws.toFixed(1);
-        document.getElementById('rpf_bht').textContent       = bht.toFixed(1);
-        document.getElementById('rpf_grad_p').textContent    = gradP.toFixed(2);
-        document.getElementById('rpf_grad_t').textContent    = gradT.toFixed(2);
+        document.getElementById("rpf_bhp_est").textContent = pws.toFixed(1);
+        document.getElementById("rpf_bht").textContent = bht.toFixed(1);
+        document.getElementById("rpf_grad_p").textContent = gradP.toFixed(2);
+        document.getElementById("rpf_grad_t").textContent = gradT.toFixed(2);
 
         // Parámetros operación
-        document.getElementById('rpf_prof_bsn').textContent  = profBSN.toFixed(0) + ' m';
-        document.getElementById('rpf_pws_card').textContent  = pws.toFixed(2) + ' kg/cm²';
-        document.getElementById('rpf_pwf_card').textContent  = pwf.toFixed(2) + ' kg/cm²';
-        document.getElementById('rpf_drawdown').textContent  = (pws - pwf).toFixed(2) + ' kg/cm²';
-        document.getElementById('rpf_j_card').textContent    = J.toFixed(2) + ' bpd/kg/cm²';
+        document.getElementById("rpf_prof_bsn").textContent =
+          profBSN.toFixed(0) + " m";
+        document.getElementById("rpf_pws_card").textContent =
+          pws.toFixed(2) + " kg/cm²";
+        document.getElementById("rpf_pwf_card").textContent =
+          pwf.toFixed(2) + " kg/cm²";
+        document.getElementById("rpf_drawdown").textContent =
+          (pws - pwf).toFixed(2) + " kg/cm²";
+        document.getElementById("rpf_j_card").textContent =
+          J.toFixed(2) + " bpd/kg/cm²";
 
         // Tabla perfil de fondo (STEPS puntos de superficie a profundidad BSN)
-        const tbody = document.getElementById('tabla-rpf-body');
-        tbody.innerHTML = '';
-        const depths = [], pressures = [], temps = [];
+        const tbody = document.getElementById("tabla-rpf-body");
+        tbody.innerHTML = "";
+        const depths = [],
+          pressures = [],
+          temps = [];
         for (let i = 0; i <= STEPS; i++) {
-          const d  = (i / STEPS) * profBSN;
-          const p  = (d / profBSN) * pws;
-          const t  = tempSup + (d / profBSN) * (bht - tempSup);
-          const gp = i > 0 ? ((p - pressures[i-1]) / ((d - depths[i-1]) / 100)).toFixed(2) : '—';
-          const gt = i > 0 ? ((t - temps[i-1])     / ((d - depths[i-1]) / 100)).toFixed(2) : '—';
-          depths.push(d); pressures.push(p); temps.push(t);
+          const d = (i / STEPS) * profBSN;
+          const p = (d / profBSN) * pws;
+          const t = tempSup + (d / profBSN) * (bht - tempSup);
+          const gp =
+            i > 0
+              ? ((p - pressures[i - 1]) / ((d - depths[i - 1]) / 100)).toFixed(
+                  2,
+                )
+              : "—";
+          const gt =
+            i > 0
+              ? ((t - temps[i - 1]) / ((d - depths[i - 1]) / 100)).toFixed(2)
+              : "—";
+          depths.push(d);
+          pressures.push(p);
+          temps.push(t);
           const isBSN = i === STEPS;
-          tbody.innerHTML += `<tr class="${isBSN ? 'bg-blue-50 font-semibold' : (i % 2 === 0 ? 'bg-gray-50' : '')}">
-            <td class="px-4 py-1.5">${d.toFixed(0)}${isBSN ? ' ★' : ''}</td>
+          tbody.innerHTML += `<tr class="${isBSN ? "bg-blue-50 font-semibold" : i % 2 === 0 ? "bg-gray-50" : ""}">
+            <td class="px-4 py-1.5">${d.toFixed(0)}${isBSN ? " ★" : ""}</td>
             <td class="px-4 py-1.5">${p.toFixed(2)}</td>
             <td class="px-4 py-1.5">${t.toFixed(1)}</td>
             <td class="px-4 py-1.5">${gp}</td>
@@ -1458,24 +1923,26 @@
 
         // Diagnóstico
         const drawdown = pws - pwf;
-        const ddPct    = pws > 0 ? (drawdown / pws) * 100 : 0;
-        const Qmax     = J * pws;
+        const ddPct = pws > 0 ? (drawdown / pws) * 100 : 0;
+        const Qmax = J * pws;
 
-        document.getElementById('rpf_diag_presion').textContent =
+        document.getElementById("rpf_diag_presion").textContent =
           drawdown > 30
             ? `Drawdown elevado (${drawdown.toFixed(1)} kg/cm²). Alta diferencial disponible.`
             : `Drawdown moderado (${drawdown.toFixed(1)} kg/cm²). Pozo en régimen estable.`;
 
-        document.getElementById('rpf_diag_temp').textContent =
+        document.getElementById("rpf_diag_temp").textContent =
           bht > 100
             ? `BHT alta (${bht}°C). Verificar elastómeros y viscosidad del aceite.`
             : `BHT normal (${bht}°C). Condiciones térmicas aceptables para BSN.`;
 
-        document.getElementById('rpf_diag_prod').textContent =
+        document.getElementById("rpf_diag_prod").textContent =
           `Qmax estimado: ${Qmax.toFixed(0)} bpd. ` +
-          (ddPct > 40 ? 'Pozo sub-explotado, potencial de incremento.' : 'Pozo operando cerca de su potencial.');
+          (ddPct > 40
+            ? "Pozo sub-explotado, potencial de incremento."
+            : "Pozo operando cerca de su potencial.");
 
-        document.getElementById('rpf_diag_bsn').textContent =
+        document.getElementById("rpf_diag_bsn").textContent =
           profBSN > 2000
             ? `Profundidad >${profBSN}m. Revisar cable y protector de motor para alta temperatura.`
             : `Profundidad aceptable (${profBSN}m). Configuración BSN estándar aplicable.`;
@@ -1485,60 +1952,62 @@
       }
 
       function renderPerfilRPF(depths, pressures, temps) {
-        const ctx = document.getElementById('graficoRPF').getContext('2d');
-        if (chartRPF) { chartRPF.destroy(); }
+        const ctx = document.getElementById("graficoRPF").getContext("2d");
+        if (chartRPF) {
+          chartRPF.destroy();
+        }
         chartRPF = new Chart(ctx, {
-          type: 'line',
+          type: "line",
           data: {
-            labels: depths.map(d => d.toFixed(0)),
+            labels: depths.map((d) => d.toFixed(0)),
             datasets: [
               {
-                label: 'Presión (kg/cm²)',
-                data: pressures.map(p => parseFloat(p.toFixed(2))),
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37,99,235,0.08)',
+                label: "Presión (kg/cm²)",
+                data: pressures.map((p) => parseFloat(p.toFixed(2))),
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37,99,235,0.08)",
                 fill: true,
                 tension: 0.3,
                 pointRadius: 4,
-                yAxisID: 'yP'
+                yAxisID: "yP",
               },
               {
-                label: 'Temperatura (°C)',
-                data: temps.map(t => parseFloat(t.toFixed(1))),
-                borderColor: '#ea580c',
-                backgroundColor: 'rgba(234,88,12,0.08)',
+                label: "Temperatura (°C)",
+                data: temps.map((t) => parseFloat(t.toFixed(1))),
+                borderColor: "#ea580c",
+                backgroundColor: "rgba(234,88,12,0.08)",
                 fill: true,
                 tension: 0.3,
                 pointRadius: 4,
-                yAxisID: 'yT'
-              }
-            ]
+                yAxisID: "yT",
+              },
+            ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'top' } },
+            plugins: { legend: { position: "top" } },
             scales: {
               x: {
-                title: { display: true, text: 'Profundidad (m)' },
-                grid: { color: '#e5e7eb' }
+                title: { display: true, text: "Profundidad (m)" },
+                grid: { color: "#e5e7eb" },
               },
               yP: {
-                type: 'linear',
-                position: 'left',
-                title: { display: true, text: 'Presión (kg/cm²)' },
+                type: "linear",
+                position: "left",
+                title: { display: true, text: "Presión (kg/cm²)" },
                 min: 0,
-                grid: { color: '#e5e7eb' }
+                grid: { color: "#e5e7eb" },
               },
               yT: {
-                type: 'linear',
-                position: 'right',
-                title: { display: true, text: 'Temperatura (°C)' },
+                type: "linear",
+                position: "right",
+                title: { display: true, text: "Temperatura (°C)" },
                 min: 0,
-                grid: { drawOnChartArea: false }
-              }
-            }
-          }
+                grid: { drawOnChartArea: false },
+              },
+            },
+          },
         });
       }
       // ── Fin Perfil RPF ──────────────────────────────────────────────────────
@@ -1561,7 +2030,6 @@
         // activar el botón seleccionado
         boton.classList.remove("tab-inactive");
         boton.classList.add("tab-active");
-
       }
     </script>
   </body>
