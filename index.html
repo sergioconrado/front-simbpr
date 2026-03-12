@@ -1436,6 +1436,11 @@
                   title: () => "",
                   label: (ctx) => {
                     const x = Math.round(ctx.raw.x);
+                    const isPSI = document.getElementById('inputEnPSI')?.checked;
+                    if (isPSI) {
+                      const yPSI = Math.round(ctx.raw.y * KGcm2_TO_PSI);
+                      return `Ql: ${x} bpd  |  Pwf: ${yPSI} PSI`;
+                    }
                     const y = Math.round(ctx.raw.y);
                     return `Ql: ${x} bpd  |  Pwf: ${y} kg/cm²`;
                   },
@@ -1570,7 +1575,7 @@
       function actualizarTipoYacimiento(modelo) {
         const el = document.getElementById("tipoYacimientoComentario");
         if (modelo === "lineal") {
-          el.textContent = "📌 Modelo Lineal (IP) → Yacimiento bajo saturado (presión por encima del punto de burbuja)";
+          el.textContent = "📌 Indice de productividad (IP) → Yacimiento bajo saturado (presión por encima del punto de burbuja)";
         } else {
           el.textContent = "📌 Modelo Vogel → Yacimiento saturado (presión por debajo del punto de burbuja)";
         }
