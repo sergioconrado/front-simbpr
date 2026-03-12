@@ -994,21 +994,21 @@
                     >
                       <tr>
                         <td class="px-4 py-2">Presión estática</td>
-                        <td class="px-4 py-2">Pws</td>
+                        <td class="px-4 py-2" id="d-pws-sym">Pws</td>
                         <td class="px-4 py-2 font-medium" id="d-pws">—</td>
-                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                        <td class="px-4 py-2 text-gray-400" id="d-pws-unit">kg/cm²</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Presión de fondo fluyente</td>
-                        <td class="px-4 py-2">Pwf</td>
+                        <td class="px-4 py-2" id="d-pwf-sym">Pwf</td>
                         <td class="px-4 py-2 font-medium" id="d-pwf">—</td>
-                        <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                        <td class="px-4 py-2 text-gray-400" id="d-pwf-unit">kg/cm²</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Índice de productividad</td>
-                        <td class="px-4 py-2">J</td>
+                        <td class="px-4 py-2" id="d-j-sym">J</td>
                         <td class="px-4 py-2 font-medium" id="d-j">—</td>
-                        <td class="px-4 py-2 text-gray-400">bpd/kg/cm²</td>
+                        <td class="px-4 py-2 text-gray-400" id="d-j-unit">bpd/kg/cm²</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Modelo IPR</td>
@@ -1066,7 +1066,7 @@
                   <div class="bg-gray-50 rounded-xl p-4 text-center">
                     <div class="text-xs text-gray-400 mb-1">Drawdown</div>
                     <div class="text-xl font-bold" id="d-drawdown">—</div>
-                    <div class="text-xs text-gray-400">kg/cm²</div>
+                    <div class="text-xs text-gray-400" id="d-drawdown-unit">kg/cm²</div>
                   </div>
                   <div class="bg-gray-50 rounded-xl p-4 text-center">
                     <div class="text-xs text-gray-400 mb-1">Eficiencia</div>
@@ -1089,7 +1089,7 @@
                       <tr class="bg-gray-100 text-gray-600 text-left">
                         <th class="px-4 py-2 rounded-l-lg">#</th>
                         <th class="px-4 py-2">Q (bpd)</th>
-                        <th class="px-4 py-2">Pwf (kg/cm²)</th>
+                        <th class="px-4 py-2" id="d-ipr-pwf-header">Pwf (kg/cm²)</th>
                         <th class="px-4 py-2 rounded-r-lg">% Qmax</th>
                       </tr>
                     </thead>
@@ -1756,6 +1756,7 @@
           document.getElementById('inputPwfPSI').value = (pwf * KGcm2_TO_PSI).toFixed(1);
         }
         actualizarGrafico();
+        if (!document.getElementById('panel-datos').classList.contains('hidden')) actualizarTablasDatos();
       }
 
       function syncPSItoKG(id) {
@@ -1764,6 +1765,7 @@
         if (id === 'inputPwsPSI') document.getElementById('inputPws').value = kgVal;
         else document.getElementById('inputPwf').value = kgVal;
         if (document.getElementById('autoCalibrarVogel')?.checked) actualizarGrafico();
+        if (!document.getElementById('panel-datos').classList.contains('hidden')) actualizarTablasDatos();
       }
 
       document.getElementById('inputEnPSI')?.addEventListener('change', togglePSIMode);
@@ -1921,9 +1923,26 @@
         const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
         const J = parseFloat(document.getElementById("inputJ").value) || 1;
         const modelo = document.getElementById("modeloIPR").value;
+        const isPSI = esPSI();
+        const K = KGcm2_TO_PSI;
 
-        document.getElementById("d-pws").textContent = pws.toFixed(0);
-        document.getElementById("d-pwf").textContent = pwf.toFixed(0);
+        // ── Actualizar símbolos (con sufijo PSI cuando corresponde) ──
+        document.getElementById("d-pws-sym").textContent  = isPSI ? 'Pws (PSI)' : 'Pws';
+        document.getElementById("d-pwf-sym").textContent  = isPSI ? 'Pwf (PSI)' : 'Pwf';
+        document.getElementById("d-j-sym").textContent    = isPSI ? 'J (PSI)'   : 'J';
+
+        // ── Actualizar unidades ──
+        const pressUnit = isPSI ? 'PSI' : 'kg/cm²';
+        document.getElementById("d-pws-unit").textContent     = pressUnit;
+        document.getElementById("d-pwf-unit").textContent     = pressUnit;
+        document.getElementById("d-j-unit").textContent       = isPSI ? 'bpd/PSI' : 'bpd/kg/cm²';
+        document.getElementById("d-drawdown-unit").textContent = pressUnit;
+        document.getElementById("d-ipr-pwf-header").textContent = 'Pwf (' + pressUnit + ')';
+
+        // ── Actualizar valores de presión ──
+        document.getElementById("d-pws").textContent = isPSI ? (pws * K).toFixed(1) : pws.toFixed(0);
+        document.getElementById("d-pwf").textContent = isPSI ? (pwf * K).toFixed(1) : pwf.toFixed(0);
+
         document.getElementById("d-modelo").textContent =
           modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel";
 
@@ -1945,7 +1964,7 @@
           }
           return (J * pws) / 1.8;
         })();
-        document.getElementById("d-j").textContent = Jactual.toFixed(2);
+        document.getElementById("d-j").textContent = isPSI ? (Jactual / K).toFixed(4) : Jactual.toFixed(2);
         let qOp = 0,
           diffMin = Infinity;
         const N = 60;
@@ -1963,11 +1982,12 @@
         }
 
         const drawdown = pws - pwf;
+        const drawdownDisp = isPSI ? (drawdown * K).toFixed(1) : drawdown.toFixed(0);
         const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : "0";
 
         document.getElementById("d-qmax").textContent = Qmax.toFixed(0);
         document.getElementById("d-qop").textContent = qOp.toFixed(0);
-        document.getElementById("d-drawdown").textContent = drawdown.toFixed(0);
+        document.getElementById("d-drawdown").textContent = drawdownDisp;
         document.getElementById("d-eficiencia").textContent = eficiencia;
 
         // Tabla de puntos IPR (cada 5% de Qmax)
@@ -1982,13 +2002,14 @@
                   pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2)),
                   0,
                 );
+          const pCalcDisp = isPSI ? (pCalc * K).toFixed(1) : pCalc.toFixed(0);
           const pct = i * 5;
           const isOp = Math.abs(q - qOp) < Qmax / 15;
           const hlClass = isOp ? "bg-blue-50 font-semibold" : "";
           tbody.innerHTML += `<tr class="${hlClass}">
             <td class="px-4 py-1.5">${i + 1}</td>
             <td class="px-4 py-1.5">${q.toFixed(0)}</td>
-            <td class="px-4 py-1.5">${pCalc.toFixed(0)}</td>
+            <td class="px-4 py-1.5">${pCalcDisp}</td>
             <td class="px-4 py-1.5">${pct}%</td>
           </tr>`;
         }
