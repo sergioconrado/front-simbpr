@@ -753,8 +753,18 @@
             <div id="panel-grafico">
               <!-- GRAFICA -->
               <div
-                class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px] mb-6"
+                class="glass rounded-2xl shadow-lg p-6 fade-in h-[480px] mb-6 relative"
               >
+                <!-- Color swatches flotantes -->
+                <div class="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-full px-2.5 py-1.5 shadow-sm">
+                  <span class="text-[10px] text-gray-400 font-medium mr-0.5 select-none">COLOR</span>
+                  <button onclick="setIPRColor('#2563eb')" title="Azul" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#2563eb" data-color="#2563eb"></button>
+                  <button onclick="setIPRColor('#7c3aed')" title="Violeta" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#7c3aed" data-color="#7c3aed"></button>
+                  <button onclick="setIPRColor('#059669')" title="Esmeralda" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#059669" data-color="#059669"></button>
+                  <button onclick="setIPRColor('#dc2626')" title="Rojo" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#dc2626" data-color="#dc2626"></button>
+                  <button onclick="setIPRColor('#d97706')" title="Ámbar" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#d97706" data-color="#d97706"></button>
+                  <button onclick="setIPRColor('#0891b2')" title="Cyan" class="ipr-swatch w-4 h-4 rounded-full ring-2 ring-offset-1 ring-transparent hover:scale-110 transition-transform" style="background:#0891b2" data-color="#0891b2"></button>
+                </div>
                 <canvas id="graficoBSN" class="w-full h-full"></canvas>
               </div>
               <!-- PANEL INFERIOR — Resultados -->
@@ -1562,6 +1572,33 @@
       }
 
       document.getElementById('inputEnPSI')?.addEventListener('change', togglePSIMode);
+
+      // ── Selector de color IPR ────────────────────────────────────────────────
+      let iprColor = '#2563eb';
+
+      function setIPRColor(color) {
+        iprColor = color;
+        // Resaltar swatch activo
+        document.querySelectorAll('.ipr-swatch').forEach(btn => {
+          const isActive = btn.dataset.color === color;
+          btn.style.ringColor = '';
+          btn.classList.toggle('ring-gray-800', isActive);
+          btn.classList.toggle('ring-transparent', !isActive);
+          btn.style.outline = isActive ? `2px solid ${color}` : 'none';
+          btn.style.outlineOffset = '2px';
+        });
+        if (!chartBSN) return;
+        // Línea IPR
+        chartBSN.data.datasets[0].borderColor = color;
+        // Puntos IPR
+        chartBSN.data.datasets[1].borderColor = color;
+        chartBSN.data.datasets[1].backgroundColor = color;
+        chartBSN.data.datasets[1].pointBackgroundColor = color;
+        chartBSN.update();
+      }
+
+      // Marcar el color por defecto como activo al cargar
+      document.addEventListener('DOMContentLoaded', () => setIPRColor(iprColor));
       // ────────────────────────────────────────────────────────────────────────
 
       // Estado inicial
