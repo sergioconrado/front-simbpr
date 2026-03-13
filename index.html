@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Simulador BSN</title>
+    <title>Simulador SIMBPR</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -153,7 +153,7 @@
           />
           <div class="h-6 w-px bg-gray-200"></div>
           <div class="flex flex-col leading-tight">
-            <span class="font-semibold text-sm">Simulador BSN</span>
+            <span class="font-semibold text-sm">Simulador SIMBPR</span>
             <span class="text-xs text-gray-500">Proyecto TARATUNICH 41-D</span>
           </div>
         </div>
@@ -350,16 +350,21 @@
                 id="yacimiento"
                 class="bg-gray-50/70 rounded-xl p-4 space-y-4"
               >
-                <!-- Toggle: PSI -->
-                <div class="flex flex-col gap-2">
-                  <label class="flex items-center justify-between cursor-pointer select-none">
-                    <span class="text-sm text-gray-500 flex items-center gap-1.5">Ingresar datos en <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-700">PSI</span></span>
-                    <div class="relative">
-                      <input type="checkbox" id="inputEnPSI" class="sr-only peer" />
-                      <div class="w-8 h-4 bg-gray-200 rounded-full peer-checked:bg-amber-400 transition-colors duration-200"></div>
-                      <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-4"></div>
-                    </div>
-                  </label>
+                <!-- Selector de Unidad -->
+                <div class="flex flex-col gap-1.5">
+                  <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Unidad</span>
+                  <div class="flex bg-gray-100 rounded-xl p-0.5 gap-0.5">
+                    <button
+                      id="unitBtn-kg"
+                      onclick="setUnidad('kg')"
+                      class="flex-1 text-xs font-semibold py-1.5 rounded-[10px] bg-white text-gray-800 shadow-sm transition-all duration-200"
+                    >kg/cm²</button>
+                    <button
+                      id="unitBtn-psi"
+                      onclick="setUnidad('psi')"
+                      class="flex-1 text-xs font-semibold py-1.5 rounded-[10px] text-gray-400 transition-all duration-200"
+                    >PSI</button>
+                  </div>
                 </div>
                 <div id="rowPws">
                   <label class="text-sm text-gray-500">Pws (kg/cm²)</label>
@@ -399,16 +404,7 @@
                     class="w-full mt-1 border border-amber-200 p-2 rounded-xl focus:ring-2 focus:ring-amber-200 outline-none"
                   />
                 </div>
-                <div id="rowJ" class="hidden">
-                  <label class="text-sm text-gray-500">Índice J</label>
-                  <input
-                    id="inputJ"
-                    type="number"
-                    step="0.01"
-                    value="1.5"
-                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-                  />
-                </div>
+                <input id="inputJ" type="hidden" value="1.5" />
                 <div>
                   <label class="text-sm text-gray-500">Qb (bpd)</label>
                   <input
@@ -420,21 +416,17 @@
                 </div>
                 <div>
                   <label class="text-sm text-gray-500">Modelo IPR</label>
-                  <select
-                    id="modeloIPR"
-                    onchange="actualizarTipoYacimiento(this.value)"
-                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
-                  >
-                    <option value="lineal" selected>Índice de Productividad (IP)</option>
-                    <option value="vogel">Vogel</option>
-                  </select>
+                  <input type="hidden" id="modeloIPR" value="vogel" />
+                  <div class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-gray-50 text-sm text-gray-700 font-medium">
+                    Vogel
+                  </div>
                   <!-- Comentario alusivo al tipo de yacimiento según el modelo IPR seleccionado -->
                   <p id="tipoYacimientoComentario" class="mt-2 text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-1.5 leading-snug">
                     📌 Modelo Vogel → <span class="font-semibold">Yacimiento saturado</span> (presión por debajo del punto de burbuja)
                   </p>
                   <!-- Toggle Autograficar -->
                   <label class="inline-flex items-center gap-2 cursor-pointer select-none mt-3 group">
-                    <input type="checkbox" id="autoCalibrarVogel" checked class="sr-only peer" />
+                    <input type="checkbox" id="autoCalibrarVogel" class="sr-only peer" />
                     <div class="w-3.5 h-3.5 rounded-sm border border-gray-300 bg-white peer-checked:bg-gray-700 peer-checked:border-gray-700 transition-colors duration-150 group-hover:border-gray-400"></div>
                     <span class="text-xs text-gray-400 peer-checked:text-gray-600 group-hover:text-gray-500 transition-colors">Autograficar</span>
                   </label>
@@ -1399,7 +1391,6 @@
       }
 
       function calcularCurvas() {
-        const modelo = document.getElementById("modeloIPR").value;
         const pws = parseFloat(document.getElementById("inputPws").value) || 0;
         const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
         let J = parseFloat(document.getElementById("inputJ").value) || 1;
@@ -1407,49 +1398,27 @@
         let Qmax;
 
         const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
-        if (modelo === "lineal") {
-          const dp = pws - pwf;
-          if (dp > 0 && qb > 0 && pws > 0) {
-            J = qb / dp;
-            document.getElementById("inputJ").value = J.toFixed(4);
-            Qmax = J * pws;
-            if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-          } else {
-            Qmax = J * pws;
-            if (errEl) {
-              errEl.textContent = "⚠ Parámetros inválidos para calibración (revisar Pws, Pwf, Qb).";
-              errEl.classList.remove("hidden");
-            }
-          }
+        // Vogel
+        const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
+        if (Qcalc !== null && Qcalc > 0) {
+          Qmax = Qcalc;
+          J = (1.8 * Qmax) / (pws || 1);
+          document.getElementById("inputJ").value = J.toFixed(4);
+          if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
         } else {
-          // Vogel
-          const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
-          if (Qcalc !== null && Qcalc > 0) {
-            Qmax = Qcalc;
-            J = (1.8 * Qmax) / (pws || 1);
-            document.getElementById("inputJ").value = J.toFixed(4);
-            if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-          } else {
-            Qmax = (J * pws) / 1.8;
-            if (errEl) {
-              errEl.textContent = "⚠ Parámetros inválidos para calibración (revisar Pws, Pwf, Qb).";
-              errEl.classList.remove("hidden");
-            }
+          Qmax = (J * pws) / 1.8;
+          if (errEl) {
+            errEl.textContent = "⚠ Parámetros inválidos para calibración (revisar Pws, Pwf, Qb).";
+            errEl.classList.remove("hidden");
           }
         }
 
-        // Curva IPR: 201 puntos por Pwf equidistante (Pws→0) usando fórmulas estándar
+        // Curva IPR Vogel: 201 puntos por Pwf equidistante (Pws→0)
         const N = 200;
         const ipr = Array.from({ length: N + 1 }, (_, i) => {
           const pwfVal = pws * (1 - i / N);
-          let q;
-          if (modelo === "lineal") {
-            q = J * (pws - pwfVal);
-          } else {
-            // Vogel estándar: Q/Qmax = 1 - 0.2*(Pwf/Pws) - 0.8*(Pwf/Pws)²
-            const r = pwfVal / pws;
-            q = Qmax * (1 - 0.2 * r - 0.8 * r * r);
-          }
+          const r = pwfVal / pws;
+          const q = Qmax * (1 - 0.2 * r - 0.8 * r * r);
           return { x: Math.max(q, 0), y: pwfVal };
         });
 
@@ -1468,8 +1437,7 @@
         });
 
         document.getElementById("resultadoQmax").innerText = Qmax.toFixed(0);
-        document.getElementById("modeloActivo").innerText =
-          `Modelo: ${modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel"}`;
+        document.getElementById("modeloActivo").innerText = "Modelo: Vogel";
 
         return { ipr, pwfLine, qOperacion, pwfSistema: pwf, Qmax, pws };
       }
@@ -1488,10 +1456,7 @@
         const Qmax = datos.Qmax;
         const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
 
-        const modelo = document.getElementById("modeloIPR").value;
-        const J = modelo === "lineal"
-          ? (pws - pwf > 0 ? qb / (pws - pwf) : Qmax / (pws || 1))
-          : (1.8 * Qmax) / (pws || 1);
+        const J = (1.8 * Qmax) / (pws || 1);
         set("resultadoDP", (pws - pwf).toFixed(1));
         set("resultadoJ", J.toFixed(4));
         set("resultadoQmaxPanel", Qmax.toFixed(0));
@@ -1537,8 +1502,9 @@
       }
 
       // ── Helpers modo PSI ────────────────────────────────────────────────────
+      let currentUnidad = 'kg';
       function esPSI() {
-        return document.getElementById('inputEnPSI')?.checked || false;
+        return currentUnidad === 'psi';
       }
       function iprParaGrafico(ipr) {
         if (!esPSI()) return ipr;
@@ -1546,7 +1512,7 @@
         return ipr.map(p => ({ x: p.x, y: parseFloat((p.y * K).toFixed(2)) }));
       }
       function yAxisLabel() {
-        return esPSI() ? 'PSI' : 'Pwf (kg/cm²)';
+        return esPSI() ? 'Pwf (PSI)' : 'Pwf (kg/cm²)';
       }
       function pwsParaEje(pws) {
         return esPSI() ? pws * 14.2233 : pws;
@@ -1559,6 +1525,33 @@
         renderResultadosYTabla(datos);
         const iprDisplay = iprParaGrafico(datos.ipr);
         const pwsEje = pwsParaEje(datos.pws);
+
+        const legendDotPlugin = {
+          id: 'legendDot',
+          afterDraw(chart) {
+            const legend = chart.legend;
+            if (!legend || !legend.legendItems) return;
+            const c = chart.ctx;
+            legend.legendItems.forEach((item, i) => {
+              const box = legend.legendHitBoxes[i];
+              if (!box) return;
+              const boxW = chart.options.plugins.legend.labels.boxWidth || 40;
+              const boxH = chart.options.plugins.legend.labels.boxHeight || 12;
+              const cx = box.left + boxW / 2;
+              const cy = box.top + boxH / 2;
+              const color = chart.data.datasets[0]?.borderColor || '#2563eb';
+              c.save();
+              c.beginPath();
+              c.arc(cx, cy, 4, 0, Math.PI * 2);
+              c.fillStyle = color;
+              c.fill();
+              c.strokeStyle = '#ffffff';
+              c.lineWidth = 1.5;
+              c.stroke();
+              c.restore();
+            });
+          }
+        };
 
         chartBSN = new Chart(ctx, {
           type: "line",
@@ -1584,6 +1577,7 @@
                 pointBorderWidth: 1.5,
                 hoverRadius: 7,
                 showLine: false,
+                legendHidden: true,
               },
             ],
           },
@@ -1592,13 +1586,21 @@
             maintainAspectRatio: false,
             clip: false,
             plugins: {
+              legendDot: {},
+              legend: {
+                display: true,
+                labels: {
+                  filter: (item) => item.text !== 'Puntos IPR',
+                  font: { size: 12 },
+                },
+              },
               tooltip: {
                 callbacks: {
                   title: () => "",
                   label: (ctx) => {
                     const x = Math.round(ctx.raw.x);
                     const y = Math.round(ctx.raw.y);
-                    const unit = esPSI() ? 'PSI' : 'kg/cm²';
+                    const unit = esPSI() ? 'Pwf (PSI)' : 'Pwf (kg/cm²)';
                     return `${x} bpd  |  ${y} ${unit}`;
                   },
                 },
@@ -1640,6 +1642,7 @@
               },
             },
           },
+          plugins: [legendDotPlugin],
         });
       }
 
@@ -1677,31 +1680,28 @@
           if (document.getElementById("autoCalibrarVogel")?.checked) actualizarGrafico();
         });
       });
-      // ── Visibilidad del campo Índice J ────────────────────────────────────
-      function actualizarVisibilidadJ() {
-        const modelo = document.getElementById("modeloIPR")?.value;
-        const rowJ = document.getElementById("rowJ");
-        if (rowJ) rowJ.classList.toggle("hidden", modelo !== "lineal");
-      }
-      // ────────────────────────────────────────────────────────────────────────
 
-      document.getElementById("modeloIPR")?.addEventListener("change", () => {
-        actualizarGrafico();
-        actualizarVisibilidadJ();
-      });
+
+
       document
         .getElementById("autoCalibrarVogel")
         ?.addEventListener("change", () => {
           actualizarGrafico();
-          actualizarVisibilidadJ();
         });
       // ────────────────────────────────────────────────────────────────────────
 
-      // ── Modo PSI ────────────────────────────────────────────────────────────
+      // ── Selector de Unidad (kg/cm² ↔ PSI) ──────────────────────────────────
       const KGcm2_TO_PSI = 14.2233;
 
-      function togglePSIMode() {
-        const isPSI = document.getElementById('inputEnPSI').checked;
+      function setUnidad(unidad) {
+        currentUnidad = unidad;
+        const isPSI = unidad === 'psi';
+        const btnKg  = document.getElementById('unitBtn-kg');
+        const btnPsi = document.getElementById('unitBtn-psi');
+        const activeClass  = 'flex-1 text-xs font-semibold py-1.5 rounded-[10px] bg-white text-gray-800 shadow-sm transition-all duration-200';
+        const inactiveClass = 'flex-1 text-xs font-semibold py-1.5 rounded-[10px] text-gray-400 transition-all duration-200';
+        btnKg.className  = isPSI ? inactiveClass : activeClass;
+        btnPsi.className = isPSI ? activeClass   : inactiveClass;
         document.getElementById('rowPws').classList.toggle('hidden', isPSI);
         document.getElementById('rowPwf').classList.toggle('hidden', isPSI);
         document.getElementById('rowPwsPSI').classList.toggle('hidden', !isPSI);
@@ -1724,8 +1724,6 @@
         if (document.getElementById('autoCalibrarVogel')?.checked) actualizarGrafico();
         if (!document.getElementById('panel-datos').classList.contains('hidden')) actualizarTablasDatos();
       }
-
-      document.getElementById('inputEnPSI')?.addEventListener('change', togglePSIMode);
 
       // ── Selector de color IPR ────────────────────────────────────────────────
       let iprColor = '#2563eb';
@@ -1755,22 +1753,11 @@
       document.addEventListener('DOMContentLoaded', () => setIPRColor(iprColor));
       // ────────────────────────────────────────────────────────────────────────
 
-      // Estado inicial
-      actualizarVisibilidadJ();
-
       function toggleDarkMode() {
         document.body.classList.toggle("dark");
       }
 
-      // Actualiza el comentario alusivo al tipo de yacimiento según el modelo IPR seleccionado
-      function actualizarTipoYacimiento(modelo) {
-        const el = document.getElementById("tipoYacimientoComentario");
-        if (modelo === "lineal") {
-          el.textContent = "📌 Indice de productividad (IP) → Yacimiento bajo saturado (presión por encima del punto de burbuja)";
-        } else {
-          el.textContent = "📌 Modelo Vogel → Yacimiento saturado (presión por debajo del punto de burbuja)";
-        }
-      }
+
 
       function toggleUserMenu() {
         document.getElementById("userMenu").classList.toggle("hidden");
@@ -1879,7 +1866,6 @@
         const pws = parseFloat(document.getElementById("inputPws").value) || 0;
         const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
         const J = parseFloat(document.getElementById("inputJ").value) || 1;
-        const modelo = document.getElementById("modeloIPR").value;
         const isPSI = esPSI();
         const K = KGcm2_TO_PSI;
 
@@ -1900,18 +1886,11 @@
         document.getElementById("d-pws").textContent = isPSI ? (pws * K).toFixed(1) : pws.toFixed(0);
         document.getElementById("d-pwf").textContent = isPSI ? (pwf * K).toFixed(1) : pwf.toFixed(0);
 
-        document.getElementById("d-modelo").textContent =
-          modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel";
+        document.getElementById("d-modelo").textContent = "Vogel";
 
         const qbCalib = parseFloat(document.getElementById("inputQb")?.value) || 0;
         let Jactual = J;
         const Qmax = (() => {
-          if (modelo === "lineal") {
-            const dp = pws - pwf;
-            if (dp > 0 && qbCalib > 0 && pws > 0) { Jactual = qbCalib / dp; return Jactual * pws; }
-            return J * pws;
-          }
-          // Vogel
           const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qbCalib);
           if (Qcalc !== null && Qcalc > 0) { Jactual = (1.8 * Qcalc) / (pws || 1); return Qcalc; }
           return (J * pws) / 1.8;
@@ -1922,10 +1901,7 @@
         const N = 60;
         for (let i = 0; i <= N; i++) {
           const q = (i / N) * Qmax;
-          const pCalc =
-            modelo === "lineal"
-              ? pws - q / Jactual
-              : pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
+          const pCalc = pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
           const diff = Math.abs(pCalc - pwf);
           if (diff < diffMin) {
             diffMin = diff;
@@ -1947,13 +1923,10 @@
         tbody.innerHTML = "";
         for (let i = 0; i <= 20; i++) {
           const q = (i / 20) * Qmax;
-          const pCalc =
-            modelo === "lineal"
-              ? Math.max(pws - q / Jactual, 0)
-              : Math.max(
-                  pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2)),
-                  0,
-                );
+          const pCalc = Math.max(
+            pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2)),
+            0
+          );
           const pCalcDisp = isPSI ? (pCalc * K).toFixed(1) : pCalc.toFixed(0);
           const pct = i * 5;
           const isOp = Math.abs(q - qOp) < Qmax / 15;
@@ -1966,6 +1939,7 @@
           </tr>`;
         }
       }
+      // ── Fin actualizarTablasDatos ──────────────────────────────────────────
 
       function actualizarSensibilidad() {
         const pws =
@@ -1973,7 +1947,6 @@
         const pwf =
           parseFloat(document.getElementById("inputPwf").value) || 178;
         const J = parseFloat(document.getElementById("inputJ").value) || 1.5;
-        const modelo = document.getElementById("modeloIPR").value;
 
         const variable = document.getElementById("sens-variable").value;
         const sMin =
@@ -2001,16 +1974,13 @@
           const pwfV = variable === "pwf" ? val : pwf;
           const pwsV = variable === "pws" ? val : pws;
 
-          const Qmax = modelo === "lineal" ? jV * pwsV : (jV * pwsV) / 1.8;
+          const Qmax = (jV * pwsV) / 1.8;
           let qOp = 0,
             diffMin = Infinity;
           const N = 60;
           for (let k = 0; k <= N; k++) {
             const q = (k / N) * Qmax;
-            const pCalc =
-              modelo === "lineal"
-                ? pwsV - q / jV
-                : pwsV * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
+            const pCalc = pwsV * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
             const diff = Math.abs(pCalc - pwfV);
             if (diff < diffMin) {
               diffMin = diff;
