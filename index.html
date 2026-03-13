@@ -1403,46 +1403,39 @@
         const pws = parseFloat(document.getElementById("inputPws").value) || 0;
         const pwf = parseFloat(document.getElementById("inputPwf").value) || 0;
         let J = parseFloat(document.getElementById("inputJ").value) || 1;
-        const autoCalib = document.getElementById("autoCalibrarVogel")?.checked;
         const errEl = document.getElementById("vogelCalibError");
         let Qmax;
 
-        if (autoCalib) {
-          const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
-          if (modelo === "lineal") {
-            const dp = pws - pwf;
-            if (dp > 0 && qb > 0 && pws > 0) {
-              J = qb / dp;
-              document.getElementById("inputJ").value = J.toFixed(4);
-              Qmax = J * pws;
-              if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-            } else {
-              Qmax = J * pws;
-              if (errEl) {
-                errEl.textContent = "⚠ Parámetros inválidos para auto-calibración (revisar Pws, Pwf, Qb).";
-                errEl.classList.remove("hidden");
-              }
-            }
+        const qb = parseFloat(document.getElementById("inputQb")?.value) || 0;
+        if (modelo === "lineal") {
+          const dp = pws - pwf;
+          if (dp > 0 && qb > 0 && pws > 0) {
+            J = qb / dp;
+            document.getElementById("inputJ").value = J.toFixed(4);
+            Qmax = J * pws;
+            if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
           } else {
-            // Vogel
-            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
-            if (Qcalc !== null && Qcalc > 0) {
-              Qmax = Qcalc;
-              J = (1.8 * Qmax) / (pws || 1);
-              document.getElementById("inputJ").value = J.toFixed(4);
-              if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-            } else {
-              Qmax = (J * pws) / 1.8;
-              if (errEl) {
-                errEl.textContent = "⚠ Parámetros inválidos para auto-calibración (revisar Pws, Pwf, Qb).";
-                errEl.classList.remove("hidden");
-              }
+            Qmax = J * pws;
+            if (errEl) {
+              errEl.textContent = "⚠ Parámetros inválidos para calibración (revisar Pws, Pwf, Qb).";
+              errEl.classList.remove("hidden");
             }
           }
         } else {
-          // Manual: usa J del campo
-          Qmax = modelo === "lineal" ? J * pws : (J * pws) / 1.8;
-          if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
+          // Vogel
+          const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
+          if (Qcalc !== null && Qcalc > 0) {
+            Qmax = Qcalc;
+            J = (1.8 * Qmax) / (pws || 1);
+            document.getElementById("inputJ").value = J.toFixed(4);
+            if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
+          } else {
+            Qmax = (J * pws) / 1.8;
+            if (errEl) {
+              errEl.textContent = "⚠ Parámetros inválidos para calibración (revisar Pws, Pwf, Qb).";
+              errEl.classList.remove("hidden");
+            }
+          }
         }
 
         // Curva IPR: 201 puntos por Pwf equidistante (Pws→0) usando fórmulas estándar
@@ -1910,22 +1903,17 @@
         document.getElementById("d-modelo").textContent =
           modelo === "lineal" ? "Índice de Productividad (IP)" : "Vogel";
 
-        const autoCalib = document.getElementById("autoCalibrarVogel")?.checked;
         const qbCalib = parseFloat(document.getElementById("inputQb")?.value) || 0;
         let Jactual = J;
         const Qmax = (() => {
           if (modelo === "lineal") {
-            if (autoCalib) {
-              const dp = pws - pwf;
-              if (dp > 0 && qbCalib > 0 && pws > 0) { Jactual = qbCalib / dp; return Jactual * pws; }
-            }
+            const dp = pws - pwf;
+            if (dp > 0 && qbCalib > 0 && pws > 0) { Jactual = qbCalib / dp; return Jactual * pws; }
             return J * pws;
           }
           // Vogel
-          if (autoCalib) {
-            const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qbCalib);
-            if (Qcalc !== null && Qcalc > 0) { Jactual = (1.8 * Qcalc) / (pws || 1); return Qcalc; }
-          }
+          const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qbCalib);
+          if (Qcalc !== null && Qcalc > 0) { Jactual = (1.8 * Qcalc) / (pws || 1); return Qcalc; }
           return (J * pws) / 1.8;
         })();
         document.getElementById("d-j").textContent = isPSI ? (Jactual / K).toFixed(4) : Jactual.toFixed(2);
