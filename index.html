@@ -74,67 +74,58 @@
         border-bottom-color: #475569;
       }
 
-      /* ── Sub-nav estilo GitHub ── */
+      /* ── Nav principal — pill style ── */
       #subnav {
-        background: #f6f8fa;
-        border-bottom: 1px solid #d0d7de;
+        background: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
       }
       .subnav-btn {
-        color: #57606a;
-        border-bottom-color: transparent;
-        margin-bottom: -1px;
-        border-radius: 6px 6px 0 0;
-        padding-left: 12px;
-        padding-right: 12px;
+        color: #6b7280;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 0.8125rem;
+        transition: background 0.15s ease, color 0.15s ease;
       }
       .subnav-btn:hover {
-        color: #1f2328;
-        background: rgba(208, 215, 222, 0.32);
-        border-bottom-color: #d0d7de;
+        color: #111827;
+        background: #f3f4f6;
       }
       .subnav-active {
-        color: #1f2328 !important;
-        background: #ffffff !important;
-        border-bottom-color: #fd8c73 !important;
+        color: #ffffff !important;
+        background: #111827 !important;
         font-weight: 600;
       }
+      .subnav-active svg {
+        color: #ffffff;
+      }
       .subnav-badge {
-        background: #dfe1e4;
-        color: #57606a;
+        background: #e5e7eb;
+        color: #6b7280;
+        font-size: 0.65rem;
       }
       .subnav-active .subnav-badge {
-        background: rgba(84,174,255,0.2);
-        color: #0969da;
-      }
-      .subnav-badge-alt {
-        background: #dfe1e4;
-        color: #57606a;
+        background: rgba(255,255,255,0.2);
+        color: #ffffff;
       }
       /* dark mode */
       .dark #subnav {
-        background: #161b22;
-        border-bottom-color: #30363d;
+        background: #1e293b;
+        border-bottom-color: #334155;
       }
       .dark .subnav-btn {
-        color: #8b949e;
+        color: #94a3b8;
       }
       .dark .subnav-btn:hover {
-        color: #e6edf3;
-        background: rgba(177,186,196,0.12);
-        border-bottom-color: #30363d;
+        color: #e2e8f0;
+        background: rgba(255,255,255,0.06);
       }
       .dark .subnav-active {
-        color: #e6edf3 !important;
-        background: #0d1117 !important;
-        border-bottom-color: #f78166 !important;
+        color: #0f172a !important;
+        background: #e2e8f0 !important;
       }
       .dark .subnav-badge {
-        background: #30363d;
-        color: #8b949e;
-      }
-      .dark .subnav-badge-alt {
-        background: #30363d;
-        color: #8b949e;
+        background: #334155;
+        color: #94a3b8;
       }
     </style>
   </head>
@@ -142,161 +133,150 @@
   <body class="font-sans text-gray-800">
     <div class="flex flex-col min-h-screen">
       <!-- Header -->
-      <div
-        class="bg-white/70 backdrop-blur-md border-b border-gray-200 px-6 py-4 flex justify-between items-center"
-      >
-        <div class="flex items-center gap-4">
-          <img
-            src="logo-SIMBPR.png"
-            alt="Logo SIMBPR"
-            class="h-12 w-auto object-contain"
-          />
-          <div class="h-6 w-px bg-gray-200"></div>
-          <div class="flex flex-col leading-tight">
-            <span class="font-semibold text-sm">Simulador SIMBPR</span>
-            <span class="text-xs text-gray-500">Proyecto TARATUNICH 41-D</span>
+      <div class="bg-white/80 backdrop-blur-md border-b border-gray-200 px-6 py-0 flex justify-between items-stretch min-h-[56px]">
+
+        <!-- LEFT: Logo + nombre -->
+        <div class="flex items-center gap-3">
+          <img src="logo-SIMBPR.png" alt="Logo SIMBPR" class="h-14 w-auto object-contain" />
+          <div class="h-5 w-px bg-gray-200"></div>
+          <span class="font-bold text-sm tracking-tight text-gray-800">Simulador SIMBPR</span>
+          <!-- Version badge -->
+          <span class="ml-1 text-[10px] font-semibold text-gray-400 border border-gray-200 rounded px-1.5 py-0.5 select-none">v1.0</span>
+        </div>
+
+        <!-- CENTER: Estado del sistema + fecha -->
+        <div class="flex items-center gap-5 text-xs">
+          <!-- Status -->
+          <div class="flex items-center gap-1.5">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span class="text-green-700 font-medium">Activa Local</span>
+          </div>
+          <div class="h-4 w-px bg-gray-200"></div>
+          <!-- Fecha y hora en tiempo real -->
+          <div class="flex items-center gap-1.5 text-gray-500">
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+            </svg>
+            <span id="header-datetime" class="font-medium tabular-nums"></span>
           </div>
         </div>
-        <div class="flex items-center gap-4">
-          <div class="text-xs text-green-600 font-medium">● Activa Local</div>
-          <div class="relative">
-            <button
-              onclick="toggleUserMenu()"
-              class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition"
-            >
-              <div
-                class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium"
-              >
-                SC
-              </div>
-              <span class="text-sm">Sergio</span>
-              <span class="text-gray-400 text-xs">▾</span>
-            </button>
-            <div
-              id="userMenu"
-              class="hidden absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
-            >
-              <button
-                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
-              >
-                Perfil
-              </button>
-              <button
-                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition"
-              >
-                Configuración
-              </button>
-              <div class="border-t border-gray-100"></div>
-              <button
-                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-500 transition"
-              >
-                Cerrar sesión
-              </button>
+
+        <!-- RIGHT: Acciones -->
+        <div class="flex items-center gap-1">
+          <!-- Avatar usuario -->
+          <div class="flex items-center gap-2 pl-1">
+            <div class="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center text-xs font-bold text-white select-none">ED</div>
+            <div class="flex flex-col leading-tight">
+              <span class="text-xs font-semibold text-gray-700">Edgar</span>
+              <span class="text-[10px] text-gray-400">Ingeniero IPR</span>
             </div>
           </div>
-          <button
-            onclick="toggleDarkMode()"
-            class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-200 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="w-5 h-5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"
-              />
-            </svg>
-          </button>
         </div>
+
       </div>
-      <!-- ── Sub-navegación estilo GitHub ── -->
-      <nav
-        id="subnav"
-        class="bg-white border-b border-gray-200 px-4 overflow-x-auto"
-        aria-label="Navegación del proyecto"
-      >
-        <ul class="flex items-stretch gap-1 min-w-max" role="tablist">
+      <!-- ── Navegación principal ── -->
+      <nav id="subnav" class="px-5 py-2.5 flex items-center gap-1" aria-label="Navegación principal">
 
-          <!-- Nombre del proyecto -->
-          <li role="presentation">
-            <button
-              onclick="activarSubnav(this, 'tab-proyecto')"
-              role="tab"
-              aria-selected="false"
-              data-tab="tab-proyecto"
-              class="subnav-btn group flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-all duration-150"
-            >
-              <!-- Folder icon -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/>
-              </svg>
-              <span>Proyecto</span>
-              <span class="subnav-badge ml-1 rounded-full px-2 py-0.5 text-xs font-semibold">1</span>
-            </button>
-          </li>
+        <!-- Proyectos -->
+        <button
+          onclick="activarSubnav(this, 'tab-proyecto')"
+          role="tab" aria-selected="false" data-tab="tab-proyecto"
+          class="subnav-btn flex items-center gap-2 font-medium whitespace-nowrap"
+        >
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+          </svg>
+          <span>Proyectos</span>
+          <span id="subnav-proy-count" class="subnav-badge rounded-full px-1.5 py-px font-semibold">0</span>
+        </button>
 
-          <!-- Bombas -->
-          <li role="presentation">
-            <button
-              onclick="activarSubnav(this, 'tab-bombas')"
-              role="tab"
-              aria-selected="false"
-              data-tab="tab-bombas"
-              class="subnav-btn group flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-all duration-150"
-            >
-              <!-- Lightning bolt / pump icon -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.268a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
-              </svg>
-              <span>Bombas</span>
-            </button>
-          </li>
+        <!-- Bombas -->
+        <button
+          onclick="activarSubnav(this, 'tab-bombas')"
+          role="tab" aria-selected="false" data-tab="tab-bombas"
+          class="subnav-btn flex items-center gap-2 font-medium whitespace-nowrap"
+        >
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span>Bombas</span>
+        </button>
 
-          <!-- Contrapresión -->
-          <li role="presentation">
-            <button
-              onclick="activarSubnav(this, 'tab-contrapresion')"
-              role="tab"
-              aria-selected="false"
-              data-tab="tab-contrapresion"
-              class="subnav-btn group flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-all duration-150"
-            >
-              <!-- Chart bar / pressure icon -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm4.5 7.5a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zm3.75-1.5a.75.75 0 00-1.5 0v3.75a.75.75 0 001.5 0V12zm2.25-3a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0v-6a.75.75 0 01.75-.75zm3.75-1.5a.75.75 0 00-1.5 0v7.5a.75.75 0 001.5 0V7.5z" clip-rule="evenodd" />
-              </svg>
-              <span>Contrapresión</span>
-            </button>
-          </li>
+        <!-- Contrapresión -->
+        <button
+          onclick="activarSubnav(this, 'tab-contrapresion')"
+          role="tab" aria-selected="false" data-tab="tab-contrapresion"
+          class="subnav-btn flex items-center gap-2 font-medium whitespace-nowrap"
+        >
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Contrapresión</span>
+        </button>
 
-          <!-- Configuración -->
-          <li role="presentation">
-            <button
-              onclick="activarSubnav(this, 'tab-configuracion')"
-              role="tab"
-              aria-selected="false"
-              data-tab="tab-configuracion"
-              class="subnav-btn group flex items-center gap-2 px-3 py-3 text-sm font-medium whitespace-nowrap border-b-2 border-transparent transition-all duration-150"
-            >
-              <!-- Gear / settings icon -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
-              </svg>
-              <span>Configuración</span>
-            </button>
-          </li>
+        <!-- Configuración -->
+        <button
+          onclick="activarSubnav(this, 'tab-configuracion')"
+          role="tab" aria-selected="false" data-tab="tab-configuracion"
+          class="subnav-btn flex items-center gap-2 font-medium whitespace-nowrap"
+        >
+          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          <span>Configuración</span>
+        </button>
 
-        </ul>
       </nav>
 
+      <!-- ══ BARRA DE CONTEXTO DEL PROYECTO ══ -->
+      <div id="proyecto-context-bar" class="hidden bg-white border-b border-gray-200">
+        <div class="max-w-screen-2xl mx-auto px-4 py-2.5 flex items-center gap-4">
+          <!-- Botón volver -->
+          <button onclick="volverAProyectos()" class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition group shrink-0">
+            <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+            <span>Proyectos</span>
+          </button>
+          <div class="h-4 w-px bg-gray-200"></div>
+          <!-- Info del proyecto -->
+          <div class="flex items-center gap-3 flex-1 min-w-0 overflow-x-auto">
+            <div id="ctx-avatar" class="w-8 h-8 rounded-lg bg-blue-200 flex items-center justify-center text-xs font-bold text-gray-700 shrink-0"></div>
+            <div class="flex items-center gap-4 text-xs min-w-0">
+              <div class="flex items-center gap-1.5 shrink-0">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>
+                <span id="ctx-nombre" class="font-semibold text-gray-800"></span>
+              </div>
+              <div id="ctx-cliente-wrap" class="flex items-center gap-1 text-gray-500 shrink-0">
+                <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                <span id="ctx-cliente"></span>
+              </div>
+              <div id="ctx-compania-wrap" class="flex items-center gap-1 text-gray-500 shrink-0">
+                <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+                <span id="ctx-compania"></span>
+              </div>
+              <div id="ctx-usuario-wrap" class="flex items-center gap-1 text-gray-500 shrink-0">
+                <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span id="ctx-usuario"></span>
+              </div>
+              <div id="ctx-orden-wrap" class="flex items-center gap-1 text-gray-500 shrink-0">
+                <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                <span id="ctx-orden"></span>
+              </div>
+              <div id="ctx-comentarios-wrap" class="hidden items-center gap-1 text-gray-400 shrink-0" title="">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                <span id="ctx-comentarios" class="truncate max-w-[200px]"></span>
+              </div>
+            </div>
+          </div>
+          <!-- Estado -->
+          <span id="ctx-estado" class="shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full"></span>
+        </div>
+      </div>
+
       <!-- ══ PANEL PRINCIPAL: SIMULADOR (default) ══ -->
-      <div id="panel-simulador" class="flex flex-1">
+      <div id="panel-simulador" class="hidden flex flex-1">
         <!-- PANEL IZQUIERDO -->
         <div
           id="leftPanel"
@@ -1353,7 +1333,7 @@
           <div
             class="bg-white border-t border-gray-200 p-4 text-xs text-gray-500"
           >
-            Activa Local | Proyecto TARATUNICH 41-D
+            <span id="footer-proyecto-texto">Activa Local | Sin proyecto seleccionado</span>
           </div>
         </div>
       </div>
@@ -1480,7 +1460,7 @@
 
       // Devuelve { max, stepSize } con valores redondeados a números bonitos (50, 100, etc.)
       function niceAxisMax(rawMax) {
-        const target = rawMax; // sin padding extra; el redondeo ya deja margen
+        const target = rawMax * 1.1; // añadir 10% de margen
         const rough = target / 6; // ~6 intervalos
         const mag = Math.pow(10, Math.floor(Math.log10(rough)));
         const norm = rough / mag;
@@ -1757,21 +1737,18 @@
         document.body.classList.toggle("dark");
       }
 
-
-
-      function toggleUserMenu() {
-        document.getElementById("userMenu").classList.toggle("hidden");
+      // ── Reloj en tiempo real ────────────────────────────────────────────────
+      function actualizarReloj() {
+        var el = document.getElementById('header-datetime');
+        if (!el) return;
+        var now = new Date();
+        var fecha = now.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+        var hora  = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        el.textContent = fecha + '  ' + hora;
       }
-
-      document.addEventListener("click", function (event) {
-        const menu = document.getElementById("userMenu");
-        if (
-          !event.target.closest("#userMenu") &&
-          !event.target.closest("button[onclick='toggleUserMenu()']")
-        ) {
-          menu.classList.add("hidden");
-        }
-      });
+      actualizarReloj();
+      setInterval(actualizarReloj, 30000);
+      // ────────────────────────────────────────────────────────────────────────
 
       function calcularProduccion() {
         const qt = parseFloat(document.getElementById("prod_qt").value) || 0;
@@ -2294,6 +2271,13 @@
         }
         cancelarFormProyecto();
         renderProyectos();
+        // Si es proyecto nuevo, abrirlo automáticamente
+        if (idx < 0) {
+          abrirProyecto(proyectos.length - 1);
+        } else if (proyectoActivoIdx === idx) {
+          // Si editamos el proyecto activo, refrescar contexto
+          abrirProyecto(idx);
+        }
       }
 
       function editarProyecto(idx) {
@@ -2315,11 +2299,20 @@
         var cur = estados.indexOf(proyectos[idx].estado);
         proyectos[idx].estado = estados[(cur + 1) % estados.length];
         renderProyectos();
+        if (proyectoActivoIdx === idx) abrirProyecto(idx);
       }
 
       function eliminarProyecto(idx) {
         if (!confirm('¿Eliminar el proyecto "' + proyectos[idx].nombre + '"?')) return;
+        var wasActive = (proyectoActivoIdx === idx);
         proyectos.splice(idx, 1);
+        if (wasActive) {
+          proyectoActivoIdx = -1;
+          document.getElementById('proyecto-context-bar').classList.add('hidden');
+          document.getElementById('footer-proyecto-texto').textContent = 'Activa Local | Sin proyecto seleccionado';
+        } else if (proyectoActivoIdx > idx) {
+          proyectoActivoIdx--;
+        }
         renderProyectos();
       }
 
@@ -2327,6 +2320,10 @@
         var lista  = document.getElementById('proy-lista');
         var empty  = document.getElementById('proy-empty');
         lista.innerHTML = '';
+        // Actualizar badge del subnav
+        var badge = document.getElementById('subnav-proy-count');
+        if (badge) badge.textContent = proyectos.length;
+
         if (proyectos.length === 0) {
           empty.classList.remove('hidden');
           return;
@@ -2336,13 +2333,17 @@
           var col   = AVATAR_COLORS[i % AVATAR_COLORS.length];
           var ec    = ESTADO_COLORS[p.estado] || ESTADO_COLORS['Activo'];
           var card  = document.createElement('div');
-          card.className = 'bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition-shadow';
+          card.className = 'bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer group';
+          card.onclick = function(e) {
+            if (e.target.closest('button')) return;
+            abrirProyecto(i);
+          };
           card.innerHTML =
             '<div class="flex items-start justify-between gap-2">' +
               '<div class="flex items-center gap-3 min-w-0">' +
                 '<div class="w-10 h-10 rounded-xl ' + col + ' flex items-center justify-center text-xs font-bold text-gray-700 shrink-0">' + iniciales(p.nombre) + '</div>' +
                 '<div class="min-w-0">' +
-                  '<p class="text-sm font-semibold text-gray-800 truncate">' + escHtml(p.nombre) + '</p>' +
+                  '<p class="text-sm font-semibold text-gray-800 truncate group-hover:text-blue-600 transition-colors">' + escHtml(p.nombre) + '</p>' +
                   '<p class="text-xs text-gray-400 truncate">' + escHtml(p.cliente) + '</p>' +
                 '</div>' +
               '</div>' +
@@ -2356,6 +2357,10 @@
             (p.comentarios ? '<p class="text-xs text-gray-400 italic line-clamp-2">' + escHtml(p.comentarios) + '</p>' : '') +
             '<div class="flex items-center justify-between pt-1 border-t border-gray-50">' +
               '<span class="text-[10px] text-gray-300">' + p.fecha + '</span>' +
+              '<span class="text-[10px] text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity font-medium flex items-center gap-0.5">' +
+                '<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>' +
+                'Abrir' +
+              '</span>' +
               '<div class="flex gap-2">' +
                 '<button onclick="editarProyecto(' + i + ')" title="Editar" class="text-gray-400 hover:text-gray-700 transition">' +
                   '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>' +
@@ -2372,6 +2377,97 @@
       function escHtml(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
       }
+
+      // ── Proyecto activo & navegación ──────────────────────────────────────────
+      var proyectoActivoIdx = -1;
+
+      function abrirProyecto(idx) {
+        var p = proyectos[idx];
+        if (!p) return;
+        proyectoActivoIdx = idx;
+
+        // Actualizar footer
+        document.getElementById('footer-proyecto-texto').textContent =
+          'Activa Local | ' + p.nombre + (p.cliente ? ' · ' + p.cliente : '') + (p.orden ? ' · ' + p.orden : '');
+
+        // Actualizar barra de contexto
+        var col = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+        var avatarEl = document.getElementById('ctx-avatar');
+        avatarEl.textContent = iniciales(p.nombre);
+        avatarEl.className = 'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-gray-700 shrink-0 ' + col;
+
+        document.getElementById('ctx-nombre').textContent = p.nombre;
+        document.getElementById('ctx-cliente').textContent = p.cliente;
+        document.getElementById('ctx-cliente-wrap').style.display = p.cliente ? 'flex' : 'none';
+        document.getElementById('ctx-compania').textContent = p.compania;
+        document.getElementById('ctx-compania-wrap').style.display = p.compania ? 'flex' : 'none';
+        document.getElementById('ctx-usuario').textContent = p.usuario;
+        document.getElementById('ctx-usuario-wrap').style.display = p.usuario ? 'flex' : 'none';
+        document.getElementById('ctx-orden').textContent = p.orden;
+        document.getElementById('ctx-orden-wrap').style.display = p.orden ? 'flex' : 'none';
+
+        var ctxComentarios = document.getElementById('ctx-comentarios-wrap');
+        if (p.comentarios) {
+          ctxComentarios.classList.remove('hidden');
+          ctxComentarios.classList.add('flex');
+          ctxComentarios.title = p.comentarios;
+          document.getElementById('ctx-comentarios').textContent = p.comentarios;
+        } else {
+          ctxComentarios.classList.add('hidden');
+          ctxComentarios.classList.remove('flex');
+        }
+
+        var ec = ESTADO_COLORS[p.estado] || ESTADO_COLORS['Activo'];
+        var estadoEl = document.getElementById('ctx-estado');
+        estadoEl.textContent = p.estado;
+        estadoEl.className = 'shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ' + ec.bg + ' ' + ec.text;
+
+        // Mostrar barra de contexto
+        document.getElementById('proyecto-context-bar').classList.remove('hidden');
+
+        // Desactivar subnav
+        document.querySelectorAll('.subnav-btn').forEach(function(b) {
+          b.classList.remove('subnav-active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.subnav-panel').forEach(function(panel) {
+          panel.classList.add('hidden');
+          panel.classList.remove('flex');
+        });
+
+        // Mostrar simulador
+        document.getElementById('panel-simulador').classList.remove('hidden');
+
+        // Scroll arriba
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function volverAProyectos() {
+        proyectoActivoIdx = -1;
+
+        // Ocultar barra de contexto
+        document.getElementById('proyecto-context-bar').classList.add('hidden');
+
+        // Ocultar simulador
+        document.getElementById('panel-simulador').classList.add('hidden');
+
+        // Restaurar footer
+        document.getElementById('footer-proyecto-texto').textContent = 'Activa Local | Sin proyecto seleccionado';
+
+        // Activar subnav de Proyecto
+        var proyBtn = document.querySelector('[data-tab="tab-proyecto"]');
+        if (proyBtn) {
+          proyBtn.classList.add('subnav-active');
+          proyBtn.setAttribute('aria-selected', 'true');
+        }
+        var proyPanel = document.getElementById('tab-proyecto');
+        if (proyPanel) {
+          proyPanel.classList.remove('hidden');
+          proyPanel.classList.add('flex');
+        }
+      }
+      // ── Fin Proyecto activo & navegación ──────────────────────────────────────
+
       // ── Fin Gestión de Proyectos ─────────────────────────────────────────────
 
     </script>
@@ -2532,6 +2628,11 @@
         const simulador = document.getElementById('panel-simulador');
         const isAlreadyActive = btn.getAttribute('aria-selected') === 'true';
 
+        // Ocultar barra de contexto al navegar por subnav (excepto si hay proyecto activo y se va al simulador)
+        if (tabId !== 'tab-proyecto' || isAlreadyActive) {
+          // Si toggleamos OFF y hay proyecto activo, mostrar simulador con contexto
+        }
+
         // Deactivate all tabs
         document.querySelectorAll('.subnav-btn').forEach(function(b) {
           b.classList.remove('subnav-active');
@@ -2544,11 +2645,15 @@
         });
 
         if (isAlreadyActive) {
-          // Toggle off: return to default simulator view
+          // Toggle off: return to simulator if project is active, otherwise just show simulator
+          if (proyectoActivoIdx >= 0) {
+            document.getElementById('proyecto-context-bar').classList.remove('hidden');
+          }
           simulador.classList.remove('hidden');
         } else {
           // Show clicked tab panel, hide simulator
           simulador.classList.add('hidden');
+          document.getElementById('proyecto-context-bar').classList.add('hidden');
           btn.classList.add('subnav-active');
           btn.setAttribute('aria-selected', 'true');
           const panel = document.getElementById(tabId);
@@ -2626,6 +2731,14 @@
         boton.classList.remove("tab-inactive");
         boton.classList.add("tab-active");
       }
+
+      // ── Iniciar en la pestaña Proyecto al cargar ──
+      (function() {
+        var proyBtn = document.querySelector('[data-tab="tab-proyecto"]');
+        if (proyBtn) {
+          activarSubnav(proyBtn, 'tab-proyecto');
+        }
+      })();
     </script>
   </body>
 </html>
