@@ -6,6 +6,12 @@ Los proyectos se persisten en **SQL Server** a través de una API REST incluida 
 
 ---
 
+> ### 👋 ¿Es tu primera vez aquí?
+> Consulta la **[Guía de Inicio Rápido para Principiantes → INICIO-RAPIDO.md](./INICIO-RAPIDO.md)**  
+> Te explica paso a paso cómo instalar las herramientas, descargar el proyecto y abrirlo en VS Code.
+
+---
+
 ## Requisitos previos
 
 | Herramienta | Versión mínima | Descarga |
