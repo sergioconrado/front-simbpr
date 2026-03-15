@@ -1,0 +1,118 @@
+### SIMBPR — Pruebas de API REST
+### Requiere la extensión "REST Client" (humao.rest-client)
+### Asegúrate de que el servidor esté corriendo: npm start
+
+@baseUrl = http://localhost:3001/api
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PROYECTOS
+# ─────────────────────────────────────────────────────────────────────────────
+
+### 1. Listar todos los proyectos
+GET {{baseUrl}}/proyectos
+Accept: application/json
+
+###
+
+### 2. Crear un nuevo proyecto
+POST {{baseUrl}}/proyectos
+Content-Type: application/json
+
+{
+  "nombre": "Pozo Alfa-1",
+  "usuario": "Sergio Conrado",
+  "compania": "PEMEX",
+  "cliente": "Cliente Ejemplo",
+  "orden": "OT-2024-001",
+  "comentarios": "Pozo piloto de prueba",
+  "fecha": "15 mar. 2026",
+  "estado": "Activo"
+}
+
+###
+
+### 3. Obtener un proyecto por ID  (cambia el 1 por el ID real)
+GET {{baseUrl}}/proyectos/1
+Accept: application/json
+
+###
+
+### 4. Actualizar un proyecto
+PUT {{baseUrl}}/proyectos/1
+Content-Type: application/json
+
+{
+  "nombre": "Pozo Alfa-1 (actualizado)",
+  "usuario": "Sergio Conrado",
+  "compania": "PEMEX",
+  "cliente": "Cliente Ejemplo",
+  "orden": "OT-2024-001",
+  "comentarios": "Comentarios actualizados",
+  "estado": "En pausa"
+}
+
+###
+
+### 5. Rotar estado del proyecto  (Activo → En pausa → Cerrado)
+PATCH {{baseUrl}}/proyectos/1/estado
+Content-Type: application/json
+
+###
+
+### 6. Eliminar un proyecto
+DELETE {{baseUrl}}/proyectos/1
+
+###
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SIMULACIÓN POR PROYECTO  (usa el ID del proyecto creado arriba)
+# ─────────────────────────────────────────────────────────────────────────────
+
+### 7. Obtener todos los datos de simulación
+GET {{baseUrl}}/proyectos/1/simulacion
+Accept: application/json
+
+###
+
+### 8. Guardar / actualizar datos IPR
+PUT {{baseUrl}}/proyectos/1/simulacion/ipr
+Content-Type: application/json
+
+{
+  "pws": 210,
+  "pwf": 178,
+  "qb": 320,
+  "j_index": 1.5,
+  "unidad": "kg",
+  "ipr_color": "#2563eb"
+}
+
+###
+
+### 9. Guardar / actualizar datos de Producción
+PUT {{baseUrl}}/proyectos/1/simulacion/produccion
+Content-Type: application/json
+
+{
+  "qt": 500,
+  "bsw": 20,
+  "api": 32,
+  "gor": 150,
+  "bo": 1.1
+}
+
+###
+
+### 10. Guardar / actualizar datos BSN
+PUT {{baseUrl}}/proyectos/1/simulacion/bsn
+Content-Type: application/json
+
+{
+  "etapas": 120,
+  "freq": 60,
+  "hp": 200,
+  "volt": 1150,
+  "amp": 92,
+  "depth": 2200,
+  "tempfondo": 90
+}

@@ -1,0 +1,70 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // ── npm start — servidor Express (API + frontend estático) ───────────
+      "label": "Servidor: Iniciar (npm start)",
+      "type": "npm",
+      "script": "start",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Servidor iniciado en"
+        }
+      }
+    },
+    {
+      // ── CSS watch — Tailwind en modo observación ─────────────────────────
+      "label": "CSS: Watch (Tailwind)",
+      "type": "npm",
+      "script": "dev:css",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "focus": false
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      // ── CSS build — genera output.css minificado ─────────────────────────
+      "label": "CSS: Build (producción)",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      // ── npm install ──────────────────────────────────────────────────────
+      "label": "Instalar dependencias (npm install)",
+      "type": "shell",
+      "command": "npm install",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

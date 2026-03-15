@@ -1,16 +1,65 @@
 {
+  // ── Editor ───────────────────────────────────────────────────────────────
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.tabSize": 2,
+  "editor.rulers": [100],
   "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // ── Exclusiones (mejorar rendimiento de búsqueda) ────────────────────────
+  "files.exclude": {
+    "node_modules": true,
+    "output.css": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "package-lock.json": true,
+    "output.css": true
+  },
+
+  // ── Asociaciones de archivos ─────────────────────────────────────────────
+  "files.associations": {
+    "*.env*": "dotenv",
+    ".env.example": "dotenv"
+  },
+
+  // ── Anidamiento de archivos relacionados en el Explorer ──────────────────
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, .npmrc",
+    "tailwind.config.js": "postcss.config.js",
+    "input.css": "output.css",
+    ".env.example": ".env"
+  },
+
+  // ── Tailwind CSS ─────────────────────────────────────────────────────────
   "css.validate": false,
   "tailwindCSS.includeLanguages": {
     "html": "html",
     "javascript": "javascript"
   },
   "tailwindCSS.experimental.classRegex": [],
+
+  // ── Live Server ──────────────────────────────────────────────────────────
   "liveServer.settings.port": 5500,
   "liveServer.settings.donotShowInfoMsg": true,
+
+  // ── SQL Server (ms-mssql) ────────────────────────────────────────────────
+  "mssql.connections": [
+    {
+      "profileName": "SIMBPR Local",
+      "server": "localhost",
+      "database": "SIMBPR",
+      "authenticationType": "SqlLogin",
+      "user": "sa",
+      "savePassword": false
+    }
+  ],
+
+  // ── Formateadores por lenguaje ────────────────────────────────────────────
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -18,6 +67,15 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "ms-mssql.mssql"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

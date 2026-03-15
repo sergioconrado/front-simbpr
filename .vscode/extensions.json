@@ -1,9 +1,16 @@
 {
   "recommendations": [
+    // ── Frontend ──────────────────────────────────────────────────────────
     "ritwickdey.LiveServer",
     "bradlc.vscode-tailwindcss",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "christian-kohler.path-intellisense"
+    "christian-kohler.path-intellisense",
+    // ── Backend / Node.js ─────────────────────────────────────────────────
+    "ms-vscode.vscode-js-debug",
+    "mikestead.dotenv",
+    "humao.rest-client",
+    // ── SQL Server ────────────────────────────────────────────────────────
+    "ms-mssql.mssql"
   ]
 }
