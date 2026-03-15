@@ -5,11 +5,12 @@ import {
   getProyecto,
   getProyectoActivoIdx,
   setProyectoActivoIdx,
-  agregarProyecto,
-  actualizarProyecto,
-  eliminarProyecto as eliminarProyectoModel,
-  toggleEstadoProyecto,
+  agregarProyectoAPI,
+  actualizarProyectoAPI,
+  eliminarProyectoAPI,
+  toggleEstadoProyectoAPI,
   crearDatosProyecto,
+  cargarProyectosDesdeAPI,
 } from '../models/ProjectModel.js';
 
 import {
@@ -51,7 +52,7 @@ export function cancelarFormProyecto() {
   ocultarFormProyecto();
 }
 
-export function guardarProyecto() {
+export async function guardarProyecto() {
   const campos = leerFormProyecto();
 
   if (!campos.nombre || !campos.usuario || !campos.cliente) {
@@ -63,9 +64,9 @@ export function guardarProyecto() {
     // Edición: conservar estado y fecha originales
     const original = getProyecto(_proyEditIndex);
     const data = { ...crearDatosProyecto(campos), estado: original.estado, fecha: original.fecha };
-    actualizarProyecto(_proyEditIndex, data);
+    await actualizarProyectoAPI(_proyEditIndex, data);
   } else {
-    const idx = agregarProyecto(crearDatosProyecto(campos));
+    const idx = await agregarProyectoAPI(crearDatosProyecto(campos));
     ocultarFormProyecto();
     _renderizar();
     // Abrir automáticamente el nuevo proyecto
@@ -87,15 +88,15 @@ export function editarProyecto(idx) {
   mostrarFormView(getProyecto(idx));
 }
 
-export function toggleEstado(idx) {
-  toggleEstadoProyecto(idx);
+export async function toggleEstado(idx) {
+  await toggleEstadoProyectoAPI(idx);
   _renderizar();
   if (getProyectoActivoIdx() === idx) abrirProyecto(idx);
 }
 
-export function eliminarProyecto(idx) {
+export async function eliminarProyecto(idx) {
   if (!confirm(`¿Eliminar el proyecto "${getProyecto(idx)?.nombre}"?`)) return;
-  const { wasActive } = eliminarProyectoModel(idx);
+  const { wasActive } = await eliminarProyectoAPI(idx);
   if (wasActive) {
     mostrarBarraContexto(false);
     actualizarFooter(null);
@@ -125,4 +126,13 @@ export function volverAProyectos() {
   mostrarSimulador(false);
   actualizarFooter(null);
   mostrarPanelProyectos();
+}
+
+/**
+ * Loads all projects from SQL Server and renders the project list.
+ * Called once on application startup (non-blocking).
+ */
+export async function inicializarProyectos() {
+  await cargarProyectosDesdeAPI();
+  _renderizar();
 }

@@ -1,4 +1,10 @@
 // ProjectModel.js — Project data management (state & CRUD)
+//
+// In-memory cache + async persistence via the REST API.
+// The _proyectos array is the local source of truth for the UI;
+// each entry carries an `id` field returned by SQL Server.
+
+import { api } from '../services/ApiService.js';
 
 export const ESTADO_COLORS = {
   Activo:    { bg: 'bg-green-100', text: 'text-green-700' },
@@ -17,6 +23,8 @@ export const AVATAR_COLORS = [
 
 let _proyectos = [];
 let _proyectoActivoIdx = -1;
+
+// ── Synchronous in-memory accessors (unchanged public API) ────────────────
 
 export function getProyectos() {
   return _proyectos;
@@ -66,6 +74,68 @@ export function toggleEstadoProyecto(idx) {
   _proyectos[idx].estado = estados[(cur + 1) % estados.length];
 }
 
+// ── Async API-backed operations ───────────────────────────────────────────
+
+/**
+ * Loads all projects from the API and repopulates the in-memory cache.
+ * Call once on application startup.
+ */
+export async function cargarProyectosDesdeAPI() {
+  try {
+    const proyectos = await api.proyectos.listar();
+    _proyectos = proyectos;
+  } catch (err) {
+    console.warn('[ProjectModel] No se pudo conectar al API. Usando modo sin conexión.', err.message);
+  }
+}
+
+/**
+ * Creates a project in the API and pushes it into the local cache.
+ * @param {object} data — result of crearDatosProyecto()
+ * @returns {Promise<number>} index of the new project in _proyectos
+ */
+export async function agregarProyectoAPI(data) {
+  const saved = await api.proyectos.crear(data);
+  _proyectos.push(saved);
+  return _proyectos.length - 1;
+}
+
+/**
+ * Updates a project in the API and refreshes the local cache entry.
+ * @param {number} idx
+ * @param {object} data
+ */
+export async function actualizarProyectoAPI(idx, data) {
+  const proyecto = _proyectos[idx];
+  if (!proyecto) return;
+  const saved = await api.proyectos.actualizar(proyecto.id, data);
+  _proyectos[idx] = saved;
+}
+
+/**
+ * Toggles the project estado via the API and updates the local cache.
+ * @param {number} idx
+ */
+export async function toggleEstadoProyectoAPI(idx) {
+  const proyecto = _proyectos[idx];
+  if (!proyecto) return;
+  const saved = await api.proyectos.toggleEstado(proyecto.id);
+  _proyectos[idx] = saved;
+}
+
+/**
+ * Deletes a project from the API and removes it from the local cache.
+ * @param {number} idx
+ * @returns {{ wasActive: boolean }}
+ */
+export async function eliminarProyectoAPI(idx) {
+  const proyecto = _proyectos[idx];
+  if (proyecto?.id) {
+    await api.proyectos.eliminar(proyecto.id);
+  }
+  return eliminarProyecto(idx);
+}
+
 /**
  * Construye el objeto de datos de un proyecto nuevo.
  */
@@ -107,3 +177,4 @@ export function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+

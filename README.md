@@ -2,6 +2,8 @@
 
 Simulador IPR (Inflow Performance Relationship) para análisis de pozos de aceite con modelo Vogel. Incluye gestión de proyectos, conversión de unidades, perfil de fondo (RPF) y análisis de sensibilidad.
 
+Los proyectos se persisten en **SQL Server** a través de una API REST incluida en el propio repositorio.
+
 ---
 
 ## Requisitos previos
@@ -11,6 +13,7 @@ Simulador IPR (Inflow Performance Relationship) para análisis de pozos de aceit
 | [Node.js](https://nodejs.org/) | 18 LTS o superior | https://nodejs.org/es/ |
 | [Visual Studio Code](https://code.visualstudio.com/) | Cualquier versión reciente | https://code.visualstudio.com/ |
 | [Git](https://git-scm.com/) | Cualquier versión reciente | https://git-scm.com/ |
+| **SQL Server** | 2016+ o Azure SQL Database | https://www.microsoft.com/es-mx/sql-server/sql-server-downloads |
 
 ---
 
@@ -66,24 +69,75 @@ Al abrir el proyecto VS Code detectará las extensiones recomendadas automática
 
 ---
 
-## Ejecutar el proyecto
+## Configurar SQL Server
 
-El archivo principal es `index.html`. Como usa módulos ES (`src/main.js`), **no se puede abrir directamente en el navegador** con `file://` — necesitas un servidor local.
+### 1. Crear la base de datos
 
-### Opción 1 — Live Server (recomendado)
+En SQL Server Management Studio (SSMS) o Azure Data Studio, ejecuta:
 
-1. Asegúrate de tener la extensión **Live Server** instalada.
-2. Abre `index.html` en el editor.
-3. Haz clic en **Go Live** en la barra de estado inferior derecha de VS Code.
-4. El navegador abrirá `http://127.0.0.1:5500` automáticamente.
-
-### Opción 2 — npm serve
-
-```bash
-npm run serve
+```sql
+CREATE DATABASE SIMBPR;
 ```
 
-Abre `http://localhost:3000` en tu navegador.
+### 2. Crear las tablas
+
+Abre el archivo `server/schema.sql` en SSMS y ejecútalo contra la base de datos `SIMBPR`. Esto crea las cuatro tablas:
+
+| Tabla | Contenido |
+|-------|-----------|
+| `Proyectos` | Nombre, usuario, cliente, estado, fecha, etc. |
+| `SimulacionIPR` | Parámetros de la curva IPR (Pws, Pwf, Qb, J, unidad, color) |
+| `SimulacionProduccion` | Qt, BSW, API, GOR, Bo |
+| `SimulacionBSN` | Etapas, frecuencia, HP, voltaje, amperaje, profundidad |
+
+### 3. Configurar la conexión
+
+```bash
+# Copia el archivo de ejemplo
+cp server/.env.example server/.env
+
+# Edita server/.env con tus credenciales de SQL Server
+```
+
+Ejemplo de `server/.env`:
+
+```env
+DB_SERVER=localhost
+DB_PORT=1433
+DB_DATABASE=SIMBPR
+DB_USER=sa
+DB_PASSWORD=TuContraseña
+DB_WINDOWS_AUTH=false
+PORT=3001
+```
+
+> **Seguridad**: El archivo `server/.env` está en `.gitignore` y **nunca** se sube al repositorio.
+
+---
+
+## Ejecutar el proyecto
+
+### Modo desarrollo (recomendado)
+
+Necesitas **dos terminales**:
+
+**Terminal 1 — API + frontend (Express)**
+```bash
+npm start
+```
+Esto inicia el servidor en `http://localhost:3001`. Abre esa URL en tu navegador.
+
+**Terminal 2 — Compilación CSS en modo watch (opcional)**
+```bash
+npm run dev:css
+```
+
+### Modo Live Server (sin base de datos / solo pruebas de UI)
+
+1. Abre `index.html` en VS Code.
+2. Haz clic en **Go Live** en la barra de estado inferior derecha.
+3. La app funciona pero **sin persistencia** (los proyectos no se guardan al recargar).
+4. El servidor Express no es necesario en este modo; los errores de conexión al API se muestran solo en la consola del navegador.
 
 ---
 
@@ -91,9 +145,36 @@ Abre `http://localhost:3000` en tu navegador.
 
 | Comando | Descripción |
 |---------|-------------|
-| `npm run serve` | Inicia un servidor local en `http://localhost:3000` |
-| `npm run dev` | Compila el CSS de Tailwind en modo watch (recarga al guardar) |
+| `npm start` | Inicia el servidor Express (API + frontend estático) en `:3001` |
+| `npm run dev:css` | Compila Tailwind en modo watch |
 | `npm run build` | Genera `output.css` minificado para producción |
+| `npm run serve` | Inicia un servidor estático simple en `:3000` (sin API) |
+
+---
+
+## API REST
+
+El servidor expone los siguientes endpoints en `/api`:
+
+### Proyectos
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/proyectos` | Lista todos los proyectos |
+| `POST` | `/api/proyectos` | Crea un nuevo proyecto |
+| `GET` | `/api/proyectos/:id` | Obtiene un proyecto por ID |
+| `PUT` | `/api/proyectos/:id` | Actualiza un proyecto |
+| `PATCH` | `/api/proyectos/:id/estado` | Rota el estado (Activo → En pausa → Cerrado) |
+| `DELETE` | `/api/proyectos/:id` | Elimina un proyecto |
+
+### Datos de simulación por proyecto
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/api/proyectos/:id/simulacion` | Obtiene todos los datos de simulación |
+| `PUT` | `/api/proyectos/:id/simulacion/ipr` | Guarda/actualiza datos IPR |
+| `PUT` | `/api/proyectos/:id/simulacion/produccion` | Guarda/actualiza datos de producción |
+| `PUT` | `/api/proyectos/:id/simulacion/bsn` | Guarda/actualiza datos BSN |
 
 ---
 
@@ -108,12 +189,22 @@ front-simbpr/
 ├── tailwind.config.js
 ├── postcss.config.js
 ├── package.json
-└── src/                    # Código JavaScript (MVC)
+├── server/                 # Backend Node.js + Express
+│   ├── index.js            # Servidor Express (API + static files)
+│   ├── db.js               # Pool de conexiones SQL Server (mssql)
+│   ├── schema.sql          # DDL — crea las 4 tablas en SQL Server
+│   ├── .env.example        # Plantilla de variables de entorno
+│   └── routes/
+│       ├── proyectos.js    # CRUD REST /api/proyectos
+│       └── simulaciones.js # /api/proyectos/:id/simulacion/*
+└── src/                    # Código JavaScript frontend (MVC)
     ├── main.js             # Punto de entrada JS — inicializa la app
+    ├── services/
+    │   └── ApiService.js   # Cliente fetch() para la API REST
     ├── models/             # Lógica de negocio (sin acceso al DOM)
     │   ├── IPRModel.js         Cálculos IPR Vogel
     │   ├── UnitModel.js        Conversión kg/cm² ↔ PSI
-    │   ├── ProjectModel.js     Gestión de proyectos (CRUD)
+    │   ├── ProjectModel.js     Gestión de proyectos (cache + API)
     │   ├── ProductionModel.js  Cálculo de fluidos (Qo, Qw, Qg)
     │   ├── BSNModel.js         Bomba Sumergible (BSN)
     │   └── RPFModel.js         Perfil RPF y sensibilidad
@@ -132,16 +223,22 @@ front-simbpr/
 
 ## Tecnologías
 
-- **HTML5 / CSS3 / JavaScript ES2020** (sin framework)
-- **Tailwind CSS 3** — utilidades CSS (vía CDN en desarrollo)
-- **Chart.js** — gráficas IPR (vía CDN)
-- **ES Modules** — organización modular del código JS
-- **Arquitectura MVC** — separación de responsabilidades
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | HTML5 / CSS3 / JavaScript ES2020 (sin framework) |
+| Estilos | Tailwind CSS 3 |
+| Gráficas | Chart.js (vía CDN) |
+| Módulos JS | ES Modules nativos |
+| Backend | Node.js + Express 5 |
+| Base de datos | SQL Server 2016+ / Azure SQL |
+| Driver DB | mssql (node-mssql) |
+| Arquitectura | MVC (frontend) + REST API (backend) |
 
 ---
 
 ## Notas
 
-- El proyecto usa **Tailwind CDN** para desarrollo; no es necesario compilar CSS para ver la aplicación funcionando.
-- Para producción, ejecuta `npm run build` y enlaza `output.css` en `index.html` en lugar del CDN.
-- Los datos de proyectos se almacenan **solo en memoria** (se pierden al recargar la página). Una versión futura puede integrar `localStorage` o un backend.
+- La app funciona en modo **sin conexión** si el servidor API no está disponible: los proyectos no se guardan pero la simulación IPR sigue funcionando.
+- Para producción, ejecuta `npm run build` para generar el CSS minificado.
+- Las credenciales de SQL Server deben estar **siempre** en `server/.env` (nunca en el código).
+

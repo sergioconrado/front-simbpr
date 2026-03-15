@@ -28,6 +28,7 @@ import {
   eliminarProyecto,
   abrirProyecto,
   volverAProyectos,
+  inicializarProyectos,
 } from './controllers/ProjectController.js';
 
 import {
@@ -75,3 +76,6 @@ iniciarReloj();
 
 // Start on the Projects tab
 mostrarPanelProyectos();
+
+// Load projects from SQL Server (non-blocking — UI is already usable)
+inicializarProyectos();
