@@ -1,0 +1,54 @@
+{
+  // ── Debug configurations ────────────────────────────────────────────────
+  // Press F5 to pick a configuration, or use the Run & Debug panel.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // ── Inicia el servidor Express y lo depura ──────────────────────────
+      "name": "🚀 Iniciar servidor SIMBPR",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/index.js",
+      "envFile": "${workspaceFolder}/server/.env",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "restart": true,
+      "runtimeArgs": ["--inspect"],
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    },
+    {
+      // ── Se conecta a un servidor que ya está corriendo ──────────────────
+      "name": "🔌 Conectar al servidor (ya en ejecución)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    },
+    {
+      // ── Inicia el servidor Y abre el navegador automáticamente ──────────
+      "name": "🌐 Servidor + Abrir navegador",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/index.js",
+      "envFile": "${workspaceFolder}/server/.env",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "restart": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "serverReadyAction": {
+        "pattern": "Servidor iniciado en http://localhost:([0-9]+)",
+        "uriFormat": "http://localhost:%s",
+        "action": "openExternally"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      // ── Inicia servidor + compilación de CSS en paralelo ─────────────────
+      "name": "🔧 Servidor + CSS Watch",
+      "configurations": ["🚀 Iniciar servidor SIMBPR"],
+      "preLaunchTask": "CSS: Watch (Tailwind)"
+    }
+  ]
+}

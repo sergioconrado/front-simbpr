@@ -1,0 +1,9 @@
+node_modules/
+output.css
+*.log
+.DS_Store
+Thumbs.db
+
+# Environment variables — NEVER commit secrets
+.env
+server/.env

@@ -1,0 +1,56 @@
+{
+  "folders": [
+    {
+      "name": "SIMBPR — Simulador de Pozos",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "window.title": "SIMBPR ${separator} ${activeEditorShort}"
+  },
+  "extensions": {
+    "recommendations": [
+      "ritwickdey.LiveServer",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "christian-kohler.path-intellisense",
+      "ms-vscode.vscode-js-debug",
+      "mikestead.dotenv",
+      "humao.rest-client",
+      "ms-mssql.mssql"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🚀 Iniciar servidor SIMBPR",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server/index.js",
+        "envFile": "${workspaceFolder}/server/.env",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "restart": true,
+        "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+      },
+      {
+        "name": "🌐 Servidor + Abrir navegador",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server/index.js",
+        "envFile": "${workspaceFolder}/server/.env",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "restart": true,
+        "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+        "serverReadyAction": {
+          "pattern": "Servidor iniciado en http://localhost:([0-9]+)",
+          "uriFormat": "http://localhost:%s",
+          "action": "openExternally"
+        }
+      }
+    ]
+  }
+}
