@@ -83,8 +83,8 @@ else
                         <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">
                             Editar
                         </a>
-                        <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="m-0"
-                              onsubmit="return confirm('¿Eliminar el proyecto &quot;@Html.Raw(p.Nombre.Replace("'", "\\'"))&quot;?')">
+                        <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="m-0 js-delete-form"
+                              data-nombre="@p.Nombre">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
                         </form>
@@ -94,3 +94,17 @@ else
         }
     </div>
 }
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.js-delete-form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            var nombre = form.dataset.nombre || '';
+            if (!confirm('¿Eliminar el proyecto "' + nombre + '"?')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+}
+
