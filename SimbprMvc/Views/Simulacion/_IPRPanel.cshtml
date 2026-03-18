@@ -1,0 +1,153 @@
+@model SimbprMvc.Models.ViewModels.SimulacionIPRViewModel
+@{
+    var r = Model.Resultado;
+}
+
+<div class="row g-4">
+    <!-- Input form -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold">Parámetros IPR</h6>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Simulacion" asp-action="IPR"
+                      asp-route-proyectoId="@Model.ProyectoId" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small" role="alert"></div>
+                    <input type="hidden" asp-for="ProyectoId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Pws" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Pws" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">@Model.Unidad</span>
+                        </div>
+                        <span asp-validation-for="Pws" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Pwf" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Pwf" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">@Model.Unidad</span>
+                        </div>
+                        <span asp-validation-for="Pwf" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Qb" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Qb" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">bpd</span>
+                        </div>
+                        <span asp-validation-for="Qb" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="JIndex" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="JIndex" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">bpd/@Model.Unidad</span>
+                        </div>
+                        <span asp-validation-for="JIndex" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Unidad" class="form-label small fw-semibold"></label>
+                        <select asp-for="Unidad" class="form-select form-select-sm">
+                            <option value="kg">kg/cm²</option>
+                            <option value="psi">PSI</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="IprColor" class="form-label small fw-semibold"></label>
+                        <input asp-for="IprColor" type="color" class="form-control form-control-sm form-control-color" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        Calcular &amp; Guardar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="col-lg-8">
+        @if (r is not null)
+        {
+            @if (!string.IsNullOrEmpty(r.Error))
+            {
+                <div class="alert alert-warning small">@r.Error</div>
+            }
+
+            <!-- KPIs -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 bg-primary text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.Qmax.ToString("F0")</div>
+                        <div class="small">Qmax (bpd)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 bg-success text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.QOperacion.ToString("F0")</div>
+                        <div class="small">Q operación (bpd)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 bg-info text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.PwfSistema.ToString("F1")</div>
+                        <div class="small">Pwf (@Model.Unidad)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 bg-secondary text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.J.ToString("F4")</div>
+                        <div class="small">J (bpd/@Model.Unidad)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-2">
+                    <h6 class="mb-0 small fw-bold">Tabla IPR (11 puntos)</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-bordered mb-0 small">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-end">Q (bpd)</th>
+                                    <th class="text-end">Pwf (@Model.Unidad)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < r.Tabla.Count; i++)
+                                {
+                                    var row = r.Tabla[i];
+                                    <tr>
+                                        <td class="text-center">@(i + 1)</td>
+                                        <td class="text-end">@row.Q.ToString("F1")</td>
+                                        <td class="text-end">@row.Pwf.ToString("F2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-5">
+                <div style="font-size:3rem">📈</div>
+                <p class="mt-2">Ingresa los parámetros y presiona <strong>Calcular</strong>.</p>
+            </div>
+        }
+    </div>
+</div>
