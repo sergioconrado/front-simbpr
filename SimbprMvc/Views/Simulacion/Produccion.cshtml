@@ -1,0 +1,16 @@
+@model SimbprMvc.Models.ViewModels.SimulacionProduccionViewModel
+@{
+    ViewData["Title"] = $"Producción — {Model.ProyectoNombre}";
+}
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-controller="Simulacion" asp-action="Index" asp-route-proyectoId="@Model.ProyectoId"
+       class="btn btn-sm btn-outline-secondary">← Simulador</a>
+    <h5 class="mb-0 fw-bold">🧪 Producción de Fluidos — @Model.ProyectoNombre</h5>
+</div>
+
+<partial name="_ProduccionPanel" model="Model" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

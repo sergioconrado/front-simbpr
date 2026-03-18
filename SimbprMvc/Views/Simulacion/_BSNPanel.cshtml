@@ -1,0 +1,158 @@
+@model SimbprMvc.Models.ViewModels.SimulacionBSNViewModel
+@{
+    var r = Model.Resultado;
+}
+
+<div class="row g-4">
+    <!-- Input form -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold">Parámetros BSN / ESP</h6>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Simulacion" asp-action="BSN"
+                      asp-route-proyectoId="@Model.ProyectoId" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger small"></div>
+                    <input type="hidden" asp-for="ProyectoId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Etapas" class="form-label small fw-semibold"></label>
+                        <input asp-for="Etapas" class="form-control form-control-sm" type="number" min="1" />
+                        <span asp-validation-for="Etapas" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Freq" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Freq" class="form-control" type="number" step="any" min="30" max="90" />
+                            <span class="input-group-text">Hz</span>
+                        </div>
+                        <span asp-validation-for="Freq" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Hp" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Hp" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">HP</span>
+                        </div>
+                        <span asp-validation-for="Hp" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Volt" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Volt" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">V</span>
+                        </div>
+                        <span asp-validation-for="Volt" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Amp" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Amp" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">A</span>
+                        </div>
+                        <span asp-validation-for="Amp" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Depth" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="Depth" class="form-control" type="number" step="any" min="0" />
+                            <span class="input-group-text">m</span>
+                        </div>
+                        <span asp-validation-for="Depth" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TempFondo" class="form-label small fw-semibold"></label>
+                        <div class="input-group input-group-sm">
+                            <input asp-for="TempFondo" class="form-control" type="number" step="any" min="0" max="300" />
+                            <span class="input-group-text">°C</span>
+                        </div>
+                        <span asp-validation-for="TempFondo" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        Calcular &amp; Guardar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="col-lg-8">
+        @if (r is not null)
+        {
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4">
+                    <div class="card border-0 bg-primary text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.Cabeza.ToString("F1")</div>
+                        <div class="small">Cabeza (m)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="card border-0 bg-success text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.Bhp.ToString("F1")</div>
+                        <div class="small">BHP (HP)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="card border-0 bg-info text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.Eficiencia.ToString("F1")</div>
+                        <div class="small">Eficiencia (%)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="card border-0 bg-warning text-dark text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.CargaFactor.ToString("F1")</div>
+                        <div class="small">Factor de carga (%)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="card border-0 bg-secondary text-white text-center py-3 shadow-sm">
+                        <div class="fw-bold fs-5">@r.PotenciaKw.ToString("F2")</div>
+                        <div class="small">Potencia (kW)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary table -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-2">
+                    <h6 class="mb-0 small fw-bold">Resumen BSN</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped table-bordered mb-0 small">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Parámetro</th>
+                                <th class="text-end">Valor</th>
+                                <th>Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cabeza total</td><td class="text-end">@r.Cabeza.ToString("F1")</td><td>m</td></tr>
+                            <tr><td>Potencia al freno (BHP)</td><td class="text-end">@r.Bhp.ToString("F1")</td><td>HP</td></tr>
+                            <tr><td>Eficiencia hidráulica</td><td class="text-end">@r.Eficiencia.ToString("F1")</td><td>%</td></tr>
+                            <tr><td>Factor de carga</td><td class="text-end">@r.CargaFactor.ToString("F1")</td><td>%</td></tr>
+                            <tr><td>Potencia eléctrica</td><td class="text-end">@r.PotenciaKw.ToString("F2")</td><td>kW</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-muted py-5">
+                <div style="font-size:3rem">⚙️</div>
+                <p class="mt-2">Ingresa los parámetros y presiona <strong>Calcular</strong>.</p>
+            </div>
+        }
+    </div>
+</div>

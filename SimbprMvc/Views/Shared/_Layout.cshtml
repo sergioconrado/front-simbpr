@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — SIMBPR</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SimbprMvc.styles.css" asp-append-version="true" />
+    <style>
+        body { background-color: #f8fafc; }
+        .navbar-brand { font-weight: 700; letter-spacing: .04em; }
+        .simbpr-badge { font-size: .65rem; background:#1d4ed8; color:#fff; border-radius:4px; padding:2px 6px; vertical-align:middle; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom shadow-sm mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Proyectos" asp-action="Index">
+                    🛢 SIMBPR <span class="simbpr-badge">MVC</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Abrir menú">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Proyectos" asp-action="Index">Proyectos</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-lg">
+        @if (TempData["Success"] is string msg)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @msg
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        }
+        <main role="main" class="pb-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top bg-white mt-5 py-3 text-muted small">
+        <div class="container-lg d-flex justify-content-between">
+            <span>&copy; @DateTime.UtcNow.Year SIMBPR — Simulador de Pozos Petroleros</span>
+            <span>ASP.NET Core @System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

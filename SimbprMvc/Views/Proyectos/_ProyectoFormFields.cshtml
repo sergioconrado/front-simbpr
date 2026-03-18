@@ -1,0 +1,37 @@
+@model SimbprMvc.Models.ViewModels.ProyectoFormViewModel
+
+<div class="mb-3">
+    <label asp-for="Nombre" class="form-label fw-semibold"></label>
+    <input asp-for="Nombre" class="form-control" placeholder="Ej. Análisis Pozo-1" />
+    <span asp-validation-for="Nombre" class="text-danger small"></span>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label asp-for="Usuario" class="form-label fw-semibold"></label>
+        <input asp-for="Usuario" class="form-control" placeholder="Nombre del ingeniero" />
+        <span asp-validation-for="Usuario" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Cliente" class="form-label fw-semibold"></label>
+        <input asp-for="Cliente" class="form-control" placeholder="Empresa cliente" />
+        <span asp-validation-for="Cliente" class="text-danger small"></span>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label asp-for="Compania" class="form-label fw-semibold"></label>
+        <input asp-for="Compania" class="form-control" placeholder="Empresa consultora (opcional)" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Orden" class="form-label fw-semibold"></label>
+        <input asp-for="Orden" class="form-control" placeholder="No. de orden (opcional)" />
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Comentarios" class="form-label fw-semibold"></label>
+    <textarea asp-for="Comentarios" class="form-control" rows="3"
+              placeholder="Descripción adicional del proyecto…"></textarea>
+</div>

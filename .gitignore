@@ -7,3 +7,9 @@ Thumbs.db
 # Environment variables — NEVER commit secrets
 .env
 server/.env
+
+# ASP.NET Core MVC build artifacts
+SimbprMvc/bin/
+SimbprMvc/obj/
+SimbprMvc/.vs/
+SimbprMvc/*.user

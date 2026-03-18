@@ -1,0 +1,49 @@
+@model SimbprMvc.Models.ViewModels.SimuladorViewModel
+@{
+    ViewData["Title"] = $"Simulador — {Model.ProyectoNombre}";
+}
+
+<!-- Project context bar -->
+<div class="d-flex align-items-center gap-3 mb-4 p-3 bg-white rounded border shadow-sm">
+    <a asp-controller="Proyectos" asp-action="Index" class="btn btn-sm btn-outline-secondary">← Proyectos</a>
+    <div class="vr"></div>
+    <div>
+        <span class="fw-bold">@Model.ProyectoNombre</span>
+        <span class="badge bg-success ms-2">@Model.ProyectoEstado</span>
+    </div>
+    <div class="text-muted small ms-auto">Cliente: @Model.ProyectoCliente</div>
+</div>
+
+<!-- Tab navigation -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-ipr" type="button">
+            📈 IPR (Vogel)
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-prod" type="button">
+            🧪 Producción
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-bsn" type="button">
+            ⚙️ BSN (ESP)
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- IPR Tab -->
+    <div class="tab-pane fade show active" id="tab-ipr">
+        <partial name="_IPRPanel" model="Model.IPR" />
+    </div>
+    <!-- Produccion Tab -->
+    <div class="tab-pane fade" id="tab-prod">
+        <partial name="_ProduccionPanel" model="Model.Produccion" />
+    </div>
+    <!-- BSN Tab -->
+    <div class="tab-pane fade" id="tab-bsn">
+        <partial name="_BSNPanel" model="Model.BSN" />
+    </div>
+</div>
