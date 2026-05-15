@@ -13,6 +13,7 @@ import {
   calcularBSNHandler,
   mostrarPanel,
   mostrarTab,
+  mostrarYacimientoTab,
   actualizarSensibilidadHandler,
   calcularRPFHandler,
   iniciarReloj,
@@ -50,6 +51,7 @@ window.calcularProduccion   = calcularProduccionHandler;
 window.calcularBSN          = calcularBSNHandler;
 window.mostrarPanel         = mostrarPanel;
 window.mostrarTab           = mostrarTab;
+window.mostrarYacimientoTab = mostrarYacimientoTab;
 window.actualizarSensibilidad = actualizarSensibilidadHandler;
 window.calcularRPF          = calcularRPFHandler;
 

@@ -55,7 +55,9 @@
       "database": "SIMBPR",
       "authenticationType": "SqlLogin",
       "user": "sa",
-      "savePassword": false
+      "savePassword": false,
+      "groupId": "ROOT",
+      "id": "9e6c03cf-0ddb-4b17-9eab-6eeddce6b680"
     }
   ],
 

@@ -108,7 +108,7 @@ export function actualizarColorSwatch(color) {
  * Recibe valores ya calculados por el controlador.
  * @param {{ pws, pwf, Jactual, Qmax, qOp, isPSI }} params
  */
-export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI }) {
+export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI, ipr = [], vlpParams = {} }) {
   const K = KGcm2_TO_PSI;
   const pressUnit = isPSI ? 'PSI' : 'kg/cm²';
 
@@ -132,14 +132,20 @@ export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI }) {
   const drawdown = pws - pwf;
   set('d-drawdown',    isPSI ? (drawdown * K).toFixed(1) : drawdown.toFixed(0));
   set('d-eficiencia',  Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : '0');
+  set('d-prof-disp',   (vlpParams.profundidadDisponible || vlpParams.profBSN || 0).toFixed(0));
+  set('d-nl',          (vlpParams.nivelLiquido || 0).toFixed(0));
+  set('d-pl',          isPSI ? ((vlpParams.pl || 0) * K).toFixed(1) : (vlpParams.pl || 0).toFixed(0));
+  set('d-pwh',         isPSI ? ((vlpParams.pwh || 0) * K).toFixed(1) : (vlpParams.pwh || 0).toFixed(0));
+  set('d-tubing-id',   (vlpParams.tubingId || 0).toFixed(3));
 
   // Tabla de puntos IPR (cada 5 % de Qmax)
   const tbody = document.getElementById('tabla-ipr-body');
   if (!tbody) return;
   tbody.innerHTML = '';
   for (let i = 0; i <= 20; i++) {
-    const q      = (i / 20) * Qmax;
-    const pCalc  = Math.max(pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2)), 0);
+    const pt     = ipr[i * 10] || { x: (i / 20) * Qmax, y: 0 };
+    const q      = pt.x;
+    const pCalc  = Math.max(pt.y, 0);
     const pDisp  = isPSI ? (pCalc * K).toFixed(1) : pCalc.toFixed(0);
     const pct    = i * 5;
     const isOp   = Math.abs(q - qOp) < Qmax / 15;

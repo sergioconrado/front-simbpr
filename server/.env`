@@ -1,0 +1,23 @@
+# Copia este archivo a .env y rellena con tus credenciales de SQL Server.
+# NUNCA subas el archivo .env al repositorio.
+
+# Dirección del servidor SQL Server (ej. localhost, 192.168.1.10, servidor.empresa.com)
+DB_SERVER=localhost
+
+# Puerto SQL Server (por defecto 1433)
+DB_PORT=1433
+
+# Nombre de la base de datos
+DB_DATABASE=SIMBPR
+
+# Nombre de usuario de SQL Server
+DB_USER=sa
+
+# Contraseña de SQL Server
+DB_PASSWORD=TuContraseñaSegura
+
+# Autenticación de Windows (true) en lugar de usuario/contraseña (false)
+DB_WINDOWS_AUTH=false
+
+# Puerto donde escuchará el servidor Express (por defecto 3001)
+PORT=3001

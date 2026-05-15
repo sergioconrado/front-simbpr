@@ -1,6 +1,7 @@
 // SimulatorController.js — Simulator events & coordination
 
-import { calcularCurvas, calcularQmaxDesdePuntoVogel } from '../models/IPRModel.js';
+import { calcularCurvas } from '../models/IPRModel.js';
+import { calcularCurvaVLP, encontrarInterseccionCurvas } from '../models/VLPModel.js';
 import { calcularProduccion } from '../models/ProductionModel.js';
 import { calcularBSN }        from '../models/BSNModel.js';
 import { calcularRPF, calcularSensibilidad } from '../models/RPFModel.js';
@@ -8,7 +9,6 @@ import {
   esPSI,
   setCurrentUnidad,
   KGcm2_TO_PSI,
-  pwsParaEje,
 } from '../models/UnitModel.js';
 
 import {
@@ -34,7 +34,7 @@ import {
   actualizarReloj,
 } from '../views/SimulatorView.js';
 
-import { mostrarPanelUI, mostrarTabUI } from '../views/AppView.js';
+import { mostrarPanelUI, mostrarTabUI, mostrarYacimientoTabUI } from '../views/AppView.js';
 
 // ── Color IPR activo ────────────────────────────────────────────────────────
 let iprColor = '#2563eb';
@@ -42,6 +42,55 @@ let iprColor = '#2563eb';
 // ── Helpers para leer inputs del DOM ───────────────────────────────────────
 function getFloat(id, fallback = 0) {
   return parseFloat(document.getElementById(id)?.value) || fallback;
+}
+
+function leerParametrosVLP(Qmax) {
+  const profundidadDisponible = getFloat('vlp_prof_disp', getFloat('pozo_prof_disp', 2450));
+  return {
+    qmax: Qmax,
+    profundidadDisponible,
+    profBSN: getFloat('vlp_bsn_depth', getFloat('bsn_depth', profundidadDisponible)),
+    nivelLiquido: getFloat('vlp_nl', getFloat('pozo_nl', 500)),
+    pl: getFloat('vlp_pl', getFloat('pozo_pl', 15)),
+    pwh: getFloat('vlp_pwh', getFloat('pozo_pwh', 20)),
+    tubingId: getFloat('vlp_tubing_id', getFloat('pozo_tubing_id', 2.441)),
+    bsw: getFloat('vlp_bsw', getFloat('prod_bsw', 30)),
+    api: getFloat('vlp_api', getFloat('prod_api', 35)),
+    gor: getFloat('vlp_gor', getFloat('prod_gor', 150)),
+    viscosidad: getFloat('vlp_visc', getFloat('prod_visc', 2.5)),
+    etapas: getFloat('vlp_bsn_etapas', getFloat('bsn_etapas', 120)),
+    freq: getFloat('vlp_bsn_freq', getFloat('bsn_freq', 60)),
+  };
+}
+
+function calcularSistemaIPRVLP(pws, pwf, qb, J) {
+  const datosIPR = calcularCurvas(pws, pwf, qb, J);
+  const vlpParams = leerParametrosVLP(datosIPR.Qmax);
+  const qVals = datosIPR.ipr.map((pt) => pt.x);
+  const vlp = calcularCurvaVLP(qVals, vlpParams);
+  const puntoOperacion = encontrarInterseccionCurvas(datosIPR.ipr, vlp);
+
+  return {
+    ...datosIPR,
+    vlp,
+    vlpParams,
+    puntoOperacion,
+    qOperacion: puntoOperacion?.x || 0,
+    pwfSistema: puntoOperacion?.y || 0,
+  };
+}
+
+function normalizarEtiquetasVLP() {
+  const etiquetas = {
+    vlp_nl: 'Nivel de liquido NL (m)',
+    vlp_pwh: 'Pwh (kg/cm2)',
+    vlp_pl: 'PL (kg/cm2)',
+  };
+
+  Object.entries(etiquetas).forEach(([inputId, texto]) => {
+    const label = document.getElementById(inputId)?.previousElementSibling;
+    if (label) label.textContent = texto;
+  });
 }
 
 // ── Cálculo y sincronización central ───────────────────────────────────────
@@ -56,7 +105,7 @@ function _calcularYActualizar() {
   const qb  = getFloat('inputQb');
   const J   = getFloat('inputJ', 1);
 
-  const datos = calcularCurvas(pws, pwf, qb, J);
+  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
 
   // Actualizar J calculado en el input oculto
   actualizarInputJ(datos.J);
@@ -149,34 +198,28 @@ export function mostrarTab(tab, boton) {
   mostrarTabUI(tab, boton);
 }
 
+export function mostrarYacimientoTab(tab, boton) {
+  mostrarYacimientoTabUI(tab, boton);
+}
+
 function _actualizarTablasDatosCompleto() {
   const pws   = getFloat('inputPws');
   const pwf   = getFloat('inputPwf');
   const J     = getFloat('inputJ', 1);
   const qb    = getFloat('inputQb');
   const isPSI = esPSI();
+  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
 
-  // Compute Qmax & J via model
-  let Jactual = J, Qmax;
-  const Qcalc = calcularQmaxDesdePuntoVogel(pws, pwf, qb);
-  if (Qcalc !== null && Qcalc > 0) {
-    Jactual = (1.8 * Qcalc) / (pws || 1);
-    Qmax    = Qcalc;
-  } else {
-    Qmax = (J * pws) / 1.8;
-  }
-
-  // Find operating point
-  let qOp = 0, diffMin = Infinity;
-  const N = 60;
-  for (let i = 0; i <= N; i++) {
-    const q      = (i / N) * Qmax;
-    const pCalc  = pws * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
-    const diff   = Math.abs(pCalc - pwf);
-    if (diff < diffMin) { diffMin = diff; qOp = q; }
-  }
-
-  actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI });
+  actualizarTablasDatos({
+    pws,
+    pwf,
+    Jactual: datos.J,
+    Qmax: datos.Qmax,
+    qOp: datos.qOperacion,
+    isPSI,
+    ipr: datos.ipr,
+    vlpParams: datos.vlpParams,
+  });
 }
 
 export function actualizarSensibilidadHandler() {
@@ -214,7 +257,37 @@ export function iniciarReloj() {
 
 // ── Listeners de auto-graficado ─────────────────────────────────────────────
 export function registrarListeners() {
-  ['inputPws', 'inputPwf', 'inputQb'].forEach((id) => {
+  normalizarEtiquetasVLP();
+
+  [
+    'inputPws',
+    'inputPwf',
+    'inputQb',
+    'vlp_prof_disp',
+    'vlp_bsn_depth',
+    'vlp_nl',
+    'vlp_pwh',
+    'vlp_pl',
+    'vlp_tubing_id',
+    'vlp_bsw',
+    'vlp_api',
+    'vlp_gor',
+    'vlp_visc',
+    'vlp_bsn_etapas',
+    'vlp_bsn_freq',
+    'pozo_prof_disp',
+    'pozo_pl',
+    'pozo_pwh',
+    'pozo_nl',
+    'pozo_tubing_id',
+    'prod_bsw',
+    'prod_api',
+    'prod_gor',
+    'prod_visc',
+    'bsn_depth',
+    'bsn_etapas',
+    'bsn_freq',
+  ].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('input', () => {

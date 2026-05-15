@@ -1,15 +1,17 @@
-// RPFModel.js — Reservoir Pressure/Temperature Profile & Sensitivity Analysis
+// RPFModel.js - Reservoir Pressure/Temperature Profile & Sensitivity Analysis
+
+import { calcularQVogelDesdePwf } from './IPRModel.js';
 
 const TEMP_SUPERFICIAL = 25; // °C estimada en superficie
 
 /**
- * Calcula el perfil de presión y temperatura vs. profundidad.
+ * Calcula el perfil de presion y temperatura vs. profundidad.
  * @param {{ pws: number, pwf: number, J: number, profBSN: number, bht: number }} params
  * @returns {{ gradP, gradT, depths, pressures, temps, gradPs, gradTs, diagnostico, kpis, operacion }}
  */
 export function calcularRPF({ pws, pwf, J, profBSN, bht }) {
   const STEPS = 10;
-  const gradP = (pws / profBSN) * 100;      // kg/cm²/100 m
+  const gradP = (pws / profBSN) * 100; // kg/cm²/100 m
   const gradT = ((bht - TEMP_SUPERFICIAL) / profBSN) * 100; // °C/100 m
 
   const depths = [], pressures = [], temps = [], gradPs = [], gradTs = [];
@@ -20,10 +22,10 @@ export function calcularRPF({ pws, pwf, J, profBSN, bht }) {
     const t = TEMP_SUPERFICIAL + (d / profBSN) * (bht - TEMP_SUPERFICIAL);
     const gp = i > 0
       ? ((p - pressures[i - 1]) / ((d - depths[i - 1]) / 100)).toFixed(2)
-      : '—';
+      : '-';
     const gt = i > 0
       ? ((t - temps[i - 1]) / ((d - depths[i - 1]) / 100)).toFixed(2)
-      : '—';
+      : '-';
     depths.push(d);
     pressures.push(p);
     temps.push(t);
@@ -33,7 +35,7 @@ export function calcularRPF({ pws, pwf, J, profBSN, bht }) {
 
   const drawdown = pws - pwf;
   const ddPct = pws > 0 ? (drawdown / pws) * 100 : 0;
-  const Qmax = J * pws;
+  const Qmax = (J * pws) / 1.8;
 
   const diagnostico = {
     presion: drawdown > 30
@@ -61,19 +63,19 @@ export function calcularRPF({ pws, pwf, J, profBSN, bht }) {
     gradPs,
     gradTs,
     diagnostico,
-    kpis:     { pws, bht, gradP, gradT },
+    kpis: { pws, bht, gradP, gradT },
     operacion: { profBSN, pws, pwf, drawdown, J },
   };
 }
 
 /**
- * Calcula el análisis de sensibilidad variando un parámetro.
+ * Calcula el analisis de sensibilidad variando un parametro.
  * @param {{ pws: number, pwf: number, J: number, variable: string, sMin: number, sMax: number }} params
  * @returns {{ rows, xVals, qmaxVals, qopVals, label }}
  */
 export function calcularSensibilidad({ pws, pwf, J, variable, sMin, sMax }) {
   const labels = {
-    j:   'J (bpd/kg/cm²)',
+    j: 'J (bpd/kg/cm²)',
     pwf: 'Pwf (kg/cm²)',
     pws: 'Pws (kg/cm²)',
   };
@@ -83,28 +85,21 @@ export function calcularSensibilidad({ pws, pwf, J, variable, sMin, sMax }) {
   const rows = [], xVals = [], qmaxVals = [], qopVals = [];
 
   for (let i = 0; i <= steps; i++) {
-    const val  = sMin + i * step;
-    const jV   = variable === 'j'   ? val : J;
+    const val = sMin + i * step;
+    const jV = variable === 'j' ? val : J;
     const pwfV = variable === 'pwf' ? val : pwf;
     const pwsV = variable === 'pws' ? val : pws;
 
     const Qmax = (jV * pwsV) / 1.8;
-    let qOp = 0, diffMin = Infinity;
-    const N = 60;
-    for (let k = 0; k <= N; k++) {
-      const q = (k / N) * Qmax;
-      const pCalc = pwsV * (1 - 0.2 * (q / Qmax) - 0.8 * Math.pow(q / Qmax, 2));
-      const diff = Math.abs(pCalc - pwfV);
-      if (diff < diffMin) { diffMin = diff; qOp = q; }
-    }
-
-    const drawdown  = pwsV - pwfV;
+    const qOp = calcularQVogelDesdePwf(pwsV, Qmax, pwfV);
+    const drawdown = pwsV - pwfV;
     const eficiencia = Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(1) : '0.0';
+
     rows.push({
-      val:        val.toFixed(2),
-      Qmax:       Qmax.toFixed(0),
-      qOp:        qOp.toFixed(0),
-      drawdown:   drawdown.toFixed(2),
+      val: val.toFixed(2),
+      Qmax: Qmax.toFixed(0),
+      qOp: qOp.toFixed(0),
+      drawdown: drawdown.toFixed(2),
       eficiencia,
     });
     xVals.push(val.toFixed(2));

@@ -330,6 +330,18 @@
                 id="yacimiento"
                 class="bg-gray-50/70 rounded-xl p-4 space-y-4"
               >
+                <div class="flex bg-gray-100 rounded-xl p-0.5 gap-0.5">
+                  <button
+                    onclick="mostrarYacimientoTab('yacimiento-ipr', this)"
+                    class="yacimiento-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-[10px] bg-white text-gray-800 shadow-sm transition-all duration-200"
+                  >IPR</button>
+                  <button
+                    onclick="mostrarYacimientoTab('yacimiento-vlp', this)"
+                    class="yacimiento-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-[10px] text-gray-400 transition-all duration-200"
+                  >VLP</button>
+                </div>
+
+                <div id="yacimiento-ipr" class="yacimiento-subpanel space-y-4">
                 <!-- Selector de Unidad -->
                 <div class="flex flex-col gap-1.5">
                   <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Unidad</span>
@@ -412,6 +424,66 @@
                   </label>
                 </div>
                 <p id="vogelCalibError" class="text-xs text-red-500 hidden"></p>
+                </div>
+
+                <div id="yacimiento-vlp" class="yacimiento-subpanel hidden space-y-4">
+                  <div>
+                    <label class="text-sm text-gray-500">Prof. disponible (m)</label>
+                    <input id="vlp_prof_disp" type="number" value="2450" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                  </div>
+                  <div>
+                    <label class="text-sm text-gray-500">Prof. asentamiento BSN (m)</label>
+                    <input id="vlp_bsn_depth" type="number" value="2200" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                  </div>
+                  <div>
+                    <label class="text-sm text-gray-500">Nivel de lÃ­quido NL (m)</label>
+                    <input id="vlp_nl" type="number" value="500" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-sm text-gray-500">Pwh (kg/cmÂ²)</label>
+                      <input id="vlp_pwh" type="number" value="20" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                    <div>
+                      <label class="text-sm text-gray-500">PL (kg/cmÂ²)</label>
+                      <input id="vlp_pl" type="number" value="15" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-sm text-gray-500">ID tubing (pg)</label>
+                    <input id="vlp_tubing_id" type="number" value="2.441" step="0.001" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-sm text-gray-500">BSW (%)</label>
+                      <input id="vlp_bsw" type="number" value="30" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                    <div>
+                      <label class="text-sm text-gray-500">API</label>
+                      <input id="vlp_api" type="number" value="35" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-sm text-gray-500">GOR (scf/bbl)</label>
+                      <input id="vlp_gor" type="number" value="150" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                    <div>
+                      <label class="text-sm text-gray-500">Viscosidad (cP)</label>
+                      <input id="vlp_visc" type="number" value="2.5" step="0.1" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-sm text-gray-500">Etapas BSN</label>
+                      <input id="vlp_bsn_etapas" type="number" value="120" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                    <div>
+                      <label class="text-sm text-gray-500">Frecuencia (Hz)</label>
+                      <input id="vlp_bsn_freq" type="number" value="60" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- POZO -->
@@ -447,38 +519,52 @@
                   </select>
                 </div>
 
-                <div>
+                <div class="hidden">
                   <label class="text-sm text-gray-500">Prof. m disp.</label>
                   <input
+                    id="pozo_prof_disp"
                     type="number"
                     value="2450"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
                   />
                 </div>
 
-                <div>
+                <div class="hidden">
                   <label class="text-sm text-gray-500">PL (kg/cm²)</label>
                   <input
+                    id="pozo_pl"
                     type="number"
                     value="15"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
                   />
                 </div>
 
-                <div>
+                <div class="hidden">
                   <label class="text-sm text-gray-500">Pwh (kg/cm²)</label>
                   <input
+                    id="pozo_pwh"
                     type="number"
                     value="20"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
                   />
                 </div>
 
-                <div>
+                <div class="hidden">
                   <label class="text-sm text-gray-500">NL (m)</label>
                   <input
+                    id="pozo_nl"
                     type="number"
                     value="500"
+                    class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
+                  />
+                </div>
+                <div class="hidden">
+                  <label class="text-sm text-gray-500">ID tubing (pg)</label>
+                  <input
+                    id="pozo_tubing_id"
+                    type="number"
+                    value="2.441"
+                    step="0.001"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl"
                   />
                 </div>
@@ -955,26 +1041,32 @@
                       <tr>
                         <td class="px-4 py-2">Profundidad disponible</td>
                         <td class="px-4 py-2">Prof.</td>
-                        <td class="px-4 py-2 font-medium">2,450</td>
+                        <td class="px-4 py-2 font-medium" id="d-prof-disp">2,450</td>
                         <td class="px-4 py-2 text-gray-400">m</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Nivel de líquido</td>
                         <td class="px-4 py-2">NL</td>
-                        <td class="px-4 py-2 font-medium">500</td>
+                        <td class="px-4 py-2 font-medium" id="d-nl">500</td>
                         <td class="px-4 py-2 text-gray-400">m</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Presión en la línea</td>
                         <td class="px-4 py-2">PL</td>
-                        <td class="px-4 py-2 font-medium">15</td>
+                        <td class="px-4 py-2 font-medium" id="d-pl">15</td>
                         <td class="px-4 py-2 text-gray-400">kg/cm²</td>
                       </tr>
                       <tr>
                         <td class="px-4 py-2">Presión en la cabeza</td>
                         <td class="px-4 py-2">Pwh</td>
-                        <td class="px-4 py-2 font-medium">20</td>
+                        <td class="px-4 py-2 font-medium" id="d-pwh">20</td>
                         <td class="px-4 py-2 text-gray-400">kg/cm²</td>
+                      </tr>
+                      <tr>
+                        <td class="px-4 py-2">ID tubing</td>
+                        <td class="px-4 py-2">ID</td>
+                        <td class="px-4 py-2 font-medium" id="d-tubing-id">2.441</td>
+                        <td class="px-4 py-2 text-gray-400">pg</td>
                       </tr>
                     </tbody>
                   </table>

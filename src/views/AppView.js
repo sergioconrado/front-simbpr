@@ -97,6 +97,20 @@ export function mostrarTabUI(tab, boton) {
 /**
  * Activa el botón del subnav de Proyectos y muestra su panel.
  */
+export function mostrarYacimientoTabUI(tab, boton) {
+  document.querySelectorAll('.yacimiento-subpanel').forEach((panel) => {
+    panel.classList.add('hidden');
+  });
+  document.getElementById(tab)?.classList.remove('hidden');
+
+  const activeClass = 'yacimiento-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-[10px] bg-white text-gray-800 shadow-sm transition-all duration-200';
+  const inactiveClass = 'yacimiento-tab-btn flex-1 text-xs font-semibold py-1.5 rounded-[10px] text-gray-400 transition-all duration-200';
+  document.querySelectorAll('.yacimiento-tab-btn').forEach((btn) => {
+    btn.className = inactiveClass;
+  });
+  boton.className = activeClass;
+}
+
 export function mostrarPanelProyectos() {
   const proyBtn = document.querySelector('[data-tab="tab-proyecto"]');
   if (proyBtn) {

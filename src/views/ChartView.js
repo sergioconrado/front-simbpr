@@ -18,34 +18,13 @@ export function getChartBSN() {
 export function crearGrafico(datos) {
   const ctx = document.getElementById('graficoBSN').getContext('2d');
   const iprDisplay = iprParaGrafico(datos.ipr);
+  const vlpDisplay = iprParaGrafico(datos.vlp || []);
+  const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
+  const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
+  const puntoPrueba = datos.puntoPrueba ? iprParaGrafico([datos.puntoPrueba]) : [];
   const pwsEje     = pwsParaEje(datos.pws);
-
-  const legendDotPlugin = {
-    id: 'legendDot',
-    afterDraw(chart) {
-      const legend = chart.legend;
-      if (!legend || !legend.legendItems) return;
-      const c = chart.ctx;
-      legend.legendItems.forEach((item, i) => {
-        const box = legend.legendHitBoxes[i];
-        if (!box) return;
-        const boxW = chart.options.plugins.legend.labels.boxWidth || 40;
-        const boxH = chart.options.plugins.legend.labels.boxHeight || 12;
-        const cx = box.left + boxW / 2;
-        const cy = box.top  + boxH / 2;
-        const color = chart.data.datasets[0]?.borderColor || '#2563eb';
-        c.save();
-        c.beginPath();
-        c.arc(cx, cy, 4, 0, Math.PI * 2);
-        c.fillStyle = color;
-        c.fill();
-        c.strokeStyle = '#ffffff';
-        c.lineWidth = 1.5;
-        c.stroke();
-        c.restore();
-      });
-    },
-  };
+  const axY = niceAxisMax(pwsEje);
+  const vlpVisible = vlpDisplay.filter((pt) => pt.y <= axY.max);
 
   chartBSN = new Chart(ctx, {
     type: 'line',
@@ -59,6 +38,49 @@ export function crearGrafico(datos) {
           tension: 0,
           pointRadius: 0,
           pointHoverRadius: 4,
+        },
+        {
+          label: 'VLP',
+          data: vlpVisible,
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220,38,38,0.08)',
+          borderWidth: 2.5,
+          borderDash: [8, 5],
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        },
+        {
+          label: 'Pwf prueba',
+          data: pwfLineDisplay,
+          borderColor: '#6b7280',
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+        },
+        {
+          label: 'Punto de operacion',
+          data: puntoOperacion,
+          borderColor: '#047857',
+          backgroundColor: '#047857',
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          showLine: false,
+        },
+        {
+          label: 'Prueba Qb-Pwf',
+          data: puntoPrueba,
+          borderColor: '#d97706',
+          backgroundColor: 'rgba(217,119,6,0.15)',
+          pointStyle: 'rectRot',
+          pointRadius: 9,
+          pointHoverRadius: 11,
+          pointBorderColor: '#d97706',
+          pointBorderWidth: 2.5,
+          showLine: false,
         },
         {
           label: 'Puntos IPR',
@@ -80,11 +102,13 @@ export function crearGrafico(datos) {
       maintainAspectRatio: false,
       clip: false,
       plugins: {
-        legendDot: {},
         legend: {
           display: true,
+          position: 'bottom',
           labels: {
             filter: (item) => item.text !== 'Puntos IPR',
+            usePointStyle: true,
+            boxWidth: 10,
             font: { size: 12 },
           },
         },
@@ -94,7 +118,7 @@ export function crearGrafico(datos) {
             label: (ctx) => {
               const x = Math.round(ctx.raw.x);
               const y = Math.round(ctx.raw.y);
-              return `${x} bpd  |  ${y} ${yAxisLabel()}`;
+              return `${ctx.dataset.label}: ${x} bpd  |  ${y} ${yAxisLabel()}`;
             },
           },
         },
@@ -116,7 +140,7 @@ export function crearGrafico(datos) {
         },
         y: {
           min: 0,
-          max: niceAxisMax(pwsEje).max,
+          max: axY.max,
           title: {
             display: true,
             text: yAxisLabel(),
@@ -125,11 +149,11 @@ export function crearGrafico(datos) {
           },
           grid:   { color: '#e5e7eb', lineWidth: 1 },
           border: { color: '#000000', width: 2 },
-          ticks:  { color: '#111827', stepSize: niceAxisMax(pwsEje).stepSize },
+          ticks:  { color: '#111827', stepSize: axY.stepSize },
         },
       },
     },
-    plugins: [legendDotPlugin],
+    plugins: [],
   });
 }
 
@@ -140,13 +164,21 @@ export function crearGrafico(datos) {
 export function actualizarGrafico(datos) {
   if (!chartBSN) return;
   const iprDisplay = iprParaGrafico(datos.ipr);
+  const vlpDisplay = iprParaGrafico(datos.vlp || []);
+  const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
+  const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
+  const puntoPrueba = datos.puntoPrueba ? iprParaGrafico([datos.puntoPrueba]) : [];
   const pwsEje     = pwsParaEje(datos.pws);
 
   chartBSN.data.datasets[0].data = iprDisplay;
-  chartBSN.data.datasets[1].data = samplearPuntosIPR(iprDisplay);
+  chartBSN.data.datasets[2].data = pwfLineDisplay;
+  chartBSN.data.datasets[3].data = puntoOperacion;
+  chartBSN.data.datasets[4].data = puntoPrueba;
+  chartBSN.data.datasets[5].data = samplearPuntosIPR(iprDisplay);
 
   const axX = niceAxisMax(datos.Qmax);
   const axY = niceAxisMax(pwsEje);
+  chartBSN.data.datasets[1].data = vlpDisplay.filter((pt) => pt.y <= axY.max);
   chartBSN.options.scales.x.max = axX.max;
   chartBSN.options.scales.x.ticks.stepSize = axX.stepSize;
   chartBSN.options.scales.y.max = axY.max;
@@ -161,9 +193,9 @@ export function actualizarGrafico(datos) {
 export function setIPRChartColor(color) {
   if (!chartBSN) return;
   chartBSN.data.datasets[0].borderColor = color;
-  chartBSN.data.datasets[1].borderColor = color;
-  chartBSN.data.datasets[1].backgroundColor = color;
-  chartBSN.data.datasets[1].pointBackgroundColor = color;
+  chartBSN.data.datasets[5].borderColor = color;
+  chartBSN.data.datasets[5].backgroundColor = color;
+  chartBSN.data.datasets[5].pointBackgroundColor = color;
   chartBSN.update();
 }
 

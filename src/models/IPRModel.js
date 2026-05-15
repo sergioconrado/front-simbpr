@@ -13,6 +13,20 @@ export function calcularQmaxDesdePuntoVogel(pws, pwf, qb) {
   return qb / denom;
 }
 
+export function calcularQVogelDesdePwf(pws, Qmax, pwf) {
+  if (pws <= 0 || Qmax <= 0 || pwf < 0) return 0;
+  const r = Math.min(Math.max(pwf / pws, 0), 1);
+  return Math.max(Qmax * (1 - 0.2 * r - 0.8 * r * r), 0);
+}
+
+export function calcularPwfVogelDesdeQ(pws, Qmax, q) {
+  if (pws <= 0 || Qmax <= 0 || q < 0) return 0;
+  const qFrac = Math.min(Math.max(q / Qmax, 0), 1);
+  const discriminante = 0.04 - 3.2 * (qFrac - 1);
+  const r = (-0.2 + Math.sqrt(Math.max(discriminante, 0))) / 1.6;
+  return pws * Math.min(Math.max(r, 0), 1);
+}
+
 /**
  * Devuelve los 11 puntos de la tabla (índices 0,20,40…200)
  * de la curva generada con 201 puntos — tabla y gráfica siempre sincronizados.
@@ -40,7 +54,7 @@ export function generarQ(Qmax, N = 200) {
  * @param {number} pwf - Presión de fondo fluyente (kg/cm²)
  * @param {number} qb  - Caudal base de prueba (bpd)
  * @param {number} J   - Índice de productividad
- * @returns {{ ipr, pwfLine, qOperacion, pwfSistema, Qmax, pws, J, error }}
+ * @returns {{ ipr, pwfLine, qReferencia, pwfReferencia, Qmax, pws, J, puntoPrueba, error }}
  */
 export function calcularCurvas(pws, pwf, qb, J) {
   let Qmax;
@@ -58,25 +72,15 @@ export function calcularCurvas(pws, pwf, qb, J) {
 
   const N = 200;
   const ipr = Array.from({ length: N + 1 }, (_, i) => {
-    const pwfVal = pws * (1 - i / N);
-    const r = pwfVal / pws;
-    const q = Qmax * (1 - 0.2 * r - 0.8 * r * r);
-    return { x: Math.max(q, 0), y: pwfVal };
+    const q = (i / N) * Qmax;
+    return { x: q, y: calcularPwfVogelDesdeQ(pws, Qmax, q) };
   });
 
   const pwfLine = ipr.map((pt) => ({ x: pt.x, y: pwf }));
+  const puntoPrueba = { x: qb, y: pwf };
+  const qReferencia = calcularQVogelDesdePwf(pws, Qmax, pwf);
 
-  let qOperacion = 0;
-  let diffMin = Infinity;
-  ipr.forEach((p) => {
-    const diff = Math.abs(p.y - pwf);
-    if (diff < diffMin) {
-      diffMin = diff;
-      qOperacion = p.x;
-    }
-  });
-
-  return { ipr, pwfLine, qOperacion, pwfSistema: pwf, Qmax, pws, J: Jcalc, error };
+  return { ipr, pwfLine, qReferencia, pwfReferencia: pwf, Qmax, pws, J: Jcalc, puntoPrueba, error };
 }
 
 /**
