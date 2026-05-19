@@ -1,12 +1,12 @@
 // server/index.js — Express API server for SIMBPR
 "use strict";
 
-require("dotenv").config({ path: __dirname + "/.env" });
-
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
+
+require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 const proyectosRouter = require("./routes/proyectos");
 const simulacionesRouter = require("./routes/simulaciones");

@@ -1,16 +1,18 @@
 // db.js — SQL Server connection pool
-// Reads configuration from environment variables (see .env.example).
 
-const sql = require("mssql/msnodesqlv8");
+const sql = require("mssql");
 
 const config = {
-  connectionString:
-    "Driver={ODBC Driver 18 for SQL Server};" +
-    "Server=DESKTOP-GA2BORU\\SQLEXPRESS;" +
-    "Database=SIMBPR;" +
-    "Trusted_Connection=yes;" +
-    "Encrypt=yes;" +
-    "TrustServerCertificate=yes;",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  port: parseInt(process.env.DB_PORT || "1433"),
+  database: process.env.DB_DATABASE,
+
+  options: {
+    encrypt: false,
+    trustServerCertificate: true,
+  },
 };
 
 async function getPool() {
