@@ -15,6 +15,9 @@ import {
   mostrarReporte,
   mostrarTab,
   mostrarYacimientoTab,
+  limpiarVistaSimulacion,
+  exportarGraficaActual,
+  generarInformeGraficaActual,
   actualizarSensibilidadHandler,
   calcularRPFHandler,
   iniciarReloj,
@@ -59,6 +62,9 @@ window.mostrarPanel         = mostrarPanel;
 window.mostrarReporte       = mostrarReporte;
 window.mostrarTab           = mostrarTab;
 window.mostrarYacimientoTab = mostrarYacimientoTab;
+window.limpiarVistaSimulacion = limpiarVistaSimulacion;
+window.exportarGraficaActual = exportarGraficaActual;
+window.generarInformeGraficaActual = generarInformeGraficaActual;
 window.actualizarSensibilidad = actualizarSensibilidadHandler;
 window.calcularRPF          = calcularRPFHandler;
 

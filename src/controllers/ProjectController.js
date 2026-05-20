@@ -11,7 +11,7 @@ import {
   toggleEstadoProyectoAPI,
   crearDatosProyecto,
   cargarProyectosDesdeAPI,
-} from '../models/ProjectModel.js';
+} from "../models/ProjectModel.js";
 
 import {
   renderProyectos,
@@ -22,10 +22,18 @@ import {
   actualizarBarraContexto,
   actualizarFooter,
   mostrarBarraContexto,
-} from '../views/ProjectView.js';
+} from "../views/ProjectView.js";
 
-import { desactivarSubnavUI, mostrarSimulador, mostrarPanelProyectos } from '../views/AppView.js';
-import { desactivarGuardado, reiniciarEstadoGuardado } from './SaveController.js';
+import {
+  desactivarSubnavUI,
+  mostrarSimulador,
+  mostrarPanelProyectos,
+} from "../views/AppView.js";
+import {
+  desactivarGuardado,
+  reiniciarEstadoGuardado,
+} from "./SaveController.js";
+import { cargarSimulacionProyecto } from "./SimulatorController.js";
 
 // ── índice del proyecto en edición (-1 = nuevo) ──────────────────────────
 let _proyEditIndex = -1;
@@ -57,14 +65,18 @@ export async function guardarProyecto() {
   const campos = leerFormProyecto();
 
   if (!campos.nombre || !campos.usuario || !campos.cliente) {
-    resaltarCamposRequeridos(['proy-nombre', 'proy-usuario', 'proy-cliente']);
+    resaltarCamposRequeridos(["proy-nombre", "proy-usuario", "proy-cliente"]);
     return;
   }
 
   if (_proyEditIndex >= 0) {
     // Edición: conservar estado y fecha originales
     const original = getProyecto(_proyEditIndex);
-    const data = { ...crearDatosProyecto(campos), estado: original.estado, fecha: original.fecha };
+    const data = {
+      ...crearDatosProyecto(campos),
+      estado: original.estado,
+      fecha: original.fecha,
+    };
     await actualizarProyectoAPI(_proyEditIndex, data);
   } else {
     const idx = await agregarProyectoAPI(crearDatosProyecto(campos));
@@ -106,9 +118,10 @@ export async function eliminarProyecto(idx) {
   _renderizar();
 }
 
-export function abrirProyecto(idx) {
+export async function abrirProyecto(idx) {
   const p = getProyecto(idx);
   if (!p) return;
+
   setProyectoActivoIdx(idx);
 
   actualizarFooter(p);
@@ -116,11 +129,12 @@ export function abrirProyecto(idx) {
   mostrarBarraContexto(true);
   reiniciarEstadoGuardado();
 
-  // Desactivar subnav y mostrar simulador
   desactivarSubnavUI();
   mostrarSimulador(true);
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  await cargarSimulacionProyecto(p.id);
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export function volverAProyectos() {

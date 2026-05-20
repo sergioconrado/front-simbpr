@@ -11,6 +11,16 @@ const set = (id, val) => {
 const isFiniteNumber = (value) => Number.isFinite(Number(value));
 const formatOrND = (value, decimals = 0) =>
   isFiniteNumber(value) ? Number(value).toFixed(decimals) : 'N/D';
+const EMPTY_VALUE = '—';
+const escapeHTML = (value) =>
+  String(value ?? 'N/D')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+let feedbackTimer = null;
 
 const estadoVLPUI = {
   calculada: {
@@ -62,6 +72,293 @@ export function renderResumenVLP(resumen = {}) {
   set('vlp-pwf-operacion', formatOrND(punto.pwf, pressureDecimals));
   set('vlp-caudal-operacion-unit', caudalUnit);
   set('vlp-pwf-operacion-unit', pressureUnit);
+}
+
+export function mostrarFeedbackGrafica(mensaje, tipo = 'info') {
+  const feedback = document.getElementById('grafica-action-feedback');
+  if (!feedback) return;
+
+  const estilos = {
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    warning: 'border-amber-200 bg-amber-50 text-amber-800',
+    error: 'border-red-200 bg-red-50 text-red-700',
+    info: 'border-gray-200 bg-white/80 text-gray-600',
+  };
+
+  feedback.textContent = mensaje;
+  feedback.className = `mt-3 min-h-[32px] rounded-lg border px-3 py-2 text-xs font-semibold transition ${estilos[tipo] || estilos.info}`;
+
+  clearTimeout(feedbackTimer);
+  feedbackTimer = setTimeout(() => {
+    feedback.textContent = '';
+    feedback.className = 'mt-3 min-h-[32px] rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-transparent transition';
+  }, 8000);
+}
+
+export function reiniciarFormularioSimulacion() {
+  const root = document.getElementById('panel-simulador');
+  if (!root) return;
+
+  root.querySelectorAll('input, select, textarea').forEach((field) => {
+    if (field.matches('[type="button"], [type="submit"], [type="reset"]')) return;
+
+    if (field instanceof HTMLInputElement) {
+      if (['checkbox', 'radio'].includes(field.type)) {
+        field.checked = field.defaultChecked;
+      } else {
+        field.value = field.defaultValue || '';
+      }
+    } else if (field instanceof HTMLSelectElement) {
+      const defaultIndex = Array.from(field.options).findIndex((option) => option.defaultSelected);
+      field.selectedIndex = defaultIndex >= 0 ? defaultIndex : 0;
+    } else {
+      field.value = field.defaultValue || '';
+    }
+
+    field.classList.remove(
+      'border-red-300',
+      'border-red-400',
+      'border-emerald-300',
+      'border-emerald-400',
+      'ring-red-200',
+      'ring-emerald-200',
+      'bg-red-50',
+      'bg-emerald-50',
+    );
+    field.removeAttribute('aria-invalid');
+  });
+
+  mostrarErrorVogel('');
+}
+
+export function limpiarResultadosSimulacion() {
+  [
+    'resultadoQmax',
+    'resultadoQmaxPanel',
+    'resultadoDP',
+    'resultadoJ',
+    'd-pws',
+    'd-pwf',
+    'd-j',
+    'd-modelo',
+    'd-prof-disp',
+    'd-nl',
+    'd-pl',
+    'd-pwh',
+    'd-tubing-id',
+    'd-qmax',
+    'd-qop',
+    'd-drawdown',
+    'd-eficiencia',
+    'prod_qo',
+    'prod_qw',
+    'prod_qg',
+    'prod_dens',
+    'prod_res',
+    'bsn_cabeza',
+    'bsn_bhp',
+    'bsn_efic',
+    'bsn_carga',
+    'bsn_kw',
+    'rpf_bhp_est',
+    'rpf_bht',
+    'rpf_grad_p',
+    'rpf_grad_t',
+    'rpf_prof_bsn',
+    'rpf_pws_card',
+    'rpf_pwf_card',
+    'rpf_drawdown',
+    'rpf_j_card',
+    'rpf_diag_presion',
+    'rpf_diag_temp',
+    'rpf_diag_prod',
+    'rpf_diag_bsn',
+  ].forEach((id) => set(id, EMPTY_VALUE));
+
+  set('modeloActivo', '');
+  ['tablaIprBody', 'tabla-ipr-body', 'tabla-sens-body', 'tabla-rpf-body'].forEach((id) => {
+    const tbody = document.getElementById(id);
+    if (tbody) tbody.innerHTML = '';
+  });
+
+  renderResumenVLP({ estado: 'incompleta' });
+  document.getElementById('vlp-punto-operacion')?.classList.add('hidden');
+  document.getElementById('rep-vlp-operacion')?.classList.add('hidden');
+  renderReporteVLP({
+    fechaGeneracion: 'N/D',
+    proyectoNombre: 'N/D',
+    resumen: { estado: 'incompleta' },
+  });
+}
+
+function crearFilaInforme(label, value, unit = '') {
+  return `<tr><td>${label}</td><td>${value ?? 'N/D'}</td><td>${unit}</td></tr>`;
+}
+
+export function abrirInformeTecnicoImprimible(reporte) {
+  const parametrosIPR = reporte.parametrosIPR || {};
+  const resumenIPR = reporte.resumenIPR || {};
+  const resumenVLP = reporte.resumenVLP || {};
+  const vlpParams = reporte.parametrosVLP || {};
+  const punto = reporte.puntoOperacion;
+  const puntoOperacion = punto
+    ? `${Number(punto.x).toFixed(0)} bpd / ${Number(punto.y).toFixed(1)} ${reporte.unidadPresion}`
+    : 'Sin interseccion calculada';
+  const proyectoNombre = escapeHTML(reporte.proyectoNombre || 'Sin proyecto activo');
+  const fecha = escapeHTML(reporte.fecha);
+  const unidadPresion = escapeHTML(reporte.unidadPresion);
+  const estadoVLP = escapeHTML(resumenVLP.estadoLabel || 'N/D');
+
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Informe tecnico SIMBPR</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f4f6; color: #111827; font-family: Arial, Helvetica, sans-serif; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px; background: #fff; min-height: 100vh; }
+    header { display: flex; justify-content: space-between; gap: 24px; border-bottom: 2px solid #111827; padding-bottom: 18px; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 24px; letter-spacing: 0; }
+    h2 { margin: 24px 0 10px; font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: #374151; }
+    .meta { text-align: right; font-size: 12px; color: #4b5563; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
+    th { background: #f9fafb; color: #374151; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 20px; }
+    .kpi { border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; background: #f9fafb; }
+    .kpi span { display: block; font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+    .kpi strong { font-size: 18px; }
+    img { width: 100%; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 8px; }
+    .note { margin-top: 24px; font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+    @media print {
+      body { background: #fff; }
+      main { padding: 16mm; max-width: none; }
+      button { display: none; }
+      .grid { break-inside: avoid; }
+      img { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Informe tecnico de simulacion SIMBPR</h1>
+        <p>Curvas IPR / VLP y punto de operacion</p>
+      </div>
+      <div class="meta">
+        <div><strong>Proyecto:</strong> ${proyectoNombre}</div>
+        <div><strong>Fecha:</strong> ${fecha}</div>
+        <div><strong>Unidad:</strong> ${unidadPresion}</div>
+      </div>
+    </header>
+
+    <section class="kpis">
+      <div class="kpi"><span>Qmax</span><strong>${escapeHTML(resumenIPR.qmax)}</strong><small> bpd</small></div>
+      <div class="kpi"><span>Q operacion</span><strong>${escapeHTML(resumenIPR.qOperacion)}</strong><small> bpd</small></div>
+      <div class="kpi"><span>Pwf operacion</span><strong>${escapeHTML(resumenIPR.pwfSistema)}</strong><small> ${unidadPresion}</small></div>
+      <div class="kpi"><span>Estado VLP</span><strong>${estadoVLP}</strong></div>
+    </section>
+
+    <div class="grid">
+      <section>
+        <h2>Parametros principales IPR</h2>
+        <table>
+          <thead><tr><th>Parametro</th><th>Valor</th><th>Unidad</th></tr></thead>
+          <tbody>
+            ${crearFilaInforme('Pws', escapeHTML(parametrosIPR.pws), unidadPresion)}
+            ${crearFilaInforme('Pwf prueba', escapeHTML(parametrosIPR.pwf), unidadPresion)}
+            ${crearFilaInforme('Qb', parametrosIPR.qb, 'bpd')}
+            ${crearFilaInforme('Indice J', escapeHTML(parametrosIPR.j), `bpd/${unidadPresion}`)}
+            ${crearFilaInforme('Modelo', 'Vogel', '')}
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Parametros principales VLP</h2>
+        <table>
+          <thead><tr><th>Parametro</th><th>Valor</th><th>Unidad</th></tr></thead>
+          <tbody>
+            ${crearFilaInforme('Profundidad disponible', vlpParams.profundidadDisponible?.toFixed?.(0), 'm')}
+            ${crearFilaInforme('Prof. asentamiento BSN', vlpParams.profBSN?.toFixed?.(0), 'm')}
+            ${crearFilaInforme('Nivel de liquido', vlpParams.nivelLiquido?.toFixed?.(0), 'm')}
+            ${crearFilaInforme('Pwh', vlpParams.pwh?.toFixed?.(1), unidadPresion)}
+            ${crearFilaInforme('PL', vlpParams.pl?.toFixed?.(1), unidadPresion)}
+            ${crearFilaInforme('ID tubing', vlpParams.tubingId?.toFixed?.(3), 'pg')}
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section>
+      <h2>Resumen IPR</h2>
+      <table>
+        <tbody>
+          ${crearFilaInforme('Caudal maximo calculado', escapeHTML(resumenIPR.qmax), 'bpd')}
+          ${crearFilaInforme('Drawdown operativo', escapeHTML(resumenIPR.drawdown), unidadPresion)}
+          ${crearFilaInforme('Punto de operacion', escapeHTML(puntoOperacion), '')}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Resumen VLP</h2>
+      <table>
+        <tbody>
+          ${crearFilaInforme('Presion minima', escapeHTML(resumenVLP.presionMin), unidadPresion)}
+          ${crearFilaInforme('Presion maxima', escapeHTML(resumenVLP.presionMax), unidadPresion)}
+          ${crearFilaInforme('Caudal maximo VLP', escapeHTML(resumenVLP.caudalMax), 'bpd')}
+          ${crearFilaInforme('Puntos calculados', escapeHTML(resumenVLP.totalPuntos), 'puntos')}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Grafica IPR / VLP</h2>
+      <img alt="Grafica IPR VLP SIMBPR" src="${reporte.imagenGrafica}">
+    </section>
+
+    <p class="note">Informe generado automaticamente por SIMBPR. Revise supuestos operativos y datos de entrada antes de emitir recomendaciones finales.</p>
+  </main>
+</body>
+</html>`;
+
+  let frame = document.getElementById('simbpr-print-frame');
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.id = 'simbpr-print-frame';
+    frame.title = 'Informe tecnico SIMBPR';
+    frame.style.position = 'fixed';
+    frame.style.right = '0';
+    frame.style.bottom = '0';
+    frame.style.width = '0';
+    frame.style.height = '0';
+    frame.style.border = '0';
+    frame.style.visibility = 'hidden';
+    document.body.appendChild(frame);
+  }
+
+  const printWindow = frame.contentWindow;
+  const printDocument = frame.contentDocument || printWindow?.document;
+  if (!printWindow || !printDocument) return false;
+
+  let printRequested = false;
+  const imprimir = () => {
+    if (printRequested) return;
+    printRequested = true;
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 250);
+  };
+  frame.onload = imprimir;
+
+  printDocument.open();
+  printDocument.write(html);
+  printDocument.close();
+  setTimeout(imprimir, 350);
+
+  return true;
 }
 
 export function mostrarReporteUI(tipo) {
