@@ -4,10 +4,7 @@
 //   • In production (served by Express), it uses the same origin.
 //   • In development (Live Server on :5500), it points to the API on :3001.
 
-const API_BASE =
-  window.location.port === '5500' || window.location.port === '5501'
-    ? 'http://localhost:3001/api'
-    : '/api';
+const API_BASE = "http://localhost:3001/api";
 
 /**
  * Generic fetch helper — throws an Error with the server message on failure.
@@ -17,7 +14,7 @@ const API_BASE =
  */
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
+    headers: { "Content-Type": "application/json", ...options.headers },
     ...options,
   });
   if (res.status === 204) return undefined;
@@ -30,19 +27,41 @@ async function request(path, options = {}) {
 
 export const api = {
   proyectos: {
-    listar:   ()          => request('/proyectos'),
-    obtener:  (id)        => request(`/proyectos/${id}`),
-    crear:    (data)      => request('/proyectos', { method: 'POST', body: JSON.stringify(data) }),
-    actualizar: (id, data) => request(`/proyectos/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    toggleEstado: (id)    => request(`/proyectos/${id}/estado`, { method: 'PATCH' }),
-    eliminar: (id)        => request(`/proyectos/${id}`, { method: 'DELETE' }),
+    listar: () => request("/proyectos"),
+    obtener: (id) => request(`/proyectos/${id}`),
+    crear: (data) =>
+      request("/proyectos", { method: "POST", body: JSON.stringify(data) }),
+    actualizar: (id, data) =>
+      request(`/proyectos/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    toggleEstado: (id) =>
+      request(`/proyectos/${id}/estado`, { method: "PATCH" }),
+    eliminar: (id) => request(`/proyectos/${id}`, { method: "DELETE" }),
   },
 
   simulacion: {
-    obtener:    (proyectoId)       => request(`/proyectos/${proyectoId}/simulacion`),
-    guardarIPR: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/ipr`, { method: 'PUT', body: JSON.stringify(data) }),
-    guardarProduccion: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/produccion`, { method: 'PUT', body: JSON.stringify(data) }),
-    guardarBSN: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/bsn`, { method: 'PUT', body: JSON.stringify(data) }),
-    guardarVLP: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/vlp`, { method: 'PUT', body: JSON.stringify(data) }),
+    obtener: (proyectoId) => request(`/proyectos/${proyectoId}/simulacion`),
+    guardarIPR: (proyectoId, data) =>
+      request(`/proyectos/${proyectoId}/simulacion/ipr`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    guardarProduccion: (proyectoId, data) =>
+      request(`/proyectos/${proyectoId}/simulacion/produccion`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    guardarBSN: (proyectoId, data) =>
+      request(`/proyectos/${proyectoId}/simulacion/bsn`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    guardarVLP: (proyectoId, data) =>
+      request(`/proyectos/${proyectoId}/simulacion/vlp`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
   },
 };
