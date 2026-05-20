@@ -12,6 +12,7 @@ import {
   calcularProduccionHandler,
   calcularBSNHandler,
   mostrarPanel,
+  mostrarReporte,
   mostrarTab,
   mostrarYacimientoTab,
   actualizarSensibilidadHandler,
@@ -39,6 +40,11 @@ import {
   agregarComentario,
 } from './controllers/AppController.js';
 
+import {
+  guardarProyectoActivo,
+  inicializarGuardadoProyecto,
+} from './controllers/SaveController.js';
+
 import { mostrarPanelProyectos } from './views/AppView.js';
 
 // ── Expose public API on window (required for inline onclick attributes) ──
@@ -50,6 +56,7 @@ window.setIPRColor          = setIPRColor;
 window.calcularProduccion   = calcularProduccionHandler;
 window.calcularBSN          = calcularBSNHandler;
 window.mostrarPanel         = mostrarPanel;
+window.mostrarReporte       = mostrarReporte;
 window.mostrarTab           = mostrarTab;
 window.mostrarYacimientoTab = mostrarYacimientoTab;
 window.actualizarSensibilidad = actualizarSensibilidadHandler;
@@ -63,6 +70,7 @@ window.toggleEstado         = toggleEstado;
 window.eliminarProyecto     = eliminarProyecto;
 window.abrirProyecto        = abrirProyecto;
 window.volverAProyectos     = volverAProyectos;
+window.guardarProyectoActivo = guardarProyectoActivo;
 
 window.activarSubnav        = activarSubnav;
 window.guardarSubnavForm    = guardarSubnavForm;
@@ -75,6 +83,7 @@ window.agregarComentario    = agregarComentario;
 crearGraficoInicial();
 registrarListeners();
 iniciarReloj();
+inicializarGuardadoProyecto();
 
 // Start on the Projects tab
 mostrarPanelProyectos();

@@ -23,18 +23,21 @@ router.get('/', async (req, res) => {
   if (proyectoId === null) return;
   try {
     const pool = await getPool();
-    const [ipr, prod, bsn] = await Promise.all([
+    const [ipr, prod, bsn, vlp] = await Promise.all([
       pool.request().input('pid', sql.Int, proyectoId)
         .query('SELECT * FROM dbo.SimulacionIPR WHERE proyecto_id = @pid'),
       pool.request().input('pid', sql.Int, proyectoId)
         .query('SELECT * FROM dbo.SimulacionProduccion WHERE proyecto_id = @pid'),
       pool.request().input('pid', sql.Int, proyectoId)
         .query('SELECT * FROM dbo.SimulacionBSN WHERE proyecto_id = @pid'),
+      pool.request().input('pid', sql.Int, proyectoId)
+        .query('SELECT * FROM dbo.SimulacionVLP WHERE proyecto_id = @pid'),
     ]);
     res.json({
       ipr:       ipr.recordset[0]  || null,
       produccion: prod.recordset[0] || null,
       bsn:       bsn.recordset[0]  || null,
+      vlp:       vlp.recordset[0]  || null,
     });
   } catch (err) {
     console.error('[simulaciones] GET /', err.message);
@@ -189,6 +192,79 @@ router.put('/bsn', async (req, res) => {
   } catch (err) {
     console.error('[simulaciones] PUT /bsn', err.message);
     res.status(500).json({ error: 'Error al guardar datos BSN' });
+  }
+});
+
+// ── PUT /api/proyectos/:proyectoId/simulacion/vlp ─────────────────────────
+router.put('/vlp', async (req, res) => {
+  const proyectoId = parseId(req, res);
+  if (proyectoId === null) return;
+
+  const {
+    modelo = 'vertical_lift_performance',
+    parametros = {},
+    puntos = [],
+    punto_operacion = null,
+    q_operacion = null,
+    pwf_operacion = null,
+    version = 1,
+  } = req.body;
+
+  try {
+    const parametrosJson = JSON.stringify(parametros || {});
+    const puntosJson = JSON.stringify(Array.isArray(puntos) ? puntos : []);
+    const puntoOperacionJson = punto_operacion ? JSON.stringify(punto_operacion) : null;
+    const qOperacion = Number.isFinite(Number(q_operacion)) ? Number(q_operacion) : null;
+    const pwfOperacion = Number.isFinite(Number(pwf_operacion)) ? Number(pwf_operacion) : null;
+
+    const pool = await getPool();
+    const existing = await pool.request()
+      .input('pid', sql.Int, proyectoId)
+      .query('SELECT id FROM dbo.SimulacionVLP WHERE proyecto_id = @pid');
+
+    let result;
+    const request = pool.request()
+      .input('pid', sql.Int, proyectoId)
+      .input('modelo', sql.NVarChar(80), modelo)
+      .input('parametros_json', sql.NVarChar(sql.MAX), parametrosJson)
+      .input('puntos_json', sql.NVarChar(sql.MAX), puntosJson)
+      .input('punto_operacion_json', sql.NVarChar(sql.MAX), puntoOperacionJson)
+      .input('q_operacion', sql.Float, qOperacion)
+      .input('pwf_operacion', sql.Float, pwfOperacion)
+      .input('version', sql.Int, Number.isFinite(Number(version)) ? Number(version) : 1);
+
+    if (existing.recordset.length) {
+      result = await request.query(`
+        UPDATE dbo.SimulacionVLP
+        SET modelo=@modelo,
+            parametros_json=@parametros_json,
+            puntos_json=@puntos_json,
+            punto_operacion_json=@punto_operacion_json,
+            q_operacion=@q_operacion,
+            pwf_operacion=@pwf_operacion,
+            version=@version,
+            updated_at=GETUTCDATE()
+        OUTPUT INSERTED.*
+        WHERE proyecto_id = @pid
+      `);
+    } else {
+      result = await request.query(`
+        INSERT INTO dbo.SimulacionVLP (
+          proyecto_id, modelo, parametros_json, puntos_json,
+          punto_operacion_json, q_operacion, pwf_operacion, version
+        )
+        OUTPUT INSERTED.*
+        VALUES (
+          @pid, @modelo, @parametros_json, @puntos_json,
+          @punto_operacion_json, @q_operacion, @pwf_operacion, @version
+        )
+      `);
+    }
+
+    res.json(result.recordset[0]);
+  } catch (err) {
+    console.error('[simulaciones] PUT /vlp', err.message);
+    res.status(500).json({ error: 'Error al guardar datos VLP' });
   }
 });
 

@@ -25,6 +25,7 @@ import {
 } from '../views/ProjectView.js';
 
 import { desactivarSubnavUI, mostrarSimulador, mostrarPanelProyectos } from '../views/AppView.js';
+import { desactivarGuardado, reiniciarEstadoGuardado } from './SaveController.js';
 
 // ── índice del proyecto en edición (-1 = nuevo) ──────────────────────────
 let _proyEditIndex = -1;
@@ -100,6 +101,7 @@ export async function eliminarProyecto(idx) {
   if (wasActive) {
     mostrarBarraContexto(false);
     actualizarFooter(null);
+    desactivarGuardado();
   }
   _renderizar();
 }
@@ -112,6 +114,7 @@ export function abrirProyecto(idx) {
   actualizarFooter(p);
   actualizarBarraContexto(p, idx);
   mostrarBarraContexto(true);
+  reiniciarEstadoGuardado();
 
   // Desactivar subnav y mostrar simulador
   desactivarSubnavUI();
@@ -125,6 +128,7 @@ export function volverAProyectos() {
   mostrarBarraContexto(false);
   mostrarSimulador(false);
   actualizarFooter(null);
+  desactivarGuardado();
   mostrarPanelProyectos();
 }
 

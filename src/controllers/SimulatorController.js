@@ -7,6 +7,7 @@ import { calcularBSN }        from '../models/BSNModel.js';
 import { calcularRPF, calcularSensibilidad } from '../models/RPFModel.js';
 import {
   esPSI,
+  getCurrentUnidad,
   setCurrentUnidad,
   KGcm2_TO_PSI,
 } from '../models/UnitModel.js';
@@ -15,6 +16,7 @@ import {
   crearGrafico,
   actualizarGrafico as actualizarGraficoView,
   setIPRChartColor,
+  renderReporteVLPChart,
   renderSensibilidadChart,
   renderPerfilRPFChart,
 } from '../views/ChartView.js';
@@ -24,6 +26,9 @@ import {
   mostrarErrorVogel,
   actualizarInputJ,
   renderResultadosYTabla,
+  renderResumenVLP,
+  renderReporteVLP,
+  mostrarReporteUI,
   actualizarUnidadUI,
   actualizarColorSwatch,
   actualizarTablasDatos,
@@ -35,9 +40,11 @@ import {
 } from '../views/SimulatorView.js';
 
 import { mostrarPanelUI, mostrarTabUI, mostrarYacimientoTabUI } from '../views/AppView.js';
+import { getProyecto, getProyectoActivoIdx } from '../models/ProjectModel.js';
 
 // ── Color IPR activo ────────────────────────────────────────────────────────
 let iprColor = '#2563eb';
+let reporteActivo = 'ipr';
 
 // ── Helpers para leer inputs del DOM ───────────────────────────────────────
 function getFloat(id, fallback = 0) {
@@ -78,6 +85,57 @@ function calcularSistemaIPRVLP(pws, pwf, qb, J) {
     qOperacion: puntoOperacion?.x || 0,
     pwfSistema: puntoOperacion?.y || 0,
   };
+}
+
+function crearResumenVLP(datos, isPSI = esPSI()) {
+  const vlp = Array.isArray(datos.vlp) ? datos.vlp : [];
+  const presiones = vlp.map((pt) => Number(pt?.y)).filter(Number.isFinite);
+  const caudales = vlp.map((pt) => Number(pt?.x)).filter(Number.isFinite);
+  const convertirPresion = (value) => (isPSI ? value * KGcm2_TO_PSI : value);
+  const tieneCurva = vlp.length > 0 && presiones.length > 0 && caudales.length > 0;
+  const punto = datos.puntoOperacion;
+  const tieneInterseccion =
+    punto && Number.isFinite(Number(punto.x)) && Number.isFinite(Number(punto.y));
+
+  return {
+    presionMin: tieneCurva ? convertirPresion(Math.min(...presiones)) : null,
+    presionMax: tieneCurva ? convertirPresion(Math.max(...presiones)) : null,
+    caudalMax: tieneCurva ? Math.max(...caudales) : null,
+    totalPuntos: vlp.length || null,
+    puntoOperacion: tieneInterseccion
+      ? {
+          caudal: punto.x,
+          pwf: convertirPresion(punto.y),
+        }
+      : null,
+    estado: !tieneCurva ? 'incompleta' : tieneInterseccion ? 'calculada' : 'sin_interseccion',
+    unidadPresion: isPSI ? 'PSI' : 'kg/cm\u00b2',
+    unidadCaudal: 'bpd',
+  };
+}
+
+function getNombreProyectoActivo() {
+  const idx = getProyectoActivoIdx();
+  return getProyecto(idx)?.nombre || null;
+}
+
+function crearDatosReporteVLP(datos) {
+  return {
+    fechaGeneracion: new Date().toLocaleString('es-MX', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    proyectoNombre: getNombreProyectoActivo(),
+    resumen: crearResumenVLP(datos),
+  };
+}
+
+function actualizarReporteVLP(datos) {
+  renderReporteVLP(crearDatosReporteVLP(datos));
+  renderReporteVLPChart(datos);
 }
 
 function normalizarEtiquetasVLP() {
@@ -122,13 +180,31 @@ function _calcularYActualizar() {
 export function crearGraficoInicial() {
   const datos = _calcularYActualizar();
   renderResultadosYTabla(datos);
+  renderResumenVLP(crearResumenVLP(datos));
+  if (reporteActivo === 'vlp') actualizarReporteVLP(datos);
   crearGrafico(datos);
 }
 
 export function actualizarGrafico() {
   const datos = _calcularYActualizar();
   renderResultadosYTabla(datos);
+  renderResumenVLP(crearResumenVLP(datos));
   actualizarGraficoView(datos);
+  if (reporteActivo === 'vlp') actualizarReporteVLP(datos);
+}
+
+export function mostrarReporte(tipo = 'ipr') {
+  reporteActivo = tipo === 'vlp' ? 'vlp' : 'ipr';
+  mostrarReporteUI(reporteActivo);
+
+  if (reporteActivo !== 'vlp') return;
+
+  const pws = getFloat('inputPws');
+  const pwf = getFloat('inputPwf');
+  const qb  = getFloat('inputQb');
+  const J   = getFloat('inputJ', 1);
+  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
+  actualizarReporteVLP(datos);
 }
 
 export function setUnidad(unidad) {
@@ -141,6 +217,7 @@ export function setUnidad(unidad) {
   if (!document.getElementById('panel-datos').classList.contains('hidden')) {
     _actualizarTablasDatosCompleto();
   }
+  window.__simbprMarkDirty?.();
 }
 
 export function syncPSItoKG(id) {
@@ -161,6 +238,7 @@ export function setIPRColor(color) {
   iprColor = color;
   actualizarColorSwatch(color);
   setIPRChartColor(color);
+  window.__simbprMarkDirty?.();
 }
 
 export function calcularProduccionHandler() {
@@ -187,9 +265,58 @@ export function calcularBSNHandler() {
   actualizarResultadosBSN(resultado);
 }
 
+export function obtenerSnapshotSimulacion() {
+  const pws = getFloat('inputPws');
+  const pwf = getFloat('inputPwf');
+  const qb = getFloat('inputQb');
+  const J = getFloat('inputJ', 1);
+  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
+
+  return {
+    schema_version: 1,
+    saved_at: new Date().toISOString(),
+    ipr: {
+      pws,
+      pwf,
+      qb,
+      j_index: datos.J,
+      unidad: getCurrentUnidad(),
+      ipr_color: iprColor,
+    },
+    produccion: {
+      qt: getFloat('prod_qt'),
+      bsw: getFloat('prod_bsw'),
+      api: getFloat('prod_api', 35),
+      gor: getFloat('prod_gor'),
+      bo: getFloat('prod_bo', 1),
+    },
+    bsn: {
+      etapas: getFloat('bsn_etapas', 120),
+      freq: getFloat('bsn_freq', 60),
+      hp: getFloat('bsn_hp', 200),
+      volt: getFloat('bsn_volt', 1150),
+      amp: getFloat('bsn_amp', 92),
+      depth: getFloat('bsn_depth', 2200),
+      tempfondo: getFloat('bsn_tempfondo', 90),
+    },
+    vlp: {
+      modelo: 'vertical_lift_performance_bsn',
+      parametros: datos.vlpParams,
+      puntos: datos.vlp,
+      punto_operacion: datos.puntoOperacion,
+      q_operacion: datos.qOperacion,
+      pwf_operacion: datos.pwfSistema,
+      version: 1,
+    },
+  };
+}
+
 export function mostrarPanel(panelId, boton) {
   mostrarPanelUI(panelId, boton);
-  if (panelId === 'panel-datos')        _actualizarTablasDatosCompleto();
+  if (panelId === 'panel-datos') {
+    _actualizarTablasDatosCompleto();
+    if (reporteActivo === 'vlp') mostrarReporte('vlp');
+  }
   if (panelId === 'panel-sensibilidad') actualizarSensibilidadHandler();
   if (panelId === 'panel-perfilrpf')    calcularRPFHandler();
 }

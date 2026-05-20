@@ -272,6 +272,16 @@
           </div>
           <!-- Estado -->
           <span id="ctx-estado" class="shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full"></span>
+          <button
+            id="btn-guardar-proyecto-activo"
+            onclick="guardarProyectoActivo()"
+            disabled
+            class="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed transition"
+            title="Sin cambios"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V8.25H7.5V3.75M5.25 3.75h11.379c.398 0 .779.158 1.061.439l2.121 2.121c.281.282.439.663.439 1.061V18.75A1.5 1.5 0 0118.75 20.25H5.25A1.5 1.5 0 013.75 18.75V5.25A1.5 1.5 0 015.25 3.75zM8.25 20.25v-6h7.5v6"/></svg>
+            <span id="save-status-label">Sin cambios</span>
+          </button>
         </div>
       </div>
 
@@ -977,6 +987,49 @@
                     <p class="text-sm text-gray-400 mt-1">bpd</p>
                   </div>
                 </div>
+                <!-- Resumen VLP -->
+                <div class="mt-6 border-t border-gray-100 pt-5">
+                  <div class="flex items-center justify-between gap-3 mb-3">
+                    <h3 class="text-sm font-semibold text-gray-800">Resumen VLP</h3>
+                    <span id="vlp-resumen-estado" class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-500">Incompleta</span>
+                  </div>
+
+                  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="bg-gray-50 rounded-lg border border-gray-100 p-3">
+                      <p class="text-[11px] text-gray-400 mb-1">Presi&oacute;n m&iacute;nima</p>
+                      <p id="vlp-presion-min" class="text-lg font-bold text-gray-800 leading-tight">N/D</p>
+                      <p id="vlp-presion-min-unit" class="text-[11px] text-gray-400 mt-1">kg/cm&sup2;</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg border border-gray-100 p-3">
+                      <p class="text-[11px] text-gray-400 mb-1">Presi&oacute;n m&aacute;xima</p>
+                      <p id="vlp-presion-max" class="text-lg font-bold text-gray-800 leading-tight">N/D</p>
+                      <p id="vlp-presion-max-unit" class="text-[11px] text-gray-400 mt-1">kg/cm&sup2;</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg border border-gray-100 p-3">
+                      <p class="text-[11px] text-gray-400 mb-1">Caudal m&aacute;ximo</p>
+                      <p id="vlp-caudal-max" class="text-lg font-bold text-gray-800 leading-tight">N/D</p>
+                      <p id="vlp-caudal-max-unit" class="text-[11px] text-gray-400 mt-1">bpd</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg border border-gray-100 p-3">
+                      <p class="text-[11px] text-gray-400 mb-1">Puntos calculados</p>
+                      <p id="vlp-total-puntos" class="text-lg font-bold text-gray-800 leading-tight">N/D</p>
+                      <p class="text-[11px] text-gray-400 mt-1">puntos</p>
+                    </div>
+                  </div>
+
+                  <div id="vlp-punto-operacion" class="hidden mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-blue-50 rounded-lg border border-blue-100 p-3">
+                      <p class="text-[11px] text-blue-500 mb-1">Caudal de operaci&oacute;n</p>
+                      <p id="vlp-caudal-operacion" class="text-lg font-bold text-blue-900 leading-tight">N/D</p>
+                      <p id="vlp-caudal-operacion-unit" class="text-[11px] text-blue-400 mt-1">bpd</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg border border-blue-100 p-3">
+                      <p class="text-[11px] text-blue-500 mb-1">Presi&oacute;n Pwf</p>
+                      <p id="vlp-pwf-operacion" class="text-lg font-bold text-blue-900 leading-tight">N/D</p>
+                      <p id="vlp-pwf-operacion-unit" class="text-[11px] text-blue-400 mt-1">kg/cm&sup2;</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- PANEL INFERIOR — En construcción -->
@@ -993,6 +1046,32 @@
 
             <!-- ======= PANEL DATOS ======= -->
             <div id="panel-datos" class="hidden fade-in space-y-6">
+              <div class="glass rounded-2xl shadow-lg p-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 class="font-semibold text-sm text-gray-800">Reportes</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Seleccione el reporte tecnico a generar.</p>
+                  </div>
+                  <div class="inline-flex rounded-xl bg-gray-100 p-1 text-xs font-semibold">
+                    <button
+                      id="btn-reporte-ipr"
+                      onclick="mostrarReporte('ipr')"
+                      class="px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition"
+                    >
+                      Reporte actual
+                    </button>
+                    <button
+                      id="btn-reporte-vlp"
+                      onclick="mostrarReporte('vlp')"
+                      class="px-4 py-2 rounded-lg text-gray-400 transition hover:text-gray-700"
+                    >
+                      Reporte VLP
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="reporte-ipr" class="space-y-6">
               <!-- Parámetros de entrada -->
               <div class="glass rounded-2xl shadow-lg p-6">
                 <h2
@@ -1126,6 +1205,73 @@
                       id="tabla-ipr-body"
                     ></tbody>
                   </table>
+                </div>
+              </div>
+              </div>
+
+              <div id="reporte-vlp" class="hidden space-y-6">
+                <div class="glass rounded-2xl shadow-lg p-6">
+                  <div class="flex flex-wrap items-start justify-between gap-4 border-b border-gray-200 pb-4">
+                    <div>
+                      <h2 class="font-semibold text-base text-gray-900">Reporte de Curva VLP</h2>
+                      <p class="text-xs text-gray-400 mt-1">Proyecto: <span id="rep-vlp-proyecto">N/D</span></p>
+                    </div>
+                    <div class="text-right text-xs text-gray-500">
+                      <div class="font-semibold text-gray-700">Fecha de generaci&oacute;n</div>
+                      <div id="rep-vlp-fecha" class="mt-1">N/D</div>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                      <div class="text-xs text-gray-400 mb-1">Presi&oacute;n m&iacute;nima</div>
+                      <div class="text-xl font-bold text-gray-800" id="rep-vlp-presion-min">N/D</div>
+                      <div class="text-xs text-gray-400" id="rep-vlp-presion-min-unit">kg/cm&sup2;</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                      <div class="text-xs text-gray-400 mb-1">Presi&oacute;n m&aacute;xima</div>
+                      <div class="text-xl font-bold text-gray-800" id="rep-vlp-presion-max">N/D</div>
+                      <div class="text-xs text-gray-400" id="rep-vlp-presion-max-unit">kg/cm&sup2;</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                      <div class="text-xs text-gray-400 mb-1">Caudal m&aacute;ximo</div>
+                      <div class="text-xl font-bold text-gray-800" id="rep-vlp-caudal-max">N/D</div>
+                      <div class="text-xs text-gray-400" id="rep-vlp-caudal-max-unit">bpd</div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
+                      <div class="text-xs text-gray-400 mb-1">Puntos calculados</div>
+                      <div class="text-xl font-bold text-gray-800" id="rep-vlp-total-puntos">N/D</div>
+                      <div class="text-xs text-gray-400">puntos</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="rep-vlp-operacion" class="hidden glass rounded-2xl shadow-lg p-6">
+                  <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Punto de operaci&oacute;n</h2>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
+                      <div class="text-xs text-blue-500 mb-1">Caudal de operaci&oacute;n</div>
+                      <div class="text-xl font-bold text-blue-900" id="rep-vlp-caudal-operacion">N/D</div>
+                      <div class="text-xs text-blue-400" id="rep-vlp-caudal-operacion-unit">bpd</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
+                      <div class="text-xs text-blue-500 mb-1">Presi&oacute;n Pwf</div>
+                      <div class="text-xl font-bold text-blue-900" id="rep-vlp-pwf-operacion">N/D</div>
+                      <div class="text-xs text-blue-400" id="rep-vlp-pwf-operacion-unit">kg/cm&sup2;</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="glass rounded-2xl shadow-lg p-6">
+                  <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Estado</h2>
+                  <span id="rep-vlp-estado" class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-500">Incompleta</span>
+                </div>
+
+                <div class="glass rounded-2xl shadow-lg p-6">
+                  <h2 class="font-semibold text-sm mb-4 border-b border-gray-200 pb-2">Gr&aacute;fica VLP</h2>
+                  <div class="h-[360px]">
+                    <canvas id="graficoReporteVLP" class="w-full h-full"></canvas>
+                  </div>
                 </div>
               </div>
             </div>

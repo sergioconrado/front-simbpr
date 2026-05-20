@@ -8,6 +8,113 @@ const set = (id, val) => {
   if (el) el.textContent = val;
 };
 
+const isFiniteNumber = (value) => Number.isFinite(Number(value));
+const formatOrND = (value, decimals = 0) =>
+  isFiniteNumber(value) ? Number(value).toFixed(decimals) : 'N/D';
+
+const estadoVLPUI = {
+  calculada: {
+    label: 'Calculada',
+    className: 'inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700',
+  },
+  incompleta: {
+    label: 'Incompleta',
+    className: 'inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-500',
+  },
+  sin_interseccion: {
+    label: 'Sin intersecci\u00f3n IPR/VLP',
+    className: 'inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700',
+  },
+};
+
+/**
+ * Renderiza el resumen compacto VLP en el panel de resultados.
+ * @param {object} resumen - datos derivados por el controlador desde la curva VLP calculada
+ */
+export function renderResumenVLP(resumen = {}) {
+  const pressureDecimals = resumen.unidadPresion === 'PSI' ? 1 : 1;
+  const caudalUnit = resumen.unidadCaudal || 'bpd';
+  const pressureUnit = resumen.unidadPresion || 'kg/cm\u00b2';
+
+  set('vlp-presion-min', formatOrND(resumen.presionMin, pressureDecimals));
+  set('vlp-presion-max', formatOrND(resumen.presionMax, pressureDecimals));
+  set('vlp-caudal-max', formatOrND(resumen.caudalMax, 0));
+  set('vlp-total-puntos', isFiniteNumber(resumen.totalPuntos) ? String(resumen.totalPuntos) : 'N/D');
+  set('vlp-presion-min-unit', pressureUnit);
+  set('vlp-presion-max-unit', pressureUnit);
+  set('vlp-caudal-max-unit', caudalUnit);
+
+  const estado = estadoVLPUI[resumen.estado] || estadoVLPUI.incompleta;
+  const estadoEl = document.getElementById('vlp-resumen-estado');
+  if (estadoEl) {
+    estadoEl.textContent = estado.label;
+    estadoEl.className = estado.className;
+  }
+
+  const operacionEl = document.getElementById('vlp-punto-operacion');
+  const punto = resumen.puntoOperacion;
+  const tieneOperacion = punto && isFiniteNumber(punto.caudal) && isFiniteNumber(punto.pwf);
+
+  if (operacionEl) operacionEl.classList.toggle('hidden', !tieneOperacion);
+  if (!tieneOperacion) return;
+
+  set('vlp-caudal-operacion', formatOrND(punto.caudal, 0));
+  set('vlp-pwf-operacion', formatOrND(punto.pwf, pressureDecimals));
+  set('vlp-caudal-operacion-unit', caudalUnit);
+  set('vlp-pwf-operacion-unit', pressureUnit);
+}
+
+export function mostrarReporteUI(tipo) {
+  const esVLP = tipo === 'vlp';
+  document.getElementById('reporte-ipr')?.classList.toggle('hidden', esVLP);
+  document.getElementById('reporte-vlp')?.classList.toggle('hidden', !esVLP);
+
+  const activeClass = 'px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition';
+  const inactiveClass = 'px-4 py-2 rounded-lg text-gray-400 transition hover:text-gray-700';
+  const btnIPR = document.getElementById('btn-reporte-ipr');
+  const btnVLP = document.getElementById('btn-reporte-vlp');
+  if (btnIPR) btnIPR.className = esVLP ? inactiveClass : activeClass;
+  if (btnVLP) btnVLP.className = esVLP ? activeClass : inactiveClass;
+}
+
+/**
+ * Renderiza el reporte tecnico VLP dentro del panel Reporte.
+ */
+export function renderReporteVLP(reporte = {}) {
+  const resumen = reporte.resumen || {};
+  const punto = resumen.puntoOperacion;
+  const pressureDecimals = resumen.unidadPresion === 'PSI' ? 1 : 1;
+  const caudalUnit = resumen.unidadCaudal || 'bpd';
+  const pressureUnit = resumen.unidadPresion || 'kg/cm\u00b2';
+
+  set('rep-vlp-fecha', reporte.fechaGeneracion || 'N/D');
+  set('rep-vlp-proyecto', reporte.proyectoNombre || 'N/D');
+  set('rep-vlp-presion-min', formatOrND(resumen.presionMin, pressureDecimals));
+  set('rep-vlp-presion-max', formatOrND(resumen.presionMax, pressureDecimals));
+  set('rep-vlp-caudal-max', formatOrND(resumen.caudalMax, 0));
+  set('rep-vlp-total-puntos', isFiniteNumber(resumen.totalPuntos) ? String(resumen.totalPuntos) : 'N/D');
+  set('rep-vlp-presion-min-unit', pressureUnit);
+  set('rep-vlp-presion-max-unit', pressureUnit);
+  set('rep-vlp-caudal-max-unit', caudalUnit);
+
+  const estado = estadoVLPUI[resumen.estado] || estadoVLPUI.incompleta;
+  const estadoEl = document.getElementById('rep-vlp-estado');
+  if (estadoEl) {
+    estadoEl.textContent = estado.label;
+    estadoEl.className = estado.className.replace('text-[11px]', 'text-xs').replace('px-2.5 py-1', 'px-3 py-1.5');
+  }
+
+  const operacionEl = document.getElementById('rep-vlp-operacion');
+  const tieneOperacion = punto && isFiniteNumber(punto.caudal) && isFiniteNumber(punto.pwf);
+  if (operacionEl) operacionEl.classList.toggle('hidden', !tieneOperacion);
+  if (!tieneOperacion) return;
+
+  set('rep-vlp-caudal-operacion', formatOrND(punto.caudal, 0));
+  set('rep-vlp-pwf-operacion', formatOrND(punto.pwf, pressureDecimals));
+  set('rep-vlp-caudal-operacion-unit', caudalUnit);
+  set('rep-vlp-pwf-operacion-unit', pressureUnit);
+}
+
 /**
  * Actualiza los campos de resumen de Qmax en el panel izquierdo.
  */

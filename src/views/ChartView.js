@@ -6,6 +6,7 @@ import { iprParaGrafico, yAxisLabel, pwsParaEje } from '../models/UnitModel.js';
 let chartBSN  = null;
 let chartSens = null;
 let chartRPF  = null;
+let chartReporteVLP = null;
 
 export function getChartBSN() {
   return chartBSN;
@@ -202,6 +203,89 @@ export function setIPRChartColor(color) {
 /**
  * Renderiza el gráfico de sensibilidad.
  */
+export function renderReporteVLPChart(datos) {
+  const canvas = document.getElementById('graficoReporteVLP');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const vlpDisplay = iprParaGrafico(datos.vlp || []);
+  const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
+
+  if (chartReporteVLP) chartReporteVLP.destroy();
+
+  const maxQ = Math.max(...vlpDisplay.map((pt) => pt.x), 1);
+  const maxP = Math.max(...vlpDisplay.map((pt) => pt.y), 1);
+  const axX = niceAxisMax(maxQ);
+  const axY = niceAxisMax(maxP);
+
+  chartReporteVLP = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [
+        {
+          label: 'VLP',
+          data: vlpDisplay,
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220,38,38,0.08)',
+          borderWidth: 2.5,
+          tension: 0.25,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        },
+        {
+          label: 'Punto de operacion',
+          data: puntoOperacion,
+          borderColor: '#047857',
+          backgroundColor: '#047857',
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          showLine: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: { usePointStyle: true, boxWidth: 10, font: { size: 12 } },
+        },
+        tooltip: {
+          callbacks: {
+            title: () => '',
+            label: (ctx) => {
+              const x = Math.round(ctx.raw.x);
+              const y = Math.round(ctx.raw.y);
+              return `${ctx.dataset.label}: ${x} bpd  |  ${y} ${yAxisLabel()}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: 0,
+          max: axX.max,
+          title: { display: true, text: 'Ql (bpd)', font: { weight: 'bold', size: 13 }, color: '#111827' },
+          grid: { color: '#e5e7eb' },
+          ticks: { color: '#111827', stepSize: axX.stepSize },
+        },
+        y: {
+          min: 0,
+          max: axY.max,
+          title: { display: true, text: yAxisLabel(), font: { weight: 'bold', size: 13 }, color: '#111827' },
+          grid: { color: '#e5e7eb' },
+          ticks: { color: '#111827', stepSize: axY.stepSize },
+        },
+      },
+    },
+  });
+}
+
 export function renderSensibilidadChart(xVals, qmaxVals, qopVals, labelVar) {
   const ctx = document.getElementById('graficoSens').getContext('2d');
   if (chartSens) chartSens.destroy();

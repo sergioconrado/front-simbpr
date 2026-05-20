@@ -113,6 +113,35 @@ export async function actualizarProyectoAPI(idx, data) {
 }
 
 /**
+ * Upsert del proyecto activo en SQL Server.
+ * Si tiene id, actualiza; si no tiene id, lo crea y conserva el indice local.
+ * @param {number} idx
+ * @returns {Promise<object|null>}
+ */
+export async function guardarProyectoActivoAPI(idx) {
+  const proyecto = _proyectos[idx];
+  if (!proyecto) return null;
+
+  const data = {
+    nombre: proyecto.nombre,
+    usuario: proyecto.usuario,
+    compania: proyecto.compania || '',
+    cliente: proyecto.cliente,
+    orden: proyecto.orden || '',
+    comentarios: proyecto.comentarios || '',
+    fecha: proyecto.fecha,
+    estado: proyecto.estado || 'Activo',
+  };
+
+  const saved = proyecto.id
+    ? await api.proyectos.actualizar(proyecto.id, data)
+    : await api.proyectos.crear(data);
+
+  _proyectos[idx] = saved;
+  return saved;
+}
+
+/**
  * Toggles the project estado via the API and updates the local cache.
  * @param {number} idx
  */

@@ -70,3 +70,36 @@ CREATE TABLE dbo.SimulacionBSN (
   tempfondo    FLOAT NOT NULL DEFAULT 90,
   updated_at   DATETIME2 NOT NULL DEFAULT GETUTCDATE()
 );
+
+-- VLP se guarda en estructura hibrida:
+-- parametros/puntos completos en JSON y columnas operativas para consultas rapidas.
+IF NOT EXISTS (
+  SELECT 1 FROM sys.tables WHERE name = 'SimulacionVLP'
+)
+CREATE TABLE dbo.SimulacionVLP (
+  id                   INT IDENTITY(1,1) PRIMARY KEY,
+  proyecto_id          INT NOT NULL REFERENCES dbo.Proyectos(id) ON DELETE CASCADE,
+  modelo               NVARCHAR(80) NOT NULL DEFAULT 'vertical_lift_performance',
+  parametros_json      NVARCHAR(MAX) NOT NULL DEFAULT '{}',
+  puntos_json          NVARCHAR(MAX) NOT NULL DEFAULT '[]',
+  punto_operacion_json NVARCHAR(MAX) NULL,
+  q_operacion          FLOAT NULL,
+  pwf_operacion        FLOAT NULL,
+  version              INT NOT NULL DEFAULT 1,
+  created_at           DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+  updated_at           DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+  CONSTRAINT UQ_SimulacionVLP_Proyecto UNIQUE (proyecto_id)
+);
+
+-- Preparada para versionado futuro de snapshots completos sin afectar las tablas actuales.
+IF NOT EXISTS (
+  SELECT 1 FROM sys.tables WHERE name = 'SimulacionVersiones'
+)
+CREATE TABLE dbo.SimulacionVersiones (
+  id             INT IDENTITY(1,1) PRIMARY KEY,
+  proyecto_id    INT NOT NULL REFERENCES dbo.Proyectos(id) ON DELETE CASCADE,
+  numero_version INT NOT NULL,
+  etiqueta       NVARCHAR(120) NOT NULL DEFAULT '',
+  snapshot_json  NVARCHAR(MAX) NOT NULL,
+  created_at     DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+);

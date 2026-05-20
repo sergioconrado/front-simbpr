@@ -43,5 +43,6 @@ export const api = {
     guardarIPR: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/ipr`, { method: 'PUT', body: JSON.stringify(data) }),
     guardarProduccion: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/produccion`, { method: 'PUT', body: JSON.stringify(data) }),
     guardarBSN: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/bsn`, { method: 'PUT', body: JSON.stringify(data) }),
+    guardarVLP: (proyectoId, data) => request(`/proyectos/${proyectoId}/simulacion/vlp`, { method: 'PUT', body: JSON.stringify(data) }),
   },
 };
