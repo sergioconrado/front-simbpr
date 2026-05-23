@@ -10,17 +10,17 @@ let chartReporteVLP = null;
 let mainChartResizeObserver = null;
 
 const mainChartFont = {
-  legend: 20,
-  axisTitle: 20,
-  ticks: 19,
-  tooltip: 17,
+  legend: 13,
+  axisTitle: 13,
+  ticks: 12,
+  tooltip: 12,
 };
 
 const OPERATION_POINT_LABEL = 'Punto de operacion';
 const AXIS_MARGIN_RATIO = 0.025;
 const AXIS_TARGET_TICKS = 6;
 const MAIN_CHART_RESIZE_RETRIES = 8;
-const OPERATION_LABEL_FONT_SIZE = 14;
+const OPERATION_LABEL_FONT_SIZE = 12;
 
 function isFiniteNumber(value) {
   return Number.isFinite(Number(value));
@@ -135,16 +135,16 @@ const operationPointLabelPlugin = {
 
       const { x, y } = point.getProps(['x', 'y'], true);
       const label = dataset.operationLabel || 'Operacion';
-      const paddingX = 10;
-      const radius = 6;
+      const paddingX = 8;
+      const radius = 5;
 
       ctx.save();
       ctx.font = `700 ${OPERATION_LABEL_FONT_SIZE}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       const textWidth = ctx.measureText(label).width;
       const boxWidth = textWidth + paddingX * 2;
-      const boxHeight = 28;
-      const boxX = Math.min(x + 16, chart.chartArea.right - boxWidth);
-      const boxY = Math.max(y - 38, chart.chartArea.top + 2);
+      const boxHeight = 24;
+      const boxX = Math.min(x + 12, chart.chartArea.right - boxWidth);
+      const boxY = Math.max(y - 32, chart.chartArea.top + 2);
 
       ctx.beginPath();
       drawRoundedRect(ctx, boxX, boxY, boxWidth, boxHeight, radius);
@@ -308,11 +308,11 @@ export function crearGrafico(datos = {}) {
           label: 'IPR',
           data: iprDisplay,
           borderColor: '#2563eb',
-          borderWidth: 5,
+          borderWidth: 3,
           tension: 0,
           pointRadius: 0,
-          pointHoverRadius: 8,
-          hitRadius: 12,
+          pointHoverRadius: 6,
+          hitRadius: 10,
           borderCapStyle: 'round',
           borderJoinStyle: 'round',
         },
@@ -321,12 +321,12 @@ export function crearGrafico(datos = {}) {
           data: vlpDisplay,
           borderColor: '#dc2626',
           backgroundColor: 'rgba(220,38,38,0.08)',
-          borderWidth: 5,
-          borderDash: [8, 5],
+          borderWidth: 3,
+          borderDash: [7, 5],
           tension: 0.25,
           pointRadius: 0,
-          pointHoverRadius: 8,
-          hitRadius: 12,
+          pointHoverRadius: 6,
+          hitRadius: 10,
           borderCapStyle: 'round',
           borderJoinStyle: 'round',
         },
@@ -335,12 +335,12 @@ export function crearGrafico(datos = {}) {
           data: samplearPuntosCurva(vlpDisplay),
           borderColor: '#dc2626',
           backgroundColor: '#dc2626',
-          pointRadius: 6.5,
+          pointRadius: 4.5,
           pointBackgroundColor: '#dc2626',
           pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
-          pointHoverRadius: 8.5,
-          hitRadius: 10,
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6.5,
+          hitRadius: 9,
           showLine: false,
           legendHidden: true,
         },
@@ -348,7 +348,7 @@ export function crearGrafico(datos = {}) {
           label: 'Pwf prueba',
           data: pwfLineDisplay,
           borderColor: '#6b7280',
-          borderWidth: 2.2,
+          borderWidth: 1.8,
           borderDash: [6, 5],
           pointRadius: 0,
           pointHoverRadius: 0,
@@ -359,12 +359,12 @@ export function crearGrafico(datos = {}) {
           borderColor: '#111827',
           backgroundColor: '#facc15',
           pointBackgroundColor: '#facc15',
-          pointRadius: 12,
-          pointHoverRadius: 15,
-          hitRadius: 15,
+          pointRadius: 8,
+          pointHoverRadius: 10,
+          hitRadius: 12,
           pointStyle: 'circle',
           pointBorderColor: '#111827',
-          pointBorderWidth: 3,
+          pointBorderWidth: 2,
           showLine: false,
           order: -10,
           operationPoint: true,
@@ -376,11 +376,11 @@ export function crearGrafico(datos = {}) {
           borderColor: '#d97706',
           backgroundColor: 'rgba(217,119,6,0.15)',
           pointStyle: 'rectRot',
-          pointRadius: 12,
-          pointHoverRadius: 15,
+          pointRadius: 8,
+          pointHoverRadius: 10,
           pointBorderColor: '#d97706',
-          pointBorderWidth: 3,
-          hitRadius: 12,
+          pointBorderWidth: 2,
+          hitRadius: 10,
           showLine: false,
         },
         {
@@ -388,12 +388,12 @@ export function crearGrafico(datos = {}) {
           data: samplearPuntosIPR(iprDisplay),
           borderColor: '#2563eb',
           backgroundColor: '#2563eb',
-          pointRadius: 6.5,
+          pointRadius: 4.5,
           pointBackgroundColor: '#2563eb',
           pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
-          pointHoverRadius: 8.5,
-          hitRadius: 10,
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 6.5,
+          hitRadius: 9,
           showLine: false,
           legendHidden: true,
         },
@@ -404,7 +404,7 @@ export function crearGrafico(datos = {}) {
       maintainAspectRatio: false,
       clip: false,
       layout: {
-        padding: { top: 10, right: 14, bottom: 4, left: 6 },
+        padding: { top: 6, right: 10, bottom: 0, left: 2 },
       },
       interaction: {
         mode: 'nearest',
@@ -417,9 +417,9 @@ export function crearGrafico(datos = {}) {
           labels: {
             filter: (item) => !['Puntos IPR', 'Puntos VLP'].includes(item.text),
             usePointStyle: true,
-            boxWidth: 13,
-            boxHeight: 13,
-            padding: 18,
+            boxWidth: 10,
+            boxHeight: 10,
+            padding: 12,
             color: '#374151',
             font: { size: mainChartFont.legend, weight: '600' },
           },
@@ -432,8 +432,8 @@ export function crearGrafico(datos = {}) {
           mode: 'nearest',
           intersect: false,
           bodyFont: { size: mainChartFont.tooltip, weight: '600' },
-          padding: 14,
-          boxPadding: 7,
+          padding: 10,
+          boxPadding: 5,
           displayColors: true,
           callbacks: {
             title: (items) => {
@@ -474,7 +474,7 @@ export function crearGrafico(datos = {}) {
             color: '#111827',
             stepSize: axis.x.stepSize,
             font: { size: mainChartFont.ticks, weight: '600' },
-            padding: 8,
+            padding: 6,
             maxTicksLimit: AXIS_TARGET_TICKS + 1,
           },
         },
@@ -493,7 +493,7 @@ export function crearGrafico(datos = {}) {
             color: '#111827',
             stepSize: axis.y.stepSize,
             font: { size: mainChartFont.ticks, weight: '600' },
-            padding: 8,
+            padding: 6,
             maxTicksLimit: AXIS_TARGET_TICKS + 1,
           },
         },
