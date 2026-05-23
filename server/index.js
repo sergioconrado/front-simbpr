@@ -14,6 +14,8 @@ const simulacionesRouter = require("./routes/simulaciones");
 const app = express();
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
+app.set("trust proxy", 1);
+
 // ── Middleware ────────────────────────────────────────────────────────────
 const allowedOrigins = [
   "http://localhost:5500",
