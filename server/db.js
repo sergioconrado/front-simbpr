@@ -26,7 +26,12 @@ const poolPromise = new sql.ConnectionPool(config)
     throw err;
   });
 
+async function getPool() {
+  return poolPromise;
+}
+
 module.exports = {
   sql,
   poolPromise,
+  getPool,
 };
