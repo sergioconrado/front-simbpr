@@ -29,11 +29,21 @@
         animation: fadeIn 0.6s ease forwards;
       }
       .main-chart-frame {
-        height: clamp(320px, 44vh, 480px);
+        height: 380px;
       }
-      @media (max-width: 640px) {
+      @media (min-width: 768px) {
         .main-chart-frame {
-          height: clamp(300px, 50vh, 380px);
+          height: 460px;
+        }
+      }
+      @media (min-width: 1024px) {
+        .main-chart-frame {
+          height: 580px;
+        }
+      }
+      @media (min-width: 1440px) {
+        .main-chart-frame {
+          height: 650px;
         }
       }
       @keyframes fadeIn {
@@ -980,9 +990,9 @@
             <div id="panel-grafico">
               <!-- GRAFICA -->
               <div
-                class="glass rounded-2xl border border-white/70 shadow-[0_18px_45px_rgba(15,23,42,0.10)] p-6 fade-in mb-5 relative flex flex-col overflow-hidden"
+                class="glass rounded-2xl border border-white/70 shadow-[0_18px_45px_rgba(15,23,42,0.10)] p-5 sm:p-6 fade-in mb-5 relative flex flex-col overflow-hidden"
               >
-                <div class="flex items-start justify-between gap-4 border-b border-gray-200/80 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-gray-200/80 pb-4">
                   <div>
                     <div class="flex items-center gap-2">
                       <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]"></span>
@@ -990,7 +1000,7 @@
                     </div>
                     <p class="mt-1 text-xs font-medium text-gray-500">Ql contra Pwf con punto de operacion y punto de prueba</p>
                   </div>
-                  <div class="flex flex-wrap items-center justify-end gap-2">
+                  <div class="flex flex-wrap items-center justify-start sm:justify-end gap-2">
                     <span class="rounded-md border border-gray-200 bg-white/70 px-2.5 py-1 text-[11px] font-semibold text-gray-600">bpd</span>
                     <span class="rounded-md border border-gray-200 bg-white/70 px-2.5 py-1 text-[11px] font-semibold text-gray-600">Pwf</span>
                     <div class="flex items-center gap-1.5 rounded-full border border-gray-200/80 bg-white/75 px-2.5 py-1.5 shadow-sm backdrop-blur-sm">
@@ -1004,7 +1014,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="main-chart-frame mt-4 min-h-0">
+                <div class="main-chart-frame mt-5 min-h-0">
                   <canvas id="graficoBSN" class="block h-full min-h-0 w-full"></canvas>
                 </div>
               </div>
