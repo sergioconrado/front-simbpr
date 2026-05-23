@@ -1,6 +1,5 @@
-// db.js — SQL Server connection pool
-
-const sql = require("mssql");
+// server/db.js — SQL Server connection pool
+"use strict";
 
 const sql = require("mssql");
 
@@ -30,13 +29,4 @@ const poolPromise = new sql.ConnectionPool(config)
 module.exports = {
   sql,
   poolPromise,
-};
-
-async function getPool() {
-  return await sql.connect(config);
-}
-
-module.exports = {
-  sql,
-  getPool,
 };
