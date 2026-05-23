@@ -257,13 +257,37 @@ function observarResizeGraficoPrincipal() {
   mainChartResizeObserver.observe(wrapper);
 }
 
+function destruirGrafico(chart) {
+  if (chart) chart.destroy();
+}
+
+export function destruirGraficosSimulacion() {
+  mainChartResizeObserver?.disconnect();
+  mainChartResizeObserver = null;
+
+  destruirGrafico(chartBSN);
+  destruirGrafico(chartSens);
+  destruirGrafico(chartRPF);
+  destruirGrafico(chartReporteVLP);
+
+  chartBSN = null;
+  chartSens = null;
+  chartRPF = null;
+  chartReporteVLP = null;
+}
+
 /**
  * Crea el gráfico IPR principal desde cero.
  * @param {object} datos - resultado de calcularCurvas()
  */
-export function crearGrafico(datos) {
+export function crearGrafico(datos = {}) {
+  if (chartBSN) {
+    chartBSN.destroy();
+    chartBSN = null;
+  }
+
   const ctx = document.getElementById('graficoBSN').getContext('2d');
-  const iprDisplay = iprParaGrafico(datos.ipr);
+  const iprDisplay = iprParaGrafico(datos.ipr || []);
   const vlpDisplay = iprParaGrafico(datos.vlp || []);
   const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
   const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
@@ -479,6 +503,10 @@ export function crearGrafico(datos) {
   });
   observarResizeGraficoPrincipal();
   forzarResizeGraficoPrincipal();
+}
+
+export function crearGraficoPrincipalVacio() {
+  crearGrafico({ ipr: [], vlp: [], pwfLine: [] });
 }
 
 /**

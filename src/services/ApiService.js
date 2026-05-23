@@ -4,7 +4,11 @@
 //   • In production (served by Express), it uses the same origin.
 //   • In development (Live Server on :5500), it points to the API on :3001.
 
-const API_BASE = "http://localhost:3001/api";
+const API_BASE =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3001/api"
+    : "https://front-simbpr.onrender.com";
 
 /**
  * Generic fetch helper — throws an Error with the server message on failure.

@@ -95,7 +95,16 @@ export function mostrarFeedbackGrafica(mensaje, tipo = 'info') {
   }, 8000);
 }
 
-export function reiniciarFormularioSimulacion() {
+export function limpiarFeedbackGrafica() {
+  const feedback = document.getElementById('grafica-action-feedback');
+  if (!feedback) return;
+
+  clearTimeout(feedbackTimer);
+  feedback.textContent = '';
+  feedback.className = 'mt-3 min-h-[32px] rounded-lg border border-transparent px-3 py-2 text-xs font-semibold text-transparent transition';
+}
+
+export function reiniciarFormularioSimulacion({ limpiarValores = false } = {}) {
   const root = document.getElementById('panel-simulador');
   if (!root) return;
 
@@ -104,15 +113,15 @@ export function reiniciarFormularioSimulacion() {
 
     if (field instanceof HTMLInputElement) {
       if (['checkbox', 'radio'].includes(field.type)) {
-        field.checked = field.defaultChecked;
+        field.checked = limpiarValores ? false : field.defaultChecked;
       } else {
-        field.value = field.defaultValue || '';
+        field.value = limpiarValores ? '' : (field.defaultValue || '');
       }
     } else if (field instanceof HTMLSelectElement) {
       const defaultIndex = Array.from(field.options).findIndex((option) => option.defaultSelected);
       field.selectedIndex = defaultIndex >= 0 ? defaultIndex : 0;
     } else {
-      field.value = field.defaultValue || '';
+      field.value = limpiarValores ? '' : (field.defaultValue || '');
     }
 
     field.classList.remove(

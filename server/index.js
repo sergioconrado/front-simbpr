@@ -15,7 +15,17 @@ const app = express();
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
 // ── Middleware ────────────────────────────────────────────────────────────
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5500",
+      "http://localhost:5501",
+      "http://localhost:3001",
+      "https://front-simbpr.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Global rate limiter: max 500 requests per minute per IP (covers static + API)
@@ -53,7 +63,7 @@ app.use(express.static(frontendDir));
 
 // ── Start ─────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`[SIMBPR API] Servidor iniciado en http://localhost:${PORT}`);
+  console.log(`[SIMBPR API] Servidor iniciado en puerto ${PORT}`);
   console.log(
     `[SIMBPR API] Usando base de datos: ${process.env.DB_DATABASE || "SIMBPR"} en ${process.env.DB_SERVER || "localhost"}`,
   );

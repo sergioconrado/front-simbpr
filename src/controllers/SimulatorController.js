@@ -19,6 +19,8 @@ import {
   crearGrafico,
   actualizarGrafico as actualizarGraficoView,
   descargarGraficoPrincipalPNG,
+  crearGraficoPrincipalVacio,
+  destruirGraficosSimulacion,
   forzarResizeGraficoPrincipal,
   graficoPrincipalTieneDatos,
   limpiarGraficoPrincipal,
@@ -47,6 +49,7 @@ import {
   actualizarReloj,
   abrirInformeTecnicoImprimible,
   limpiarResultadosSimulacion,
+  limpiarFeedbackGrafica,
   mostrarFeedbackGrafica,
   reiniciarFormularioSimulacion,
 } from "../views/SimulatorView.js";
@@ -202,6 +205,36 @@ function actualizarReporteVLP(datos) {
   renderReporteVLPChart(datos);
 }
 
+function tieneSimulacionGuardada(data) {
+  return Boolean(data?.ipr || data?.produccion || data?.bsn || data?.vlp);
+}
+
+function limpiarAlmacenamientoTemporalSimulacion() {
+  const prefixes = ["simbpr:simulacion:", "simbpr:temp-simulacion:"];
+
+  [window.localStorage, window.sessionStorage].forEach((storage) => {
+    if (!storage) return;
+    prefixes.forEach((prefix) => {
+      Object.keys(storage)
+        .filter((key) => key.startsWith(prefix))
+        .forEach((key) => storage.removeItem(key));
+    });
+  });
+}
+
+function mostrarPanelGraficoPorDefecto() {
+  const btnGrafico = document.querySelector('[onclick*="panel-grafico"]');
+  if (btnGrafico) mostrarPanel("panel-grafico", btnGrafico);
+}
+
+function mostrarEntradaYacimientoPorDefecto() {
+  const btnYacimiento = document.querySelector('#leftTabsPanel [onclick*="yacimiento"]');
+  const btnIPR = document.querySelector('.yacimiento-tab-btn[onclick*="yacimiento-ipr"]');
+
+  if (btnYacimiento) mostrarTab("yacimiento", btnYacimiento);
+  if (btnIPR) mostrarYacimientoTab("yacimiento-ipr", btnIPR);
+}
+
 function normalizarEtiquetasVLP() {
   const etiquetas = {
     vlp_nl: "Nivel de liquido NL (m)",
@@ -281,6 +314,35 @@ export function limpiarVistaSimulacion() {
   } catch (err) {
     console.error("[SimulatorController] Error al limpiar la vista:", err);
     mostrarFeedbackGrafica("No se pudo limpiar la vista de simulacion. Revise la consola tecnica.", "error");
+  }
+}
+
+export function reiniciarSimulacionNuevoProyecto() {
+  try {
+    datosSimulacionActual = null;
+    vistaGraficaLimpia = true;
+    reporteActivo = "ipr";
+    iprColor = "#2563eb";
+
+    setCurrentUnidad("kg");
+    reiniciarFormularioSimulacion({ limpiarValores: true });
+    limpiarResultadosSimulacion();
+    limpiarFeedbackGrafica();
+    limpiarAlmacenamientoTemporalSimulacion();
+
+    destruirGraficosSimulacion();
+    crearGraficoPrincipalVacio();
+
+    mostrarReporteUI(reporteActivo);
+    actualizarUnidadUI(false, 0, 0);
+    actualizarColorSwatch(iprColor);
+    setIPRChartColor(iprColor);
+    mostrarEntradaYacimientoPorDefecto();
+    mostrarPanelGraficoPorDefecto();
+  } catch (err) {
+    console.error("[SimulatorController] Error al reiniciar simulación de nuevo proyecto:", err);
+  } finally {
+    forzarResizeGraficoPrincipal();
   }
 }
 
@@ -654,8 +716,15 @@ export function registrarListeners() {
   actualizarColorSwatch(iprColor);
 }
 
-export async function cargarSimulacionProyecto(proyectoId) {
+export async function cargarSimulacionProyecto(
+  proyectoId,
+  { mantenerLimpiaSiVacia = false } = {},
+) {
   if (!proyectoId) {
+    if (mantenerLimpiaSiVacia) {
+      forzarResizeGraficoPrincipal();
+      return;
+    }
     actualizarGrafico();
     forzarResizeGraficoPrincipal();
     return;
@@ -669,6 +738,15 @@ export async function cargarSimulacionProyecto(proyectoId) {
     }
 
     const data = await res.json();
+
+    if (!tieneSimulacionGuardada(data)) {
+      if (!mantenerLimpiaSiVacia) {
+        actualizarGrafico();
+        calcularProduccionHandler();
+        calcularBSNHandler();
+      }
+      return;
+    }
 
     if (data.ipr) {
       document.getElementById("inputPws").value = data.ipr.pws ?? 0;

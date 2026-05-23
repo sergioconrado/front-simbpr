@@ -33,7 +33,10 @@ import {
   desactivarGuardado,
   reiniciarEstadoGuardado,
 } from "./SaveController.js";
-import { cargarSimulacionProyecto } from "./SimulatorController.js";
+import {
+  cargarSimulacionProyecto,
+  reiniciarSimulacionNuevoProyecto,
+} from "./SimulatorController.js";
 
 // ── índice del proyecto en edición (-1 = nuevo) ──────────────────────────
 let _proyEditIndex = -1;
@@ -83,7 +86,7 @@ export async function guardarProyecto() {
     ocultarFormProyecto();
     _renderizar();
     // Abrir automáticamente el nuevo proyecto
-    abrirProyecto(idx);
+    abrirProyecto(idx, { nuevoProyecto: true });
     return;
   }
 
@@ -118,7 +121,7 @@ export async function eliminarProyecto(idx) {
   _renderizar();
 }
 
-export async function abrirProyecto(idx) {
+export async function abrirProyecto(idx, { nuevoProyecto = false } = {}) {
   const p = getProyecto(idx);
   if (!p) return;
 
@@ -132,7 +135,10 @@ export async function abrirProyecto(idx) {
   desactivarSubnavUI();
   mostrarSimulador(true);
 
-  await cargarSimulacionProyecto(p.id);
+  if (nuevoProyecto) reiniciarSimulacionNuevoProyecto();
+  await cargarSimulacionProyecto(p.id, {
+    mantenerLimpiaSiVacia: nuevoProyecto,
+  });
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
