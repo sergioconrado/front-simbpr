@@ -8,6 +8,7 @@ import {
 import { calcularProduccion } from "../models/ProductionModel.js";
 import { calcularBSN } from "../models/BSNModel.js";
 import { calcularRPF, calcularSensibilidad } from "../models/RPFModel.js";
+import { api } from "../services/ApiService.js";
 import {
   esPSI,
   getCurrentUnidad,
@@ -23,7 +24,6 @@ import {
   destruirGraficosSimulacion,
   forzarResizeGraficoPrincipal,
   graficoPrincipalTieneDatos,
-  limpiarGraficoPrincipal,
   obtenerImagenGraficoPrincipalPNG,
   setIPRChartColor,
   renderReporteVLPChart,
@@ -66,6 +66,45 @@ let iprColor = "#2563eb";
 let reporteActivo = "ipr";
 let datosSimulacionActual = null;
 let vistaGraficaLimpia = false;
+
+const SIMULATION_INPUT_IDS = [
+  "inputPws",
+  "inputPwsPSI",
+  "inputPwf",
+  "inputPwfPSI",
+  "inputQb",
+  "inputJ",
+  "vlp_prof_disp",
+  "vlp_bsn_depth",
+  "vlp_nl",
+  "vlp_pwh",
+  "vlp_pl",
+  "vlp_tubing_id",
+  "vlp_bsw",
+  "vlp_api",
+  "vlp_gor",
+  "vlp_visc",
+  "vlp_bsn_etapas",
+  "vlp_bsn_freq",
+  "pozo_prof_disp",
+  "pozo_pl",
+  "pozo_pwh",
+  "pozo_nl",
+  "pozo_tubing_id",
+  "prod_qt",
+  "prod_bsw",
+  "prod_api",
+  "prod_gor",
+  "prod_bo",
+  "prod_visc",
+  "bsn_etapas",
+  "bsn_freq",
+  "bsn_hp",
+  "bsn_volt",
+  "bsn_amp",
+  "bsn_depth",
+  "bsn_tempfondo",
+];
 
 // ── Helpers para leer inputs del DOM ───────────────────────────────────────
 function getFloat(id, fallback = 0) {
@@ -209,6 +248,33 @@ function tieneSimulacionGuardada(data) {
   return Boolean(data?.ipr || data?.produccion || data?.bsn || data?.vlp);
 }
 
+function tieneParametrosVLPGuardados(vlp) {
+  return Boolean(
+    vlp?.parametros &&
+      typeof vlp.parametros === "object" &&
+      Object.keys(vlp.parametros).length > 0,
+  );
+}
+
+function simulacionPerteneceAProyecto(data, proyectoId) {
+  const rows = [data?.ipr, data?.produccion, data?.bsn, data?.vlp].filter(Boolean);
+  return rows.every((row) => Number(row.proyecto_id) === Number(proyectoId));
+}
+
+function getProyectoIdActivo() {
+  const idx = getProyectoActivoIdx();
+  return getProyecto(idx)?.id || null;
+}
+
+function esProyectoActivo(proyectoId) {
+  return Number(getProyectoIdActivo()) === Number(proyectoId);
+}
+
+function setValue(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.value = value ?? "";
+}
+
 function limpiarAlmacenamientoTemporalSimulacion() {
   const prefixes = ["simbpr:simulacion:", "simbpr:temp-simulacion:"];
 
@@ -272,16 +338,32 @@ function _calcularYActualizar() {
   return datos;
 }
 
+function _calcularYActualizarIPRSolo() {
+  const pws = getFloat("inputPws");
+  const pwf = getFloat("inputPwf");
+  const qb = getFloat("inputQb");
+  const J = getFloat("inputJ", 1);
+  const datosIPR = calcularCurvas(pws, pwf, qb, J);
+  const datos = {
+    ...datosIPR,
+    vlp: [],
+    vlpParams: null,
+    puntoOperacion: null,
+    qOperacion: 0,
+    pwfSistema: datosIPR.pwfReferencia,
+  };
+
+  actualizarInputJ(datos.J);
+  mostrarErrorVogel(datos.error);
+  mostrarResultadosQmax(datos.Qmax);
+
+  return datos;
+}
+
 // ── Acciones públicas ───────────────────────────────────────────────────────
 
 export function crearGraficoInicial() {
-  const datos = _calcularYActualizar();
-  datosSimulacionActual = datos;
-  vistaGraficaLimpia = false;
-  renderResultadosYTabla(datos);
-  renderResumenVLP(crearResumenVLP(datos));
-  if (reporteActivo === "vlp") actualizarReporteVLP(datos);
-  crearGrafico(datos);
+  resetSimulationView();
 }
 
 export function actualizarGrafico() {
@@ -295,29 +377,18 @@ export function actualizarGrafico() {
 }
 
 export function limpiarVistaSimulacion() {
-  try {
-    reiniciarFormularioSimulacion();
-    limpiarResultadosSimulacion();
-    limpiarGraficoPrincipal();
-
-    datosSimulacionActual = null;
-    vistaGraficaLimpia = true;
-    iprColor = "#2563eb";
-    setCurrentUnidad("kg");
-    actualizarUnidadUI(false, getFloat("inputPws"), getFloat("inputPwf"));
-    actualizarColorSwatch(iprColor);
-    setIPRChartColor(iprColor);
-    limpiarGraficoPrincipal();
-    limpiarResultadosSimulacion();
-    mostrarPanel("panel-grafico", document.querySelector('[onclick*="panel-grafico"]'));
-    mostrarFeedbackGrafica("Vista limpia. El proyecto y las simulaciones guardadas no fueron modificados.", "success");
-  } catch (err) {
-    console.error("[SimulatorController] Error al limpiar la vista:", err);
-    mostrarFeedbackGrafica("No se pudo limpiar la vista de simulacion. Revise la consola tecnica.", "error");
-  }
+  resetSimulationView({
+    mostrarFeedback: true,
+    mensajeFeedback:
+      "Vista limpia. El proyecto y las simulaciones guardadas no fueron modificados.",
+  });
 }
 
-export function reiniciarSimulacionNuevoProyecto() {
+export function resetSimulationView({
+  limpiarAlmacenamientoTemporal = false,
+  mostrarFeedback = false,
+  mensajeFeedback = "",
+} = {}) {
   try {
     datosSimulacionActual = null;
     vistaGraficaLimpia = true;
@@ -327,8 +398,8 @@ export function reiniciarSimulacionNuevoProyecto() {
     setCurrentUnidad("kg");
     reiniciarFormularioSimulacion({ limpiarValores: true });
     limpiarResultadosSimulacion();
-    limpiarFeedbackGrafica();
-    limpiarAlmacenamientoTemporalSimulacion();
+
+    if (limpiarAlmacenamientoTemporal) limpiarAlmacenamientoTemporalSimulacion();
 
     destruirGraficosSimulacion();
     crearGraficoPrincipalVacio();
@@ -337,13 +408,23 @@ export function reiniciarSimulacionNuevoProyecto() {
     actualizarUnidadUI(false, 0, 0);
     actualizarColorSwatch(iprColor);
     setIPRChartColor(iprColor);
+    limpiarFeedbackGrafica();
     mostrarEntradaYacimientoPorDefecto();
     mostrarPanelGraficoPorDefecto();
+
+    if (mostrarFeedback && mensajeFeedback) {
+      mostrarFeedbackGrafica(mensajeFeedback, "success");
+    }
   } catch (err) {
-    console.error("[SimulatorController] Error al reiniciar simulación de nuevo proyecto:", err);
+    console.error("[SimulatorController] Error al reiniciar la vista:", err);
+    mostrarFeedbackGrafica("No se pudo limpiar la vista de simulacion. Revise la consola tecnica.", "error");
   } finally {
     forzarResizeGraficoPrincipal();
   }
+}
+
+export function reiniciarSimulacionNuevoProyecto() {
+  resetSimulationView({ limpiarAlmacenamientoTemporal: true });
 }
 
 export function exportarGraficaActual() {
@@ -572,6 +653,22 @@ export function obtenerSnapshotSimulacion() {
   };
 }
 
+export function haySimulacionActivaParaGuardar() {
+  if (
+    datosSimulacionActual &&
+    !vistaGraficaLimpia &&
+    Array.isArray(datosSimulacionActual.ipr) &&
+    datosSimulacionActual.ipr.length > 0
+  ) {
+    return true;
+  }
+
+  return SIMULATION_INPUT_IDS.some((id) => {
+    const value = document.getElementById(id)?.value;
+    return typeof value === "string" && value.trim() !== "";
+  });
+}
+
 export function mostrarPanel(panelId, boton) {
   mostrarPanelUI(panelId, boton);
   if (panelId === "panel-grafico") {
@@ -720,90 +817,103 @@ export async function cargarSimulacionProyecto(
   proyectoId,
   { mantenerLimpiaSiVacia = false } = {},
 ) {
-  if (!proyectoId) {
-    if (mantenerLimpiaSiVacia) {
-      forzarResizeGraficoPrincipal();
-      return;
-    }
-    actualizarGrafico();
-    forzarResizeGraficoPrincipal();
+  const proyectoIdNum = Number(proyectoId);
+
+  if (!Number.isFinite(proyectoIdNum) || proyectoIdNum <= 0) {
+    resetSimulationView();
     return;
   }
 
-  try {
-    const res = await fetch(`/api/proyectos/${proyectoId}/simulacion`);
+  resetSimulationView({
+    limpiarAlmacenamientoTemporal: mantenerLimpiaSiVacia,
+  });
 
-    if (!res.ok) {
-      throw new Error("No se pudo cargar la simulación del proyecto");
+  try {
+    const data = await api.simulacion.obtener(proyectoIdNum);
+
+    if (!esProyectoActivo(proyectoIdNum)) return;
+
+    if (!simulacionPerteneceAProyecto(data, proyectoIdNum)) {
+      throw new Error(`La simulación recibida no pertenece al proyecto ${proyectoIdNum}`);
     }
 
-    const data = await res.json();
-
     if (!tieneSimulacionGuardada(data)) {
-      if (!mantenerLimpiaSiVacia) {
-        actualizarGrafico();
-        calcularProduccionHandler();
-        calcularBSNHandler();
-      }
       return;
     }
 
     if (data.ipr) {
-      document.getElementById("inputPws").value = data.ipr.pws ?? 0;
-      document.getElementById("inputPwf").value = data.ipr.pwf ?? 0;
-      document.getElementById("inputQb").value = data.ipr.qb ?? 0;
-      document.getElementById("inputJ").value = data.ipr.j_index ?? 1;
+      setValue("inputPws", data.ipr.pws);
+      setValue("inputPwf", data.ipr.pwf);
+      setValue("inputQb", data.ipr.qb);
+      setValue("inputJ", data.ipr.j_index);
 
       if (data.ipr.ipr_color) {
-        setIPRColor(data.ipr.ipr_color);
+        iprColor = data.ipr.ipr_color;
+        actualizarColorSwatch(iprColor);
       }
 
       if (data.ipr.unidad) {
         setCurrentUnidad(data.ipr.unidad);
       }
+
+      actualizarUnidadUI(
+        getCurrentUnidad() === "psi",
+        getFloat("inputPws"),
+        getFloat("inputPwf"),
+      );
     }
 
     if (data.produccion) {
-      document.getElementById("prod_qt").value = data.produccion.qt ?? 0;
-      document.getElementById("prod_bsw").value = data.produccion.bsw ?? 0;
-      document.getElementById("prod_api").value = data.produccion.api ?? 35;
-      document.getElementById("prod_gor").value = data.produccion.gor ?? 0;
-      document.getElementById("prod_bo").value = data.produccion.bo ?? 1;
+      setValue("prod_qt", data.produccion.qt);
+      setValue("prod_bsw", data.produccion.bsw);
+      setValue("prod_api", data.produccion.api);
+      setValue("prod_gor", data.produccion.gor);
+      setValue("prod_bo", data.produccion.bo);
     }
 
     if (data.bsn) {
-      document.getElementById("bsn_etapas").value = data.bsn.etapas ?? 120;
-      document.getElementById("bsn_freq").value = data.bsn.freq ?? 60;
-      document.getElementById("bsn_hp").value = data.bsn.hp ?? 200;
-      document.getElementById("bsn_volt").value = data.bsn.volt ?? 1150;
-      document.getElementById("bsn_amp").value = data.bsn.amp ?? 92;
-      document.getElementById("bsn_depth").value = data.bsn.depth ?? 2200;
-      document.getElementById("bsn_tempfondo").value = data.bsn.tempfondo ?? 90;
+      setValue("bsn_etapas", data.bsn.etapas);
+      setValue("bsn_freq", data.bsn.freq);
+      setValue("bsn_hp", data.bsn.hp);
+      setValue("bsn_volt", data.bsn.volt);
+      setValue("bsn_amp", data.bsn.amp);
+      setValue("bsn_depth", data.bsn.depth);
+      setValue("bsn_tempfondo", data.bsn.tempfondo);
     }
 
-    if (data.vlp?.parametros) {
+    const tieneVLP = tieneParametrosVLPGuardados(data.vlp);
+
+    if (tieneVLP) {
       const p = data.vlp.parametros;
 
-      document.getElementById("vlp_prof_disp").value =
-        p.profundidadDisponible ?? 2450;
-      document.getElementById("vlp_bsn_depth").value = p.profBSN ?? 2200;
-      document.getElementById("vlp_nl").value = p.nivelLiquido ?? 500;
-      document.getElementById("vlp_pl").value = p.pl ?? 15;
-      document.getElementById("vlp_pwh").value = p.pwh ?? 20;
-      document.getElementById("vlp_tubing_id").value = p.tubingId ?? 2.441;
-      document.getElementById("vlp_bsw").value = p.bsw ?? 30;
-      document.getElementById("vlp_api").value = p.api ?? 35;
-      document.getElementById("vlp_gor").value = p.gor ?? 150;
-      document.getElementById("vlp_visc").value = p.viscosidad ?? 2.5;
-      document.getElementById("vlp_bsn_etapas").value = p.etapas ?? 120;
-      document.getElementById("vlp_bsn_freq").value = p.freq ?? 60;
+      setValue("vlp_prof_disp", p.profundidadDisponible);
+      setValue("vlp_bsn_depth", p.profBSN);
+      setValue("vlp_nl", p.nivelLiquido);
+      setValue("vlp_pl", p.pl);
+      setValue("vlp_pwh", p.pwh);
+      setValue("vlp_tubing_id", p.tubingId);
+      setValue("vlp_bsw", p.bsw);
+      setValue("vlp_api", p.api);
+      setValue("vlp_gor", p.gor);
+      setValue("vlp_visc", p.viscosidad);
+      setValue("vlp_bsn_etapas", p.etapas);
+      setValue("vlp_bsn_freq", p.freq);
     }
 
-    actualizarGrafico();
-    calcularProduccionHandler();
-    calcularBSNHandler();
+    if (data.ipr && !tieneVLP) {
+      const datos = _calcularYActualizarIPRSolo();
+      datosSimulacionActual = datos;
+      vistaGraficaLimpia = false;
+      renderResultadosYTabla(datos);
+      renderResumenVLP({ estado: "incompleta" });
+      actualizarGraficoView(datos);
+    } else if (data.ipr) {
+      actualizarGrafico();
+    }
+    if (data.produccion) calcularProduccionHandler();
+    if (data.bsn) calcularBSNHandler();
 
-    window.__simbprMarkDirty = window.__simbprMarkDirty || (() => {});
+    setIPRChartColor(iprColor);
   } catch (err) {
     console.error("[SimulatorController] Error cargando simulación:", err);
   } finally {

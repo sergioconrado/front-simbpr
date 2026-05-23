@@ -6,7 +6,10 @@ import {
   guardarProyectoActivoAPI,
 } from '../models/ProjectModel.js';
 import { guardarSimulacionCompleta } from '../models/SimulationSaveModel.js';
-import { obtenerSnapshotSimulacion } from './SimulatorController.js';
+import {
+  haySimulacionActivaParaGuardar,
+  obtenerSnapshotSimulacion,
+} from './SimulatorController.js';
 import { actualizarEstadoGuardado } from '../views/SaveView.js';
 
 const AUTOSAVE_MS = 30000;
@@ -69,11 +72,13 @@ export async function guardarProyectoActivo({ automatico = false } = {}) {
     isSaving = true;
     actualizarEstadoGuardado('saving');
 
-    const simulacion = obtenerSnapshotSimulacion();
-    crearBackupTemporal(proyecto, idx, simulacion);
-
     const proyectoGuardado = await guardarProyectoActivoAPI(idx);
-    await guardarSimulacionCompleta(proyectoGuardado.id, simulacion);
+
+    if (haySimulacionActivaParaGuardar()) {
+      const simulacion = obtenerSnapshotSimulacion();
+      crearBackupTemporal(proyectoGuardado, idx, simulacion);
+      await guardarSimulacionCompleta(proyectoGuardado.id, simulacion);
+    }
 
     hasPendingChanges = false;
     actualizarEstadoGuardado('saved');
