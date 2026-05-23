@@ -8,7 +8,7 @@ const API_BASE =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:3001/api"
-    : "https://front-simbpr.onrender.com";
+    : "https://front-simbpr-1.onrender.com/api";
 
 /**
  * Generic fetch helper — throws an Error with the server message on failure.

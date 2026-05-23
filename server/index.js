@@ -15,15 +15,21 @@ const app = express();
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
 // ── Middleware ────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:5500",
+  "http://localhost:5501",
+  "http://localhost:3001",
+  "https://front-simbpr.vercel.app",
+  "https://front-simbpr.onrender.com",
+  "https://front-simbpr-1.onrender.com",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5500",
-      "http://localhost:5501",
-      "http://localhost:3001",
-      "https://front-simbpr.vercel.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 app.use(express.json());
