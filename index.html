@@ -391,7 +391,7 @@
                   <input
                     id="inputPws"
                     type="number"
-                    value="73"
+                    placeholder="73"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
                   />
                 </div>
@@ -400,7 +400,7 @@
                   <input
                     id="inputPwsPSI"
                     type="number"
-                    value="1038"
+                    placeholder="1038"
                     oninput="syncPSItoKG('inputPwsPSI')"
                     class="w-full mt-1 border border-amber-200 p-2 rounded-xl focus:ring-2 focus:ring-amber-200 outline-none"
                   />
@@ -410,7 +410,7 @@
                   <input
                     id="inputPwf"
                     type="number"
-                    value="66"
+                    placeholder="66"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
                   />
                 </div>
@@ -419,18 +419,18 @@
                   <input
                     id="inputPwfPSI"
                     type="number"
-                    value="939"
+                    placeholder="939"
                     oninput="syncPSItoKG('inputPwfPSI')"
                     class="w-full mt-1 border border-amber-200 p-2 rounded-xl focus:ring-2 focus:ring-amber-200 outline-none"
                   />
                 </div>
-                <input id="inputJ" type="hidden" value="1.5" />
+                <input id="inputJ" type="hidden" />
                 <div>
                   <label class="text-sm text-gray-500">Qb (bpd)</label>
                   <input
                     id="inputQb"
                     type="number"
-                    value="50"
+                    placeholder="50"
                     class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none"
                   />
                 </div>
@@ -456,59 +456,63 @@
 
                 <div id="yacimiento-vlp" class="yacimiento-subpanel hidden space-y-4">
                   <div>
+                    <label class="text-sm text-gray-500">Qmax VLP (bpd)</label>
+                    <input id="vlp_qmax" type="number" placeholder="1000" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                  </div>
+                  <div>
                     <label class="text-sm text-gray-500">Prof. disponible (m)</label>
-                    <input id="vlp_prof_disp" type="number" value="2450" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    <input id="vlp_prof_disp" type="number" placeholder="2450" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                   </div>
                   <div>
                     <label class="text-sm text-gray-500">Prof. asentamiento BSN (m)</label>
-                    <input id="vlp_bsn_depth" type="number" value="2200" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    <input id="vlp_bsn_depth" type="number" placeholder="2200" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                   </div>
                   <div>
                     <label class="text-sm text-gray-500">Nivel de lÃ­quido NL (m)</label>
-                    <input id="vlp_nl" type="number" value="500" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    <input id="vlp_nl" type="number" placeholder="500" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label class="text-sm text-gray-500">Pwh (kg/cmÂ²)</label>
-                      <input id="vlp_pwh" type="number" value="20" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_pwh" type="number" placeholder="20" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                     <div>
                       <label class="text-sm text-gray-500">PL (kg/cmÂ²)</label>
-                      <input id="vlp_pl" type="number" value="15" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_pl" type="number" placeholder="15" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                   </div>
                   <div>
                     <label class="text-sm text-gray-500">ID tubing (pg)</label>
-                    <input id="vlp_tubing_id" type="number" value="2.441" step="0.001" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                    <input id="vlp_tubing_id" type="number" placeholder="2.441" step="0.001" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label class="text-sm text-gray-500">BSW (%)</label>
-                      <input id="vlp_bsw" type="number" value="30" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_bsw" type="number" placeholder="30" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                     <div>
                       <label class="text-sm text-gray-500">API</label>
-                      <input id="vlp_api" type="number" value="35" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_api" type="number" placeholder="35" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label class="text-sm text-gray-500">GOR (scf/bbl)</label>
-                      <input id="vlp_gor" type="number" value="150" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_gor" type="number" placeholder="150" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                     <div>
                       <label class="text-sm text-gray-500">Viscosidad (cP)</label>
-                      <input id="vlp_visc" type="number" value="2.5" step="0.1" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_visc" type="number" placeholder="2.5" step="0.1" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
                       <label class="text-sm text-gray-500">Etapas BSN</label>
-                      <input id="vlp_bsn_etapas" type="number" value="120" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_bsn_etapas" type="number" placeholder="120" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                     <div>
                       <label class="text-sm text-gray-500">Frecuencia (Hz)</label>
-                      <input id="vlp_bsn_freq" type="number" value="60" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
+                      <input id="vlp_bsn_freq" type="number" placeholder="60" class="w-full mt-1 border border-gray-200 p-2 rounded-xl focus:ring-2 focus:ring-gray-300 outline-none" />
                     </div>
                   </div>
                 </div>

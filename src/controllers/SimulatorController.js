@@ -1,6 +1,6 @@
 // SimulatorController.js — Simulator events & coordination
 
-import { calcularCurvas } from "../models/IPRModel.js";
+import { calcularCurvas, generarQ } from "../models/IPRModel.js";
 import {
   calcularCurvaVLP,
   encontrarInterseccionCurvas,
@@ -67,6 +67,23 @@ let reporteActivo = "ipr";
 let datosSimulacionActual = null;
 let vistaGraficaLimpia = false;
 
+const IPR_INPUT_IDS = ["inputPws", "inputPwf", "inputQb"];
+const VLP_REQUIRED_INPUT_IDS = [
+  "vlp_qmax",
+  "vlp_prof_disp",
+  "vlp_bsn_depth",
+  "vlp_nl",
+  "vlp_pwh",
+  "vlp_pl",
+  "vlp_tubing_id",
+  "vlp_bsw",
+  "vlp_api",
+  "vlp_gor",
+  "vlp_visc",
+  "vlp_bsn_etapas",
+  "vlp_bsn_freq",
+];
+
 const SIMULATION_INPUT_IDS = [
   "inputPws",
   "inputPwsPSI",
@@ -74,6 +91,7 @@ const SIMULATION_INPUT_IDS = [
   "inputPwfPSI",
   "inputQb",
   "inputJ",
+  "vlp_qmax",
   "vlp_prof_disp",
   "vlp_bsn_depth",
   "vlp_nl",
@@ -111,46 +129,175 @@ function getFloat(id, fallback = 0) {
   return parseFloat(document.getElementById(id)?.value) || fallback;
 }
 
-function leerParametrosVLP(Qmax) {
-  const profundidadDisponible = getFloat(
-    "vlp_prof_disp",
-    getFloat("pozo_prof_disp", 2450),
-  );
+function getRawValue(id) {
+  return document.getElementById(id)?.value?.trim() ?? "";
+}
+
+function getNumber(id) {
+  const value = Number(getRawValue(id));
+  return Number.isFinite(value) ? value : null;
+}
+
+function inputTieneNumero(id) {
+  return getRawValue(id) !== "" && getNumber(id) !== null;
+}
+
+function formularioTieneAlgunaEntrada(ids) {
+  return ids.some((id) => getRawValue(id) !== "");
+}
+
+function curvaTienePuntos(curva) {
+  return Array.isArray(curva) && curva.length > 0;
+}
+
+function crearDatosSimulacionVacios() {
   return {
-    qmax: Qmax,
-    profundidadDisponible,
-    profBSN: getFloat(
-      "vlp_bsn_depth",
-      getFloat("bsn_depth", profundidadDisponible),
-    ),
-    nivelLiquido: getFloat("vlp_nl", getFloat("pozo_nl", 500)),
-    pl: getFloat("vlp_pl", getFloat("pozo_pl", 15)),
-    pwh: getFloat("vlp_pwh", getFloat("pozo_pwh", 20)),
-    tubingId: getFloat("vlp_tubing_id", getFloat("pozo_tubing_id", 2.441)),
-    bsw: getFloat("vlp_bsw", getFloat("prod_bsw", 30)),
-    api: getFloat("vlp_api", getFloat("prod_api", 35)),
-    gor: getFloat("vlp_gor", getFloat("prod_gor", 150)),
-    viscosidad: getFloat("vlp_visc", getFloat("prod_visc", 2.5)),
-    etapas: getFloat("vlp_bsn_etapas", getFloat("bsn_etapas", 120)),
-    freq: getFloat("vlp_bsn_freq", getFloat("bsn_freq", 60)),
+    ipr: [],
+    vlp: [],
+    pwfLine: [],
+    puntoPrueba: null,
+    puntoOperacion: null,
+    vlpParams: null,
+    qOperacion: 0,
+    pwfSistema: 0,
+    Qmax: 0,
+    pws: 0,
+    J: 0,
+    tieneIPR: false,
+    tieneVLP: false,
   };
 }
 
-function calcularSistemaIPRVLP(pws, pwf, qb, J) {
-  const datosIPR = calcularCurvas(pws, pwf, qb, J);
-  const vlpParams = leerParametrosVLP(datosIPR.Qmax);
-  const qVals = datosIPR.ipr.map((pt) => pt.x);
-  const vlp = calcularCurvaVLP(qVals, vlpParams);
-  const puntoOperacion = encontrarInterseccionCurvas(datosIPR.ipr, vlp);
-
+function leerParametrosVLP(qmax) {
   return {
-    ...datosIPR,
-    vlp,
-    vlpParams,
-    puntoOperacion,
-    qOperacion: puntoOperacion?.x || 0,
-    pwfSistema: puntoOperacion?.y || 0,
+    qmax,
+    profundidadDisponible: getNumber("vlp_prof_disp"),
+    profBSN: getNumber("vlp_bsn_depth"),
+    nivelLiquido: getNumber("vlp_nl"),
+    pl: getNumber("vlp_pl"),
+    pwh: getNumber("vlp_pwh"),
+    tubingId: getNumber("vlp_tubing_id"),
+    bsw: getNumber("vlp_bsw"),
+    api: getNumber("vlp_api"),
+    gor: getNumber("vlp_gor"),
+    viscosidad: getNumber("vlp_visc"),
+    etapas: getNumber("vlp_bsn_etapas"),
+    freq: getNumber("vlp_bsn_freq"),
   };
+}
+
+export function formularioIPRCompleto() {
+  if (!IPR_INPUT_IDS.every(inputTieneNumero)) return false;
+
+  const pws = getNumber("inputPws");
+  const pwf = getNumber("inputPwf");
+  const qb = getNumber("inputQb");
+
+  return pws > 0 && pwf >= 0 && pwf < pws && qb > 0;
+}
+
+export function formularioVLPCompleto() {
+  if (!VLP_REQUIRED_INPUT_IDS.every(inputTieneNumero)) return false;
+
+  const qmax = getNumber("vlp_qmax");
+  const profDisp = getNumber("vlp_prof_disp");
+  const profBSN = getNumber("vlp_bsn_depth");
+  const nl = getNumber("vlp_nl");
+  const pwh = getNumber("vlp_pwh");
+  const pl = getNumber("vlp_pl");
+  const tubingId = getNumber("vlp_tubing_id");
+  const bsw = getNumber("vlp_bsw");
+  const api = getNumber("vlp_api");
+  const gor = getNumber("vlp_gor");
+  const viscosidad = getNumber("vlp_visc");
+  const etapas = getNumber("vlp_bsn_etapas");
+  const freq = getNumber("vlp_bsn_freq");
+
+  return (
+    qmax > 0 &&
+    profDisp > 0 &&
+    profBSN > 0 &&
+    profBSN <= profDisp &&
+    nl >= 0 &&
+    pwh >= 0 &&
+    pl >= 0 &&
+    tubingId > 0 &&
+    bsw >= 0 &&
+    bsw <= 100 &&
+    api > 0 &&
+    gor >= 0 &&
+    viscosidad > 0 &&
+    etapas > 0 &&
+    freq > 0
+  );
+}
+
+function mensajeValidacionIPR() {
+  if (!formularioTieneAlgunaEntrada(IPR_INPUT_IDS)) return "";
+  if (!IPR_INPUT_IDS.every(inputTieneNumero)) {
+    return "IPR incompleta: capture Pws, Pwf y Qb para graficar la curva IPR.";
+  }
+  if (!formularioIPRCompleto()) {
+    return "IPR invalida: use Pws > 0, 0 <= Pwf < Pws y Qb > 0.";
+  }
+  return "";
+}
+
+function mensajeValidacionVLP() {
+  if (!formularioTieneAlgunaEntrada(VLP_REQUIRED_INPUT_IDS)) return "";
+  if (!VLP_REQUIRED_INPUT_IDS.every(inputTieneNumero)) {
+    return "VLP incompleta: capture todos los parametros VLP, incluido Qmax VLP.";
+  }
+  if (!formularioVLPCompleto()) {
+    return "VLP invalida: revise rangos fisicos, profundidad BSN <= profundidad disponible, BSW 0-100 y valores positivos.";
+  }
+  return "";
+}
+
+function calcularSimulacionDesdeFormularios() {
+  const datos = crearDatosSimulacionVacios();
+  const iprValida = formularioIPRCompleto();
+  const vlpValida = formularioVLPCompleto();
+
+  if (iprValida) {
+    const pws = getNumber("inputPws");
+    const pwf = getNumber("inputPwf");
+    const qb = getNumber("inputQb");
+    const J = getFloat("inputJ", 1);
+    const datosIPR = calcularCurvas(pws, pwf, qb, J);
+
+    if (!datosIPR.error && curvaTienePuntos(datosIPR.ipr)) {
+      Object.assign(datos, datosIPR, {
+        tieneIPR: true,
+        pwfSistema: datosIPR.pwfReferencia,
+      });
+    } else {
+      mostrarErrorVogel(datosIPR.error);
+    }
+  }
+
+  if (vlpValida) {
+    const vlpParams = leerParametrosVLP(getNumber("vlp_qmax"));
+    const qVals = datos.tieneIPR
+      ? datos.ipr.map((pt) => pt.x)
+      : generarQ(vlpParams.qmax);
+    const vlp = calcularCurvaVLP(qVals, vlpParams);
+
+    Object.assign(datos, {
+      vlp,
+      vlpParams,
+      tieneVLP: curvaTienePuntos(vlp),
+    });
+  }
+
+  if (datos.tieneIPR && datos.tieneVLP) {
+    const puntoOperacion = encontrarInterseccionCurvas(datos.ipr, datos.vlp);
+    datos.puntoOperacion = puntoOperacion;
+    datos.qOperacion = puntoOperacion?.x || 0;
+    datos.pwfSistema = puntoOperacion?.y || datos.pwfReferencia;
+  }
+
+  return datos;
 }
 
 function crearResumenVLP(datos, isPSI = esPSI()) {
@@ -214,10 +361,8 @@ function validarDatosGrafica(mensaje) {
   const tieneDatosCalculados =
     datosSimulacionActual &&
     !vistaGraficaLimpia &&
-    Array.isArray(datosSimulacionActual.ipr) &&
-    datosSimulacionActual.ipr.length > 0 &&
-    Array.isArray(datosSimulacionActual.vlp) &&
-    datosSimulacionActual.vlp.length > 0;
+    (curvaTienePuntos(datosSimulacionActual.ipr) ||
+      curvaTienePuntos(datosSimulacionActual.vlp));
 
   if (tieneDatosCalculados && graficoPrincipalTieneDatos()) return true;
 
@@ -249,10 +394,25 @@ function tieneSimulacionGuardada(data) {
 }
 
 function tieneParametrosVLPGuardados(vlp) {
-  return Boolean(
-    vlp?.parametros &&
-      typeof vlp.parametros === "object" &&
-      Object.keys(vlp.parametros).length > 0,
+  const p = vlp?.parametros;
+  if (!p || typeof p !== "object") return false;
+
+  return (
+    Number(p.qmax) > 0 &&
+    Number(p.profundidadDisponible) > 0 &&
+    Number(p.profBSN) > 0 &&
+    Number(p.profBSN) <= Number(p.profundidadDisponible) &&
+    Number(p.nivelLiquido) >= 0 &&
+    Number(p.pwh) >= 0 &&
+    Number(p.pl) >= 0 &&
+    Number(p.tubingId) > 0 &&
+    Number(p.bsw) >= 0 &&
+    Number(p.bsw) <= 100 &&
+    Number(p.api) > 0 &&
+    Number(p.gor) >= 0 &&
+    Number(p.viscosidad) > 0 &&
+    Number(p.etapas) > 0 &&
+    Number(p.freq) > 0
   );
 }
 
@@ -321,19 +481,13 @@ function normalizarEtiquetasVLP() {
  * @returns {object} resultado de calcularCurvas()
  */
 function _calcularYActualizar() {
-  const pws = getFloat("inputPws");
-  const pwf = getFloat("inputPwf");
-  const qb = getFloat("inputQb");
-  const J = getFloat("inputJ", 1);
+  const datos = calcularSimulacionDesdeFormularios();
 
-  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
-
-  // Actualizar J calculado en el input oculto
-  actualizarInputJ(datos.J);
-  // Mostrar error si los parámetros son inválidos
-  mostrarErrorVogel(datos.error);
-  // Actualizar resumen de Qmax
-  mostrarResultadosQmax(datos.Qmax);
+  if (datos.tieneIPR) {
+    actualizarInputJ(datos.J);
+    mostrarErrorVogel(datos.error);
+    mostrarResultadosQmax(datos.Qmax);
+  }
 
   return datos;
 }
@@ -351,6 +505,8 @@ function _calcularYActualizarIPRSolo() {
     puntoOperacion: null,
     qOperacion: 0,
     pwfSistema: datosIPR.pwfReferencia,
+    tieneIPR: true,
+    tieneVLP: false,
   };
 
   actualizarInputJ(datos.J);
@@ -367,13 +523,37 @@ export function crearGraficoInicial() {
 }
 
 export function actualizarGrafico() {
+  const mensajeIPR = mensajeValidacionIPR();
+  const mensajeVLP = mensajeValidacionVLP();
   const datos = _calcularYActualizar();
+
   datosSimulacionActual = datos;
-  vistaGraficaLimpia = false;
-  renderResultadosYTabla(datos);
+  vistaGraficaLimpia = !datos.tieneIPR && !datos.tieneVLP;
+
+  limpiarResultadosSimulacion();
+
+  if (datos.tieneIPR) {
+    renderResultadosYTabla(datos);
+    mostrarResultadosQmax(datos.Qmax);
+  } else {
+    mostrarErrorVogel(mensajeIPR);
+  }
+
   renderResumenVLP(crearResumenVLP(datos));
   actualizarGraficoView(datos);
   if (reporteActivo === "vlp") actualizarReporteVLP(datos);
+
+  const mensajes = [mensajeIPR, mensajeVLP].filter(Boolean);
+  if (vistaGraficaLimpia) {
+    mostrarFeedbackGrafica(
+      mensajes[0] || "No hay datos completos para graficar IPR ni VLP.",
+      "warning",
+    );
+  } else if (mensajes.length) {
+    mostrarFeedbackGrafica(mensajes.join(" "), "warning");
+  } else {
+    limpiarFeedbackGrafica();
+  }
 }
 
 export function limpiarVistaSimulacion() {
@@ -539,13 +719,12 @@ export function mostrarReporte(tipo = "ipr") {
 
   if (reporteActivo !== "vlp") return;
 
-  const pws = getFloat("inputPws");
-  const pwf = getFloat("inputPwf");
-  const qb = getFloat("inputQb");
-  const J = getFloat("inputJ", 1);
-  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
+  const datos = datosSimulacionActual && !vistaGraficaLimpia
+    ? datosSimulacionActual
+    : calcularSimulacionDesdeFormularios();
+
   datosSimulacionActual = datos;
-  actualizarReporteVLP(datos);
+  actualizarReporteVLP(datos.tieneVLP ? datos : crearDatosSimulacionVacios());
 }
 
 export function setUnidad(unidad) {
@@ -562,13 +741,17 @@ export function setUnidad(unidad) {
 }
 
 export function syncPSItoKG(id) {
+  const raw = getRawValue(id);
+  const targetId = id === "inputPwsPSI" ? "inputPws" : "inputPwf";
+
+  if (raw === "") {
+    document.getElementById(targetId).value = "";
+    return;
+  }
+
   const val = getFloat(id);
   const kgVal = (val / KGcm2_TO_PSI).toFixed(4);
-  if (id === "inputPwsPSI") {
-    document.getElementById("inputPws").value = kgVal;
-  } else {
-    document.getElementById("inputPwf").value = kgVal;
-  }
+  document.getElementById(targetId).value = kgVal;
   if (document.getElementById("autoCalibrarVogel")?.checked)
     actualizarGrafico();
   if (!document.getElementById("panel-datos").classList.contains("hidden")) {
@@ -608,23 +791,10 @@ export function calcularBSNHandler() {
 }
 
 export function obtenerSnapshotSimulacion() {
-  const pws = getFloat("inputPws");
-  const pwf = getFloat("inputPwf");
-  const qb = getFloat("inputQb");
-  const J = getFloat("inputJ", 1);
-  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
-
-  return {
+  const datos = calcularSimulacionDesdeFormularios();
+  const snapshot = {
     schema_version: 1,
     saved_at: new Date().toISOString(),
-    ipr: {
-      pws,
-      pwf,
-      qb,
-      j_index: datos.J,
-      unidad: getCurrentUnidad(),
-      ipr_color: iprColor,
-    },
     produccion: {
       qt: getFloat("prod_qt"),
       bsw: getFloat("prod_bsw"),
@@ -641,7 +811,21 @@ export function obtenerSnapshotSimulacion() {
       depth: getFloat("bsn_depth", 2200),
       tempfondo: getFloat("bsn_tempfondo", 90),
     },
-    vlp: {
+  };
+
+  if (datos.tieneIPR) {
+    snapshot.ipr = {
+      pws: getNumber("inputPws"),
+      pwf: getNumber("inputPwf"),
+      qb: getNumber("inputQb"),
+      j_index: datos.J,
+      unidad: getCurrentUnidad(),
+      ipr_color: iprColor,
+    };
+  }
+
+  if (datos.tieneVLP) {
+    snapshot.vlp = {
       modelo: "vertical_lift_performance_bsn",
       parametros: datos.vlpParams,
       puntos: datos.vlp,
@@ -649,8 +833,10 @@ export function obtenerSnapshotSimulacion() {
       q_operacion: datos.qOperacion,
       pwf_operacion: datos.pwfSistema,
       version: 1,
-    },
-  };
+    };
+  }
+
+  return snapshot;
 }
 
 export function haySimulacionActivaParaGuardar() {
@@ -691,12 +877,18 @@ export function mostrarYacimientoTab(tab, boton) {
 }
 
 function _actualizarTablasDatosCompleto() {
-  const pws = getFloat("inputPws");
-  const pwf = getFloat("inputPwf");
-  const J = getFloat("inputJ", 1);
-  const qb = getFloat("inputQb");
+  const datos = datosSimulacionActual && !vistaGraficaLimpia
+    ? datosSimulacionActual
+    : calcularSimulacionDesdeFormularios();
+
+  if (!datos.tieneIPR) {
+    limpiarResultadosSimulacion();
+    return;
+  }
+
+  const pws = getNumber("inputPws");
+  const pwf = getNumber("inputPwf");
   const isPSI = esPSI();
-  const datos = calcularSistemaIPRVLP(pws, pwf, qb, J);
 
   actualizarTablasDatos({
     pws,
@@ -757,6 +949,7 @@ export function registrarListeners() {
     "inputPws",
     "inputPwf",
     "inputQb",
+    "vlp_qmax",
     "vlp_prof_disp",
     "vlp_bsn_depth",
     "vlp_nl",
@@ -886,6 +1079,7 @@ export async function cargarSimulacionProyecto(
     if (tieneVLP) {
       const p = data.vlp.parametros;
 
+      setValue("vlp_qmax", p.qmax);
       setValue("vlp_prof_disp", p.profundidadDisponible);
       setValue("vlp_bsn_depth", p.profBSN);
       setValue("vlp_nl", p.nivelLiquido);

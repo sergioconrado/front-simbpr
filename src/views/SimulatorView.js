@@ -498,8 +498,10 @@ export function actualizarUnidadUI(isPSI, pws, pwf) {
   document.getElementById('rowPwfPSI').classList.toggle('hidden', !isPSI);
 
   if (isPSI) {
-    document.getElementById('inputPwsPSI').value = (pws * K).toFixed(1);
-    document.getElementById('inputPwfPSI').value = (pwf * K).toFixed(1);
+    const pwsKg = document.getElementById('inputPws')?.value?.trim();
+    const pwfKg = document.getElementById('inputPwf')?.value?.trim();
+    document.getElementById('inputPwsPSI').value = pwsKg === '' ? '' : (pws * K).toFixed(1);
+    document.getElementById('inputPwfPSI').value = pwfKg === '' ? '' : (pwf * K).toFixed(1);
   }
 }
 

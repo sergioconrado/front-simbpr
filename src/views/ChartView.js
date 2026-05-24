@@ -8,6 +8,7 @@ let chartSens = null;
 let chartRPF  = null;
 let chartReporteVLP = null;
 let mainChartResizeObserver = null;
+let currentIPRColor = '#2563eb';
 
 const mainChartFont = {
   legend: 15,
@@ -41,6 +42,149 @@ function samplearPuntosCurva(curva, muestras = 9) {
     const curveIndex = Math.round((index / (muestras - 1)) * lastIndex);
     return curva[curveIndex];
   }).filter(Boolean);
+}
+
+function normalizarPuntosGrafica(curva = []) {
+  return Array.isArray(curva)
+    ? curva.filter((pt) => pt && isFiniteNumber(pt.x) && isFiniteNumber(pt.y))
+    : [];
+}
+
+function tienePuntos(curva) {
+  return Array.isArray(curva) && curva.length > 0;
+}
+
+export function limpiarDatasetsGrafica({ actualizar = true } = {}) {
+  if (!chartBSN) return false;
+  chartBSN.data.datasets = [];
+  if (actualizar) chartBSN.update();
+  return true;
+}
+
+export function construirDatasetsSegunDatos(datos = {}) {
+  const iprDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.ipr || []));
+  const vlpDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.vlp || []));
+  const pwfLineDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.pwfLine || []));
+  const puntoOperacion = datos.puntoOperacion && tienePuntos(iprDisplay) && tienePuntos(vlpDisplay)
+    ? normalizarPuntosGrafica(iprParaGrafico([datos.puntoOperacion]))
+    : [];
+  const puntoPrueba = datos.puntoPrueba && tienePuntos(iprDisplay)
+    ? normalizarPuntosGrafica(iprParaGrafico([datos.puntoPrueba]))
+    : [];
+  const datasets = [];
+
+  if (tienePuntos(iprDisplay)) {
+    datasets.push({
+      label: 'IPR',
+      data: iprDisplay,
+      borderColor: currentIPRColor,
+      borderWidth: 3.5,
+      tension: 0,
+      pointRadius: 0,
+      pointHoverRadius: 7,
+      hitRadius: 11,
+      borderCapStyle: 'round',
+      borderJoinStyle: 'round',
+    });
+
+    if (tienePuntos(pwfLineDisplay)) {
+      datasets.push({
+        label: 'Pwf prueba',
+        data: pwfLineDisplay,
+        borderColor: '#6b7280',
+        borderWidth: 2,
+        borderDash: [6, 5],
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      });
+    }
+
+    if (tienePuntos(puntoPrueba)) {
+      datasets.push({
+        label: 'Prueba Qb-Pwf',
+        data: puntoPrueba,
+        borderColor: '#d97706',
+        backgroundColor: 'rgba(217,119,6,0.15)',
+        pointStyle: 'rectRot',
+        pointRadius: 10,
+        pointHoverRadius: 12,
+        pointBorderColor: '#d97706',
+        pointBorderWidth: 2.5,
+        hitRadius: 12,
+        showLine: false,
+      });
+    }
+
+    datasets.push({
+      label: 'Puntos IPR',
+      data: samplearPuntosIPR(iprDisplay),
+      borderColor: currentIPRColor,
+      backgroundColor: currentIPRColor,
+      pointRadius: 5.5,
+      pointBackgroundColor: currentIPRColor,
+      pointBorderColor: '#ffffff',
+      pointBorderWidth: 1.75,
+      pointHoverRadius: 7.5,
+      hitRadius: 10,
+      showLine: false,
+      legendHidden: true,
+    });
+  }
+
+  if (tienePuntos(vlpDisplay)) {
+    datasets.push(
+      {
+        label: 'VLP',
+        data: vlpDisplay,
+        borderColor: '#dc2626',
+        backgroundColor: 'rgba(220,38,38,0.08)',
+        borderWidth: 3.5,
+        borderDash: [8, 5],
+        tension: 0.25,
+        pointRadius: 0,
+        pointHoverRadius: 7,
+        hitRadius: 11,
+        borderCapStyle: 'round',
+        borderJoinStyle: 'round',
+      },
+      {
+        label: 'Puntos VLP',
+        data: samplearPuntosCurva(vlpDisplay),
+        borderColor: '#dc2626',
+        backgroundColor: '#dc2626',
+        pointRadius: 5.5,
+        pointBackgroundColor: '#dc2626',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 1.75,
+        pointHoverRadius: 7.5,
+        hitRadius: 10,
+        showLine: false,
+        legendHidden: true,
+      },
+    );
+  }
+
+  if (tienePuntos(puntoOperacion)) {
+    datasets.push({
+      label: OPERATION_POINT_LABEL,
+      data: puntoOperacion,
+      borderColor: '#111827',
+      backgroundColor: '#facc15',
+      pointBackgroundColor: '#facc15',
+      pointRadius: 10,
+      pointHoverRadius: 12,
+      hitRadius: 14,
+      pointStyle: 'circle',
+      pointBorderColor: '#111827',
+      pointBorderWidth: 2.5,
+      showLine: false,
+      order: -10,
+      operationPoint: true,
+      operationLabel: 'Operacion',
+    });
+  }
+
+  return datasets;
 }
 
 function niceTickStep(min, max, ticks = AXIS_TARGET_TICKS) {
@@ -173,9 +317,7 @@ export function graficoPrincipalTieneDatos() {
 export function limpiarGraficoPrincipal() {
   if (!chartBSN) return false;
 
-  chartBSN.data.datasets.forEach((dataset) => {
-    dataset.data = [];
-  });
+  limpiarDatasetsGrafica({ actualizar: false });
   chartBSN.options.scales.x.min = 0;
   chartBSN.options.scales.x.max = 1;
   chartBSN.options.scales.x.ticks.stepSize = 1;
@@ -292,6 +434,7 @@ export function crearGrafico(datos = {}) {
   const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
   const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
   const puntoPrueba = datos.puntoPrueba ? iprParaGrafico([datos.puntoPrueba]) : [];
+  const datasets = construirDatasetsSegunDatos(datos);
   const axis = calcularLimitesAutomaticosEjes({
     ipr: iprDisplay,
     vlp: vlpDisplay,
@@ -303,101 +446,7 @@ export function crearGrafico(datos = {}) {
   chartBSN = new Chart(ctx, {
     type: 'line',
     data: {
-      datasets: [
-        {
-          label: 'IPR',
-          data: iprDisplay,
-          borderColor: '#2563eb',
-          borderWidth: 3.5,
-          tension: 0,
-          pointRadius: 0,
-          pointHoverRadius: 7,
-          hitRadius: 11,
-          borderCapStyle: 'round',
-          borderJoinStyle: 'round',
-        },
-        {
-          label: 'VLP',
-          data: vlpDisplay,
-          borderColor: '#dc2626',
-          backgroundColor: 'rgba(220,38,38,0.08)',
-          borderWidth: 3.5,
-          borderDash: [8, 5],
-          tension: 0.25,
-          pointRadius: 0,
-          pointHoverRadius: 7,
-          hitRadius: 11,
-          borderCapStyle: 'round',
-          borderJoinStyle: 'round',
-        },
-        {
-          label: 'Puntos VLP',
-          data: samplearPuntosCurva(vlpDisplay),
-          borderColor: '#dc2626',
-          backgroundColor: '#dc2626',
-          pointRadius: 5.5,
-          pointBackgroundColor: '#dc2626',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 1.75,
-          pointHoverRadius: 7.5,
-          hitRadius: 10,
-          showLine: false,
-          legendHidden: true,
-        },
-        {
-          label: 'Pwf prueba',
-          data: pwfLineDisplay,
-          borderColor: '#6b7280',
-          borderWidth: 2,
-          borderDash: [6, 5],
-          pointRadius: 0,
-          pointHoverRadius: 0,
-        },
-        {
-          label: OPERATION_POINT_LABEL,
-          data: puntoOperacion,
-          borderColor: '#111827',
-          backgroundColor: '#facc15',
-          pointBackgroundColor: '#facc15',
-          pointRadius: 10,
-          pointHoverRadius: 12,
-          hitRadius: 14,
-          pointStyle: 'circle',
-          pointBorderColor: '#111827',
-          pointBorderWidth: 2.5,
-          showLine: false,
-          order: -10,
-          operationPoint: true,
-          operationLabel: 'Operacion',
-        },
-        {
-          label: 'Prueba Qb-Pwf',
-          data: puntoPrueba,
-          borderColor: '#d97706',
-          backgroundColor: 'rgba(217,119,6,0.15)',
-          pointStyle: 'rectRot',
-          pointRadius: 10,
-          pointHoverRadius: 12,
-          pointBorderColor: '#d97706',
-          pointBorderWidth: 2.5,
-          hitRadius: 12,
-          showLine: false,
-        },
-        {
-          label: 'Puntos IPR',
-          data: samplearPuntosIPR(iprDisplay),
-          borderColor: '#2563eb',
-          backgroundColor: '#2563eb',
-          pointRadius: 5.5,
-          pointBackgroundColor: '#2563eb',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 1.75,
-          pointHoverRadius: 7.5,
-          hitRadius: 10,
-          showLine: false,
-          legendHidden: true,
-        },
-      ],
+      datasets,
     },
     options: {
       responsive: true,
@@ -515,7 +564,7 @@ export function crearGraficoPrincipalVacio() {
  */
 export function actualizarGrafico(datos) {
   if (!chartBSN) return;
-  const iprDisplay = iprParaGrafico(datos.ipr);
+  const iprDisplay = iprParaGrafico(datos.ipr || []);
   const vlpDisplay = iprParaGrafico(datos.vlp || []);
   const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
   const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
@@ -528,13 +577,8 @@ export function actualizarGrafico(datos) {
     puntoOperacion,
   });
 
-  chartBSN.data.datasets[0].data = iprDisplay;
-  chartBSN.data.datasets[1].data = vlpDisplay;
-  chartBSN.data.datasets[2].data = samplearPuntosCurva(vlpDisplay);
-  chartBSN.data.datasets[3].data = pwfLineDisplay;
-  chartBSN.data.datasets[4].data = puntoOperacion;
-  chartBSN.data.datasets[5].data = puntoPrueba;
-  chartBSN.data.datasets[6].data = samplearPuntosIPR(iprDisplay);
+  limpiarDatasetsGrafica({ actualizar: false });
+  chartBSN.data.datasets = construirDatasetsSegunDatos(datos);
 
   chartBSN.options.scales.x.min = axis.x.min;
   chartBSN.options.scales.x.max = axis.x.max;
@@ -550,11 +594,16 @@ export function actualizarGrafico(datos) {
  * Cambia el color de la curva y puntos IPR en el gráfico.
  */
 export function setIPRChartColor(color) {
+  currentIPRColor = color;
   if (!chartBSN) return;
-  chartBSN.data.datasets[0].borderColor = color;
-  chartBSN.data.datasets[6].borderColor = color;
-  chartBSN.data.datasets[6].backgroundColor = color;
-  chartBSN.data.datasets[6].pointBackgroundColor = color;
+  chartBSN.data.datasets.forEach((dataset) => {
+    if (dataset.label === 'IPR') dataset.borderColor = color;
+    if (dataset.label === 'Puntos IPR') {
+      dataset.borderColor = color;
+      dataset.backgroundColor = color;
+      dataset.pointBackgroundColor = color;
+    }
+  });
   chartBSN.update();
 }
 
