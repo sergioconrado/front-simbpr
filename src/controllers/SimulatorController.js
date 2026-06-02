@@ -60,6 +60,7 @@ import {
   mostrarYacimientoTabUI,
 } from "../views/AppView.js";
 import { getProyecto, getProyectoActivoIdx } from "../models/ProjectModel.js";
+import { formatNumber } from "../utils/numberFormat.js";
 
 // ── Color IPR activo ────────────────────────────────────────────────────────
 let iprColor = "#2563eb";
@@ -346,15 +347,6 @@ function formatFechaArchivo(date = new Date()) {
     pad(date.getMonth() + 1),
     pad(date.getDate()),
   ].join("-");
-}
-
-function formatNumber(value, decimals = 0) {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return "N/D";
-  return numericValue.toLocaleString("es-MX", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
 }
 
 function validarDatosGrafica(mensaje) {
@@ -664,23 +656,23 @@ function crearReporteTecnicoActual(imagenGrafica) {
     }),
     unidadPresion,
     parametrosIPR: {
-      pws: formatNumber(convertirPresion(pws), isPSI ? 1 : 1),
-      pwf: formatNumber(convertirPresion(pwf), isPSI ? 1 : 1),
-      qb: formatNumber(qb, 0),
-      j: formatNumber(isPSI ? datos.J / KGcm2_TO_PSI : datos.J, 4),
+      pws: formatNumber(convertirPresion(pws), 2, "N/D"),
+      pwf: formatNumber(convertirPresion(pwf), 2, "N/D"),
+      qb: formatNumber(qb, 0, "N/D"),
+      j: formatNumber(isPSI ? datos.J / KGcm2_TO_PSI : datos.J, 2, "N/D"),
     },
     parametrosVLP: vlpParams,
     resumenIPR: {
-      qmax: formatNumber(datos.Qmax, 0),
-      qOperacion: formatNumber(datos.qOperacion, 0),
-      pwfSistema: formatNumber(convertirPresion(datos.pwfSistema), isPSI ? 1 : 1),
-      drawdown: formatNumber(convertirPresion(pws - (datos.pwfSistema || 0)), isPSI ? 1 : 1),
+      qmax: formatNumber(datos.Qmax, 0, "N/D"),
+      qOperacion: formatNumber(datos.qOperacion, 0, "N/D"),
+      pwfSistema: formatNumber(convertirPresion(datos.pwfSistema), 2, "N/D"),
+      drawdown: formatNumber(convertirPresion(pws - (datos.pwfSistema || 0)), 2, "N/D"),
     },
     resumenVLP: {
-      presionMin: formatNumber(resumenVLP.presionMin, isPSI ? 1 : 1),
-      presionMax: formatNumber(resumenVLP.presionMax, isPSI ? 1 : 1),
-      caudalMax: formatNumber(resumenVLP.caudalMax, 0),
-      totalPuntos: resumenVLP.totalPuntos || "N/D",
+      presionMin: formatNumber(resumenVLP.presionMin, 2, "N/D"),
+      presionMax: formatNumber(resumenVLP.presionMax, 2, "N/D"),
+      caudalMax: formatNumber(resumenVLP.caudalMax, 0, "N/D"),
+      totalPuntos: formatNumber(resumenVLP.totalPuntos, 0, "N/D"),
       estadoLabel: labelsEstado[resumenVLP.estado] || "N/D",
     },
     puntoOperacion,

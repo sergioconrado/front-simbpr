@@ -2,6 +2,7 @@
 
 import { samplearPuntosIPR } from '../models/IPRModel.js';
 import { KGcm2_TO_PSI } from '../models/UnitModel.js';
+import { formatNumber, formatNumberWithUnit } from '../utils/numberFormat.js';
 
 const set = (id, val) => {
   const el = document.getElementById(id);
@@ -9,8 +10,7 @@ const set = (id, val) => {
 };
 
 const isFiniteNumber = (value) => Number.isFinite(Number(value));
-const formatOrND = (value, decimals = 0) =>
-  isFiniteNumber(value) ? Number(value).toFixed(decimals) : 'N/D';
+const formatOrND = (value, decimals = 2) => formatNumber(value, decimals, 'N/D');
 const EMPTY_VALUE = '—';
 const escapeHTML = (value) =>
   String(value ?? 'N/D')
@@ -49,7 +49,7 @@ export function renderResumenVLP(resumen = {}) {
   set('vlp-presion-min', formatOrND(resumen.presionMin, pressureDecimals));
   set('vlp-presion-max', formatOrND(resumen.presionMax, pressureDecimals));
   set('vlp-caudal-max', formatOrND(resumen.caudalMax, 0));
-  set('vlp-total-puntos', isFiniteNumber(resumen.totalPuntos) ? String(resumen.totalPuntos) : 'N/D');
+  set('vlp-total-puntos', formatOrND(resumen.totalPuntos, 0));
   set('vlp-presion-min-unit', pressureUnit);
   set('vlp-presion-max-unit', pressureUnit);
   set('vlp-caudal-max-unit', caudalUnit);
@@ -201,7 +201,7 @@ export function limpiarResultadosSimulacion() {
 }
 
 function crearFilaInforme(label, value, unit = '') {
-  return `<tr><td>${label}</td><td>${value ?? 'N/D'}</td><td>${unit}</td></tr>`;
+  return `<tr><td>${escapeHTML(label)}</td><td>${escapeHTML(value ?? 'N/D')}</td><td>${escapeHTML(unit)}</td></tr>`;
 }
 
 export function abrirInformeTecnicoImprimible(reporte) {
@@ -211,7 +211,7 @@ export function abrirInformeTecnicoImprimible(reporte) {
   const vlpParams = reporte.parametrosVLP || {};
   const punto = reporte.puntoOperacion;
   const puntoOperacion = punto
-    ? `${Number(punto.x).toFixed(0)} bpd / ${Number(punto.y).toFixed(1)} ${reporte.unidadPresion}`
+    ? `${formatNumber(punto.x, 0)} bpd / ${formatNumber(punto.y, 2)} ${reporte.unidadPresion}`
     : 'Sin interseccion calculada';
   const proyectoNombre = escapeHTML(reporte.proyectoNombre || 'Sin proyecto activo');
   const fecha = escapeHTML(reporte.fecha);
@@ -290,12 +290,12 @@ export function abrirInformeTecnicoImprimible(reporte) {
         <table>
           <thead><tr><th>Parametro</th><th>Valor</th><th>Unidad</th></tr></thead>
           <tbody>
-            ${crearFilaInforme('Profundidad disponible', vlpParams.profundidadDisponible?.toFixed?.(0), 'm')}
-            ${crearFilaInforme('Prof. asentamiento BSN', vlpParams.profBSN?.toFixed?.(0), 'm')}
-            ${crearFilaInforme('Nivel de liquido', vlpParams.nivelLiquido?.toFixed?.(0), 'm')}
-            ${crearFilaInforme('Pwh', vlpParams.pwh?.toFixed?.(1), unidadPresion)}
-            ${crearFilaInforme('PL', vlpParams.pl?.toFixed?.(1), unidadPresion)}
-            ${crearFilaInforme('ID tubing', vlpParams.tubingId?.toFixed?.(3), 'pg')}
+            ${crearFilaInforme('Profundidad disponible', formatOrND(vlpParams.profundidadDisponible, 0), 'm')}
+            ${crearFilaInforme('Prof. asentamiento BSN', formatOrND(vlpParams.profBSN, 0), 'm')}
+            ${crearFilaInforme('Nivel de liquido', formatOrND(vlpParams.nivelLiquido, 0), 'm')}
+            ${crearFilaInforme('Pwh', formatOrND(vlpParams.pwh, 2), unidadPresion)}
+            ${crearFilaInforme('PL', formatOrND(vlpParams.pl, 2), unidadPresion)}
+            ${crearFilaInforme('ID tubing', formatOrND(vlpParams.tubingId, 2), 'pg')}
           </tbody>
         </table>
       </section>
@@ -398,7 +398,7 @@ export function renderReporteVLP(reporte = {}) {
   set('rep-vlp-presion-min', formatOrND(resumen.presionMin, pressureDecimals));
   set('rep-vlp-presion-max', formatOrND(resumen.presionMax, pressureDecimals));
   set('rep-vlp-caudal-max', formatOrND(resumen.caudalMax, 0));
-  set('rep-vlp-total-puntos', isFiniteNumber(resumen.totalPuntos) ? String(resumen.totalPuntos) : 'N/D');
+  set('rep-vlp-total-puntos', formatOrND(resumen.totalPuntos, 0));
   set('rep-vlp-presion-min-unit', pressureUnit);
   set('rep-vlp-presion-max-unit', pressureUnit);
   set('rep-vlp-caudal-max-unit', caudalUnit);
@@ -425,9 +425,9 @@ export function renderReporteVLP(reporte = {}) {
  * Actualiza los campos de resumen de Qmax en el panel izquierdo.
  */
 export function mostrarResultadosQmax(Qmax) {
-  set('resultadoQmax', Qmax.toFixed(0));
+  set('resultadoQmax', formatNumber(Qmax, 0));
   set('modeloActivo', 'Modelo: Vogel');
-  set('resultadoQmaxPanel', Qmax.toFixed(0));
+  set('resultadoQmaxPanel', formatNumber(Qmax, 0));
 }
 
 /**
@@ -461,9 +461,9 @@ export function renderResultadosYTabla(datos) {
   const { pws, pwfSistema: pwf, qOperacion: qop, Qmax, ipr } = datos;
   const J = (1.8 * Qmax) / (pws || 1);
 
-  set('resultadoDP', (pws - pwf).toFixed(1));
-  set('resultadoJ', J.toFixed(4));
-  set('resultadoQmaxPanel', Qmax.toFixed(0));
+  set('resultadoDP', formatNumber(pws - pwf, 2));
+  set('resultadoJ', formatNumber(J, 2));
+  set('resultadoQmaxPanel', formatNumber(Qmax, 0));
 
   const tbody = document.getElementById('tablaIprBody');
   if (!tbody || ipr.length === 0) return;
@@ -473,8 +473,8 @@ export function renderResultadosYTabla(datos) {
     if (!pt) return;
     const isOp = Qmax > 0 && Math.abs(pt.x - qop) < Qmax * 0.07;
     tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
-      <td class="px-4 py-2">${Math.round(pt.x)}</td>
-      <td class="px-4 py-2">${Math.round(pt.y + 0.1)}</td>
+      <td class="px-4 py-2">${formatNumber(pt.x, 0)}</td>
+      <td class="px-4 py-2">${formatNumber(pt.y + 0.1, 0)}</td>
     </tr>`;
   });
 }
@@ -538,20 +538,20 @@ export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI, ipr
   const pwfHeader = document.getElementById('d-ipr-pwf-header');
   if (pwfHeader) pwfHeader.textContent = `Pwf (${pressUnit})`;
 
-  set('d-pws',         isPSI ? (pws * K).toFixed(1) : pws.toFixed(0));
-  set('d-pwf',         isPSI ? (pwf * K).toFixed(1) : pwf.toFixed(0));
-  set('d-j',           isPSI ? (Jactual / K).toFixed(4) : Jactual.toFixed(2));
+  set('d-pws',         formatNumber(isPSI ? pws * K : pws, isPSI ? 2 : 0));
+  set('d-pwf',         formatNumber(isPSI ? pwf * K : pwf, isPSI ? 2 : 0));
+  set('d-j',           formatNumber(isPSI ? Jactual / K : Jactual, 2));
   set('d-modelo',      'Vogel');
-  set('d-qmax',        Qmax.toFixed(0));
-  set('d-qop',         qOp.toFixed(0));
+  set('d-qmax',        formatNumber(Qmax, 0));
+  set('d-qop',         formatNumber(qOp, 0));
   const drawdown = pws - pwf;
-  set('d-drawdown',    isPSI ? (drawdown * K).toFixed(1) : drawdown.toFixed(0));
-  set('d-eficiencia',  Qmax > 0 ? ((qOp / Qmax) * 100).toFixed(0) : '0');
-  set('d-prof-disp',   (vlpParams.profundidadDisponible || vlpParams.profBSN || 0).toFixed(0));
-  set('d-nl',          (vlpParams.nivelLiquido || 0).toFixed(0));
-  set('d-pl',          isPSI ? ((vlpParams.pl || 0) * K).toFixed(1) : (vlpParams.pl || 0).toFixed(0));
-  set('d-pwh',         isPSI ? ((vlpParams.pwh || 0) * K).toFixed(1) : (vlpParams.pwh || 0).toFixed(0));
-  set('d-tubing-id',   (vlpParams.tubingId || 0).toFixed(3));
+  set('d-drawdown',    formatNumber(isPSI ? drawdown * K : drawdown, isPSI ? 2 : 0));
+  set('d-eficiencia',  formatNumber(Qmax > 0 ? (qOp / Qmax) * 100 : 0, 0));
+  set('d-prof-disp',   formatNumber(vlpParams.profundidadDisponible || vlpParams.profBSN || 0, 0));
+  set('d-nl',          formatNumber(vlpParams.nivelLiquido || 0, 0));
+  set('d-pl',          formatNumber(isPSI ? (vlpParams.pl || 0) * K : (vlpParams.pl || 0), isPSI ? 2 : 0));
+  set('d-pwh',         formatNumber(isPSI ? (vlpParams.pwh || 0) * K : (vlpParams.pwh || 0), isPSI ? 2 : 0));
+  set('d-tubing-id',   formatNumber(vlpParams.tubingId || 0, 2));
 
   // Tabla de puntos IPR (cada 5 % de Qmax)
   const tbody = document.getElementById('tabla-ipr-body');
@@ -561,12 +561,12 @@ export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI, ipr
     const pt     = ipr[i * 10] || { x: (i / 20) * Qmax, y: 0 };
     const q      = pt.x;
     const pCalc  = Math.max(pt.y, 0);
-    const pDisp  = isPSI ? (pCalc * K).toFixed(1) : pCalc.toFixed(0);
+    const pDisp  = formatNumber(isPSI ? pCalc * K : pCalc, isPSI ? 2 : 0);
     const pct    = i * 5;
     const isOp   = Math.abs(q - qOp) < Qmax / 15;
     tbody.innerHTML += `<tr class="${isOp ? 'bg-blue-50 font-semibold' : ''}">
       <td class="px-4 py-1.5">${i + 1}</td>
-      <td class="px-4 py-1.5">${q.toFixed(0)}</td>
+      <td class="px-4 py-1.5">${formatNumber(q, 0)}</td>
       <td class="px-4 py-1.5">${pDisp}</td>
       <td class="px-4 py-1.5">${pct}%</td>
     </tr>`;
@@ -577,22 +577,22 @@ export function actualizarTablasDatos({ pws, pwf, Jactual, Qmax, qOp, isPSI, ipr
  * Muestra los resultados calculados de producción de fluidos.
  */
 export function actualizarResultadosProduccion({ qo, qw, qg, dens, qRes }) {
-  set('prod_qo',   qo.toFixed(0)   + ' bpd');
-  set('prod_qw',   qw.toFixed(0)   + ' bpd');
-  set('prod_qg',   qg.toFixed(2)   + ' Mscf/d');
-  set('prod_dens', dens.toFixed(3) + ' g/cc');
-  set('prod_res',  qRes.toFixed(1) + ' rb/d');
+  set('prod_qo',   formatNumberWithUnit(qo, 'bpd', 0));
+  set('prod_qw',   formatNumberWithUnit(qw, 'bpd', 0));
+  set('prod_qg',   formatNumberWithUnit(qg, 'Mscf/d', 2));
+  set('prod_dens', formatNumberWithUnit(dens, 'g/cc', 2));
+  set('prod_res',  formatNumberWithUnit(qRes, 'rb/d', 2));
 }
 
 /**
  * Muestra los resultados calculados de la BSN.
  */
 export function actualizarResultadosBSN({ cabeza, bhp, efic, carga, kw }) {
-  set('bsn_cabeza', cabeza.toFixed(0) + ' m');
-  set('bsn_bhp',    bhp.toFixed(0)    + ' HP');
-  set('bsn_efic',   efic.toFixed(1)   + ' %');
-  set('bsn_carga',  carga.toFixed(1)  + ' %');
-  set('bsn_kw',     kw.toFixed(1)     + ' kW');
+  set('bsn_cabeza', formatNumberWithUnit(cabeza, 'm', 0));
+  set('bsn_bhp',    formatNumberWithUnit(bhp, 'HP', 0));
+  set('bsn_efic',   formatNumberWithUnit(efic, '%', 2));
+  set('bsn_carga',  formatNumberWithUnit(carga, '%', 2));
+  set('bsn_kw',     formatNumberWithUnit(kw, 'kW', 2));
 }
 
 /**
@@ -601,16 +601,16 @@ export function actualizarResultadosBSN({ cabeza, bhp, efic, carga, kw }) {
 export function actualizarResultadosRPF(result) {
   const { kpis, operacion, diagnostico, depths, pressures, temps, gradPs, gradTs } = result;
 
-  set('rpf_bhp_est',  kpis.pws.toFixed(1));
-  set('rpf_bht',      kpis.bht.toFixed(1));
-  set('rpf_grad_p',   kpis.gradP.toFixed(2));
-  set('rpf_grad_t',   kpis.gradT.toFixed(2));
+  set('rpf_bhp_est',  formatNumber(kpis.pws, 2));
+  set('rpf_bht',      formatNumber(kpis.bht, 2));
+  set('rpf_grad_p',   formatNumber(kpis.gradP, 2));
+  set('rpf_grad_t',   formatNumber(kpis.gradT, 2));
 
-  set('rpf_prof_bsn', operacion.profBSN.toFixed(0) + ' m');
-  set('rpf_pws_card', operacion.pws.toFixed(2) + ' kg/cm²');
-  set('rpf_pwf_card', operacion.pwf.toFixed(2) + ' kg/cm²');
-  set('rpf_drawdown', operacion.drawdown.toFixed(2) + ' kg/cm²');
-  set('rpf_j_card',   operacion.J.toFixed(2) + ' bpd/kg/cm²');
+  set('rpf_prof_bsn', formatNumberWithUnit(operacion.profBSN, 'm', 0));
+  set('rpf_pws_card', formatNumberWithUnit(operacion.pws, 'kg/cm²', 2));
+  set('rpf_pwf_card', formatNumberWithUnit(operacion.pwf, 'kg/cm²', 2));
+  set('rpf_drawdown', formatNumberWithUnit(operacion.drawdown, 'kg/cm²', 2));
+  set('rpf_j_card',   formatNumberWithUnit(operacion.J, 'bpd/kg/cm²', 2));
 
   set('rpf_diag_presion', diagnostico.presion);
   set('rpf_diag_temp',    diagnostico.temp);
@@ -623,11 +623,11 @@ export function actualizarResultadosRPF(result) {
   depths.forEach((d, i) => {
     const isBSN = i === depths.length - 1;
     tbody.innerHTML += `<tr class="${isBSN ? 'bg-blue-50 font-semibold' : i % 2 === 0 ? 'bg-gray-50' : ''}">
-      <td class="px-4 py-1.5">${d.toFixed(0)}${isBSN ? ' ★' : ''}</td>
-      <td class="px-4 py-1.5">${pressures[i].toFixed(2)}</td>
-      <td class="px-4 py-1.5">${temps[i].toFixed(1)}</td>
-      <td class="px-4 py-1.5">${gradPs[i]}</td>
-      <td class="px-4 py-1.5">${gradTs[i]}</td>
+      <td class="px-4 py-1.5">${formatNumber(d, 0)}${isBSN ? ' ★' : ''}</td>
+      <td class="px-4 py-1.5">${formatNumber(pressures[i], 2)}</td>
+      <td class="px-4 py-1.5">${formatNumber(temps[i], 2)}</td>
+      <td class="px-4 py-1.5">${formatNumber(gradPs[i], 2)}</td>
+      <td class="px-4 py-1.5">${formatNumber(gradTs[i], 2)}</td>
     </tr>`;
   });
 }
@@ -643,11 +643,11 @@ export function actualizarResultadosSensibilidad(rows, labelVar) {
   rows.forEach((r, idx) => {
     tbody.innerHTML += `<tr class="${idx % 2 === 0 ? 'bg-gray-50' : ''}">
       <td class="px-4 py-2">Escenario ${idx + 1}</td>
-      <td class="px-4 py-2">${r.val}</td>
-      <td class="px-4 py-2 font-medium">${r.Qmax}</td>
-      <td class="px-4 py-2">${r.qOp}</td>
-      <td class="px-4 py-2">${r.drawdown}</td>
-      <td class="px-4 py-2">${r.eficiencia}</td>
+      <td class="px-4 py-2">${formatNumber(r.val, 2)}</td>
+      <td class="px-4 py-2 font-medium">${formatNumber(r.Qmax, 0)}</td>
+      <td class="px-4 py-2">${formatNumber(r.qOp, 0)}</td>
+      <td class="px-4 py-2">${formatNumber(r.drawdown, 2)}</td>
+      <td class="px-4 py-2">${formatNumber(r.eficiencia, 2)}</td>
     </tr>`;
   });
 }

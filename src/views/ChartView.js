@@ -2,6 +2,7 @@
 
 import { samplearPuntosIPR, niceAxisMax } from '../models/IPRModel.js';
 import { iprParaGrafico, yAxisLabel } from '../models/UnitModel.js';
+import { formatNumber } from '../utils/numberFormat.js';
 
 let chartBSN  = null;
 let chartSens = null;
@@ -203,14 +204,6 @@ export function calcularLimitesAutomaticosEjes({
     x: axisBounds(puntos.map((pt) => pt.x), { forceZeroMin: true }),
     y: axisBounds(puntos.map((pt) => pt.y), { forceZeroMin: true }),
   };
-}
-
-function formatChartNumber(value, decimals = 0) {
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue)) return 'N/D';
-  return numericValue.toLocaleString('es-MX', {
-    maximumFractionDigits: decimals,
-  });
 }
 
 function drawRoundedRect(ctx, x, y, width, height, radius) {
@@ -452,8 +445,8 @@ export function crearGrafico(datos = {}) {
               return item?.dataset?.operationPoint ? 'Interseccion IPR/VLP' : '';
             },
             label: (ctx) => {
-              const x = formatChartNumber(ctx.raw.x, 0);
-              const y = formatChartNumber(ctx.raw.y, 1);
+              const x = formatNumber(ctx.raw.x, 0, 'N/D');
+              const y = formatNumber(ctx.raw.y, 2, 'N/D');
 
               if (ctx.dataset.operationPoint) {
                 return [
@@ -487,6 +480,7 @@ export function crearGrafico(datos = {}) {
             font: { size: mainChartFont.ticks, weight: '600' },
             padding: 7,
             maxTicksLimit: AXIS_TARGET_TICKS + 1,
+            callback: (value) => formatNumber(value, 0, 'N/D'),
           },
         },
         y: {
@@ -506,6 +500,7 @@ export function crearGrafico(datos = {}) {
             font: { size: mainChartFont.ticks, weight: '600' },
             padding: 7,
             maxTicksLimit: AXIS_TARGET_TICKS + 1,
+            callback: (value) => formatNumber(value, 2, 'N/D'),
           },
         },
       },
@@ -623,8 +618,8 @@ export function renderReporteVLPChart(datos) {
           callbacks: {
             title: () => '',
             label: (ctx) => {
-              const x = Math.round(ctx.raw.x);
-              const y = Math.round(ctx.raw.y);
+              const x = formatNumber(ctx.raw.x, 0, 'N/D');
+              const y = formatNumber(ctx.raw.y, 2, 'N/D');
               return `${ctx.dataset.label}: ${x} bpd  |  ${y} ${yAxisLabel()}`;
             },
           },
@@ -637,14 +632,22 @@ export function renderReporteVLPChart(datos) {
           max: axX.max,
           title: { display: true, text: 'Ql (bpd)', font: { weight: 'bold', size: 13 }, color: '#111827' },
           grid: { color: '#e5e7eb' },
-          ticks: { color: '#111827', stepSize: axX.stepSize },
+          ticks: {
+            color: '#111827',
+            stepSize: axX.stepSize,
+            callback: (value) => formatNumber(value, 0, 'N/D'),
+          },
         },
         y: {
           min: 0,
           max: axY.max,
           title: { display: true, text: yAxisLabel(), font: { weight: 'bold', size: 13 }, color: '#111827' },
           grid: { color: '#e5e7eb' },
-          ticks: { color: '#111827', stepSize: axY.stepSize },
+          ticks: {
+            color: '#111827',
+            stepSize: axY.stepSize,
+            callback: (value) => formatNumber(value, 2, 'N/D'),
+          },
         },
       },
     },
@@ -682,10 +685,34 @@ export function renderSensibilidadChart(xVals, qmaxVals, qopVals, labelVar) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'top' } },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const item = items?.[0];
+              return item ? `${labelVar}: ${formatNumber(item.label, 2, item.label)}` : '';
+            },
+            label: (ctx) => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, 2, 'N/D')}`,
+          },
+        },
+      },
       scales: {
-        x: { title: { display: true, text: labelVar }, grid: { color: '#e5e7eb' } },
-        y: { title: { display: true, text: 'Caudal (bpd)' }, min: 0, grid: { color: '#e5e7eb' } },
+        x: {
+          title: { display: true, text: labelVar },
+          grid: { color: '#e5e7eb' },
+          ticks: {
+            callback: function(value) {
+              return formatNumber(this.getLabelForValue(value), 2, this.getLabelForValue(value));
+            },
+          },
+        },
+        y: {
+          title: { display: true, text: 'Caudal (bpd)' },
+          min: 0,
+          grid: { color: '#e5e7eb' },
+          ticks: { callback: (value) => formatNumber(value, 0, 'N/D') },
+        },
       },
     },
   });
@@ -700,7 +727,7 @@ export function renderPerfilRPFChart(depths, pressures, temps) {
   chartRPF = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: depths.map((d) => d.toFixed(0)),
+      labels: depths.map((d) => formatNumber(d, 0)),
       datasets: [
         {
           label: 'Presión (kg/cm²)',
@@ -727,11 +754,36 @@ export function renderPerfilRPFChart(depths, pressures, temps) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'top' } },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            title: (items) => {
+              const item = items?.[0];
+              return item ? `Profundidad: ${formatNumber(item.label, 0, item.label)} m` : '';
+            },
+            label: (ctx) => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, 2, 'N/D')}`,
+          },
+        },
+      },
       scales: {
         x:  { title: { display: true, text: 'Profundidad (m)' }, grid: { color: '#e5e7eb' } },
-        yP: { type: 'linear', position: 'left',  title: { display: true, text: 'Presión (kg/cm²)' },     min: 0, grid: { color: '#e5e7eb' } },
-        yT: { type: 'linear', position: 'right', title: { display: true, text: 'Temperatura (°C)' }, min: 0, grid: { drawOnChartArea: false } },
+        yP: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'Presión (kg/cm²)' },
+          min: 0,
+          grid: { color: '#e5e7eb' },
+          ticks: { callback: (value) => formatNumber(value, 2, 'N/D') },
+        },
+        yT: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Temperatura (°C)' },
+          min: 0,
+          grid: { drawOnChartArea: false },
+          ticks: { callback: (value) => formatNumber(value, 2, 'N/D') },
+        },
       },
     },
   });
