@@ -64,12 +64,8 @@ export function limpiarDatasetsGrafica({ actualizar = true } = {}) {
 export function construirDatasetsSegunDatos(datos = {}) {
   const iprDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.ipr || []));
   const vlpDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.vlp || []));
-  const pwfLineDisplay = normalizarPuntosGrafica(iprParaGrafico(datos.pwfLine || []));
   const puntoOperacion = datos.puntoOperacion && tienePuntos(iprDisplay) && tienePuntos(vlpDisplay)
     ? normalizarPuntosGrafica(iprParaGrafico([datos.puntoOperacion]))
-    : [];
-  const puntoPrueba = datos.puntoPrueba && tienePuntos(iprDisplay)
-    ? normalizarPuntosGrafica(iprParaGrafico([datos.puntoPrueba]))
     : [];
   const datasets = [];
 
@@ -86,34 +82,6 @@ export function construirDatasetsSegunDatos(datos = {}) {
       borderCapStyle: 'round',
       borderJoinStyle: 'round',
     });
-
-    if (tienePuntos(pwfLineDisplay)) {
-      datasets.push({
-        label: 'Pwf prueba',
-        data: pwfLineDisplay,
-        borderColor: '#6b7280',
-        borderWidth: 2,
-        borderDash: [6, 5],
-        pointRadius: 0,
-        pointHoverRadius: 0,
-      });
-    }
-
-    if (tienePuntos(puntoPrueba)) {
-      datasets.push({
-        label: 'Prueba Qb-Pwf',
-        data: puntoPrueba,
-        borderColor: '#d97706',
-        backgroundColor: 'rgba(217,119,6,0.15)',
-        pointStyle: 'rectRot',
-        pointRadius: 10,
-        pointHoverRadius: 12,
-        pointBorderColor: '#d97706',
-        pointBorderWidth: 2.5,
-        hitRadius: 12,
-        showLine: false,
-      });
-    }
 
     datasets.push({
       label: 'Puntos IPR',
@@ -227,11 +195,9 @@ function axisBounds(values, { forceZeroMin = true } = {}) {
 export function calcularLimitesAutomaticosEjes({
   ipr = [],
   vlp = [],
-  pwfLine = [],
-  puntoPrueba = [],
   puntoOperacion = [],
 } = {}) {
-  const puntos = puntosValidos(ipr, vlp, pwfLine, puntoPrueba, puntoOperacion);
+  const puntos = puntosValidos(ipr, vlp, puntoOperacion);
 
   return {
     x: axisBounds(puntos.map((pt) => pt.x), { forceZeroMin: true }),
@@ -431,15 +397,11 @@ export function crearGrafico(datos = {}) {
   const ctx = document.getElementById('graficoBSN').getContext('2d');
   const iprDisplay = iprParaGrafico(datos.ipr || []);
   const vlpDisplay = iprParaGrafico(datos.vlp || []);
-  const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
   const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
-  const puntoPrueba = datos.puntoPrueba ? iprParaGrafico([datos.puntoPrueba]) : [];
   const datasets = construirDatasetsSegunDatos(datos);
   const axis = calcularLimitesAutomaticosEjes({
     ipr: iprDisplay,
     vlp: vlpDisplay,
-    pwfLine: pwfLineDisplay,
-    puntoPrueba,
     puntoOperacion,
   });
 
@@ -555,7 +517,7 @@ export function crearGrafico(datos = {}) {
 }
 
 export function crearGraficoPrincipalVacio() {
-  crearGrafico({ ipr: [], vlp: [], pwfLine: [] });
+  crearGrafico({ ipr: [], vlp: [] });
 }
 
 /**
@@ -566,14 +528,10 @@ export function actualizarGrafico(datos) {
   if (!chartBSN) return;
   const iprDisplay = iprParaGrafico(datos.ipr || []);
   const vlpDisplay = iprParaGrafico(datos.vlp || []);
-  const pwfLineDisplay = iprParaGrafico(datos.pwfLine || []);
   const puntoOperacion = datos.puntoOperacion ? iprParaGrafico([datos.puntoOperacion]) : [];
-  const puntoPrueba = datos.puntoPrueba ? iprParaGrafico([datos.puntoPrueba]) : [];
   const axis = calcularLimitesAutomaticosEjes({
     ipr: iprDisplay,
     vlp: vlpDisplay,
-    pwfLine: pwfLineDisplay,
-    puntoPrueba,
     puntoOperacion,
   });
 
