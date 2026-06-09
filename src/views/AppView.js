@@ -81,7 +81,7 @@ export function mostrarPanelUI(panelId, boton) {
  * @param {Element} boton - botón tab que disparó la acción
  */
 export function mostrarTabUI(tab, boton) {
-  ['yacimiento', 'pozo', 'produccion', 'bsn'].forEach((id) => {
+  ['yacimiento', 'pozo', 'produccion', 'bsn', 'bhp-acustica'].forEach((id) => {
     document.getElementById(id).classList.add('hidden');
   });
   document.getElementById(tab).classList.remove('hidden');

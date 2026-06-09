@@ -349,6 +349,12 @@
               >
                 BSN
               </button>
+              <button
+                onclick="mostrarTab('bhp-acustica', this)"
+                class="tab-btn tab-inactive flex-1 text-center py-2.5"
+              >
+                BHP / Acústica
+              </button>
             </div>
 
             <!-- Contenido del tab activo -->
@@ -930,6 +936,184 @@
                 >
                   Calcular BSN
                 </button>
+              </div>
+
+              <!-- BHP / PRUEBA ACUSTICA -->
+              <div
+                id="bhp-acustica"
+                class="bg-slate-50 rounded-xl p-4 space-y-4 hidden"
+              >
+                <div class="border-b border-slate-200 pb-3">
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-[0.16em]">
+                    BHP / Prueba Acústica
+                  </p>
+                  <h3 class="mt-1 text-sm font-semibold text-slate-900">
+                    Análisis preliminar de nivel y presión de fondo
+                  </h3>
+                </div>
+
+                <section class="space-y-3">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Estado del pozo
+                  </p>
+                  <div>
+                    <label for="bhp_estado_pozo" class="text-sm text-gray-500">Estado del pozo</label>
+                    <select
+                      id="bhp_estado_pozo"
+                      class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none"
+                    >
+                      <option selected>Produciendo</option>
+                      <option>Cerrado</option>
+                      <option>Detenido</option>
+                      <option>En prueba</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="bhp_porcentaje_liquido" class="text-sm text-gray-500">Porcentaje de líquido (%)</label>
+                    <input
+                      id="bhp_porcentaje_liquido"
+                      type="number"
+                      value="70"
+                      min="0"
+                      max="100"
+                      class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none"
+                    />
+                  </div>
+                </section>
+
+                <section class="space-y-3 border-t border-slate-200 pt-4">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Presiones
+                  </p>
+                  <div>
+                    <label for="bhp_presion_tubing" class="text-sm text-gray-500">Presión en tubing, psi(g)</label>
+                    <input id="bhp_presion_tubing" type="number" value="250" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_presion_buildup" class="text-sm text-gray-500">Presión de buildup en tubing, psi</label>
+                    <input id="bhp_presion_buildup" type="number" value="420" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_tiempo_buildup" class="text-sm text-gray-500">Tiempo de buildup, min</label>
+                    <input id="bhp_tiempo_buildup" type="number" value="60" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_presion_interfaz" class="text-sm text-gray-500">Presión interfaz gas/líquido, psi(g)</label>
+                    <input id="bhp_presion_interfaz" type="number" value="315" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                </section>
+
+                <section class="space-y-3 border-t border-slate-200 pt-4">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Profundidades
+                  </p>
+                  <div>
+                    <label for="bhp_nivel_liquido_md" class="text-sm text-gray-500">Profundidad del nivel de líquido MD, m</label>
+                    <input id="bhp_nivel_liquido_md" type="number" value="620" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_intake_md" class="text-sm text-gray-500">Profundidad de intake tubing/bomba MD, m</label>
+                    <input id="bhp_intake_md" type="number" value="1750" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_intake_tvd" class="text-sm text-gray-500">Profundidad de intake tubing/bomba TVD, m</label>
+                    <input id="bhp_intake_tvd" type="number" value="1680" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                  <div>
+                    <label for="bhp_formacion_md" class="text-sm text-gray-500">Profundidad de formación MD, m</label>
+                    <input id="bhp_formacion_md" type="number" value="2100" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                  </div>
+                </section>
+
+                <section class="space-y-3 border-t border-slate-200 pt-4">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Propiedades de fluidos
+                  </p>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label for="bhp_api_aceite" class="text-sm text-gray-500">API del aceite</label>
+                      <input id="bhp_api_aceite" type="number" value="32" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                    </div>
+                    <div>
+                      <label for="bhp_grav_agua" class="text-sm text-gray-500">Gravedad específica del agua</label>
+                      <input id="bhp_grav_agua" type="number" value="1.02" step="0.01" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label for="bhp_grav_gas" class="text-sm text-gray-500">Gravedad del gas</label>
+                      <input id="bhp_grav_gas" type="number" value="0.72" step="0.01" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                    </div>
+                    <div>
+                      <label for="bhp_velocidad_acustica" class="text-sm text-gray-500">Velocidad acústica, ft/s</label>
+                      <input id="bhp_velocidad_acustica" type="number" value="1150" class="w-full mt-1 border border-gray-200 p-2 rounded-xl bg-white focus:ring-2 focus:ring-slate-300 outline-none" />
+                    </div>
+                  </div>
+                </section>
+
+                <section class="border-t border-slate-200 pt-4">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                    Visualización del pozo
+                  </p>
+                  <div class="bg-white border border-slate-200 rounded-xl p-4">
+                    <div class="relative h-72 mx-auto max-w-[210px]">
+                      <div class="absolute left-1/2 top-2 bottom-2 w-16 -translate-x-1/2 rounded-b-2xl border-2 border-slate-700 bg-slate-100 overflow-hidden">
+                        <div class="absolute inset-x-0 bottom-0 h-[70%] bg-blue-500/75"></div>
+                        <div class="absolute inset-x-6 top-0 bottom-0 bg-slate-800/80"></div>
+                        <div class="absolute inset-x-0 top-[30%] border-t-2 border-blue-700"></div>
+                      </div>
+                      <div class="absolute left-[calc(50%+2.7rem)] top-[27%] flex items-center gap-2">
+                        <span class="h-px w-8 bg-blue-700"></span>
+                        <span class="text-[11px] font-semibold text-blue-700">Nivel de líquido</span>
+                      </div>
+                      <div class="absolute left-[calc(50%+2.7rem)] top-[62%] flex items-center gap-2">
+                        <span class="h-px w-8 bg-amber-500"></span>
+                        <span class="text-[11px] font-semibold text-amber-600">Intake</span>
+                      </div>
+                      <div class="absolute left-[calc(50%+2.7rem)] bottom-8 flex items-center gap-2">
+                        <span class="h-px w-8 bg-red-500"></span>
+                        <span class="text-[11px] font-semibold text-red-600">Formación</span>
+                      </div>
+                      <div class="absolute left-4 top-2 bottom-2 flex flex-col justify-between text-[10px] text-slate-400">
+                        <span>0 m</span>
+                        <span>MD</span>
+                        <span>2100 m</span>
+                      </div>
+                    </div>
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-500">
+                      <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-slate-800"></span>Tubing</div>
+                      <div class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-500"></span>Columna líquida</div>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="border-t border-slate-200 pt-4">
+                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                    Resultados preliminares
+                  </p>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-white rounded-xl p-2.5 border border-slate-200">
+                      <p class="text-gray-400 mb-0.5">Nivel de líquido</p>
+                      <p id="bhp_result_nivel_liquido" class="font-bold text-slate-800">Pendiente</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 border border-slate-200">
+                      <p class="text-gray-400 mb-0.5">Sumergencia</p>
+                      <p id="bhp_result_sumergencia" class="font-bold text-slate-800">Pendiente</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 border border-slate-200">
+                      <p class="text-gray-400 mb-0.5">Presión en intake</p>
+                      <p id="bhp_result_presion_intake" class="font-bold text-slate-800">Pendiente</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 border border-slate-200">
+                      <p class="text-gray-400 mb-0.5">PBHP estimada</p>
+                      <p id="bhp_result_pbhp" class="font-bold text-slate-800">Pendiente</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-2.5 border border-slate-200 col-span-2">
+                      <p class="text-gray-400 mb-0.5">Estado del cálculo</p>
+                      <p id="bhp_result_estado" class="font-bold text-amber-600">Pendiente de calcular</p>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
             <!-- /contenido tab -->
